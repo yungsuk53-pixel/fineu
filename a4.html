@@ -1,0 +1,1795 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FINE U - 학습 게임</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        /* 기본 스타일 */
+        body {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            overflow-x: hidden;
+            background: #F8FAFC;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .screen {
+            display: none;
+            min-height: 100vh;
+            position: relative;
+            background: #F8FAFC;
+        }
+        
+        .screen.active {
+            display: block;
+        }
+
+        /* 헤더 */
+        .header {
+            background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+            color: white;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 28rem;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 800;
+            margin: 0;
+            letter-spacing: -0.5px;
+        }
+
+        /* 게임 카드 */
+        .game-grid {
+            max-width: 28rem;
+            margin: 0 auto;
+            padding: 30px 20px 120px;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .game-card {
+            background: white;
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            border: 1px solid rgba(0,0,0,0.05);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--game-color);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .game-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+        }
+
+        .game-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .game-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .game-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            background: var(--game-color);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        .game-info h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1F2937;
+            margin: 0 0 4px 0;
+            letter-spacing: -0.3px;
+        }
+
+        .game-difficulty {
+            background: var(--difficulty-color);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 8px;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .game-description {
+            font-size: 14px;
+            color: #64748B;
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+
+        .game-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 12px;
+            background: #F8FAFC;
+            border-radius: 12px;
+        }
+
+        .stat-value {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1F2937;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 10px;
+            color: #64748B;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .game-button {
+            width: 100%;
+            background: var(--game-color);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 14px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .game-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        /* 게임별 색상 */
+        .game-quiz { 
+            --game-color: linear-gradient(135deg, #3B82F6, #1D4ED8);
+            --difficulty-color: #3B82F6;
+        }
+        .game-rocket { 
+            --game-color: linear-gradient(135deg, #EF4444, #DC2626);
+            --difficulty-color: #EF4444;
+        }
+        .game-owl { 
+            --game-color: linear-gradient(135deg, #10B981, #059669);
+            --difficulty-color: #10B981;
+        }
+
+        /* 게임 컨테이너 */
+        .game-container {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            margin: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .game-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1F2937;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        /* 퀴즈 스타일 */
+        .quiz-question {
+            background: #F8FAFC;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #3B82F6;
+        }
+
+        .quiz-options {
+            display: grid;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .quiz-option {
+            background: white;
+            border: 2px solid #E2E8F0;
+            border-radius: 12px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .quiz-option:hover {
+            border-color: #3B82F6;
+            background: #F8FAFC;
+        }
+
+        .quiz-option.correct {
+            border-color: #10B981;
+            background: #ECFDF5;
+            color: #065F46;
+        }
+
+        .quiz-option.incorrect {
+            border-color: #EF4444;
+            background: #FEF2F2;
+            color: #991B1B;
+        }
+
+        /* 로켓 게임 스타일 */
+        .rocket-game {
+            text-align: center;
+        }
+
+        .game-canvas {
+            border: 2px solid #E2E8F0;
+            border-radius: 12px;
+            background: #1F2937;
+            margin: 20px 0;
+        }
+
+        .game-controls {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+
+        .control-button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .start-button {
+            background: linear-gradient(135deg, #10B981, #059669);
+            color: white;
+        }
+
+        .pause-button {
+            background: linear-gradient(135deg, #F59E0B, #D97706);
+            color: white;
+        }
+
+        /* 똑부리 스타일 */
+        .owl-container {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .owl-character {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #F59E0B, #D97706);
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(245, 158, 11, 0.3);
+        }
+
+        .owl-character:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 30px rgba(245, 158, 11, 0.4);
+        }
+
+        .owl-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .owl-stat {
+            background: #F8FAFC;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .owl-actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .owl-button {
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+        }
+
+        .feed-button { background: linear-gradient(135deg, #EF4444, #DC2626); }
+        .study-button { background: linear-gradient(135deg, #3B82F6, #1D4ED8); }
+        .invest-button { background: linear-gradient(135deg, #10B981, #059669); }
+        .pet-button { background: linear-gradient(135deg, #8B5CF6, #7C3AED); }
+
+        /* 네비게이션 */
+        .bottom-navigation {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(0,0,0,0.05);
+            padding: 16px 0 12px 0;
+            z-index: 50;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+        }
+
+        .nav-container {
+            max-width: 28rem;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+            align-items: end;
+            position: relative;
+            height: 70px;
+            padding: 0 20px;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding: 8px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 16px;
+        }
+
+        .nav-item:hover {
+            transform: translateY(-2px);
+            background: rgba(59, 130, 246, 0.08);
+        }
+
+        .nav-item i {
+            font-size: 22px;
+            color: #9CA3AF;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item span {
+            font-size: 11px;
+            font-weight: 600;
+            color: #9CA3AF;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item.active i,
+        .nav-item:hover i {
+            color: #3B82F6;
+            transform: scale(1.1);
+        }
+
+        .nav-item.active span,
+        .nav-item:hover span {
+            color: #3B82F6;
+        }
+
+        .nav-center {
+            grid-column: 3;
+            display: flex;
+            justify-content: center;
+            align-items: end;
+            height: 100%;
+            position: relative;
+        }
+
+        .level-badge-nav {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: white;
+            font-size: 11px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            z-index: 10;
+            cursor: pointer;
+            border: 3px solid white;
+            transition: all 0.3s ease;
+        }
+
+        .level-badge-nav:hover {
+            transform: translateX(-50%) scale(1.1);
+        }
+
+        .level-yellow { background: linear-gradient(135deg, #FEF3C7, #F59E0B); }
+        .level-orange { background: linear-gradient(135deg, #FED7AA, #EA580C); }
+        .level-green { background: linear-gradient(135deg, #A7F3D0, #059669); }
+        .level-blue { background: linear-gradient(135deg, #BFDBFE, #2563EB); }
+        .level-brown { background: linear-gradient(135deg, #D2B48C, #92400E); }
+        .level-black { background: linear-gradient(135deg, #6B7280, #111827); }
+        .level-red { background: linear-gradient(135deg, #FECACA, #DC2626); }
+        /* 반응형 디자인 */
+        @media (max-width: 480px) {
+            .header {
+                padding: 16px;
+            }
+            
+            .header h1 {
+                font-size: 20px;
+            }
+            
+            .game-grid {
+                padding: 20px 16px 100px;
+                gap: 16px;
+            }
+            
+            .game-card {
+                padding: 20px;
+            }
+            
+            .nav-container {
+                padding: 0 16px;
+            }
+        }
+    </style>
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(74, 111, 165, 0.3);
+        }
+        
+        .level-badge-nav {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 12px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 10;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        .level-yellow { background: linear-gradient(135deg, #FCD34D, #F59E0B); }
+        .level-orange { background: linear-gradient(135deg, #FB923C, #EA580C); }
+        .level-green { background: linear-gradient(135deg, #34D399, #059669); }
+        .level-blue { background: linear-gradient(135deg, #60A5FA, #2563EB); }
+        .level-brown { background: linear-gradient(135deg, #A16207, #92400E); }
+        .level-black { background: linear-gradient(135deg, #374151, #111827); }
+        .level-red { background: linear-gradient(135deg, #EF4444, #DC2626); }
+
+        @keyframes glow {
+            from {
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            }
+            to {
+                box-shadow: 0 4px 20px rgba(0,0,0,0.3), 0 0 15px rgba(255,255,255,0.3);
+            }
+        }
+
+        .bottom-navigation {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid #e5e7eb;
+            padding: 12px 0 8px 0;
+            z-index: 50;
+        }
+
+        .nav-container {
+            max-width: 28rem;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+            align-items: end;
+            position: relative;
+            height: 60px;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 4px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item:hover {
+            transform: translateY(-1px);
+        }
+
+        .nav-item i {
+            font-size: 20px;
+        }
+
+        .nav-item span {
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .nav-item.active i {
+            color: #3B82F6;
+        }
+
+        .nav-item.active span {
+            color: #3B82F6;
+        }
+
+        .nav-center {
+            grid-column: 3;
+            display: flex;
+            justify-content: center;
+            align-items: end;
+            height: 100%;
+            position: relative;
+        }
+
+        .game-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .game-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+
+        .game-canvas {
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            background: #f8fafc;
+            margin: 16px 0;
+        }
+
+        .game-button {
+            background: linear-gradient(135deg, #4A6FA5, #6B8DC7);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 8px;
+        }
+
+        .game-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(74, 111, 165, 0.3);
+        }
+
+        .ranking-badge {
+            background: linear-gradient(135deg, #FCD34D, #F59E0B);
+            color: #92400E;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .rocket {
+            width: 40px;
+            height: 60px;
+            background: linear-gradient(135deg, #EF4444, #DC2626);
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+            position: absolute;
+            transition: all 0.1s ease;
+        }
+
+        .enemy {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            position: absolute;
+        }
+
+        .bullet {
+            width: 4px;
+            height: 12px;
+            background: #FCD34D;
+            position: absolute;
+            border-radius: 2px;
+        }
+
+        .owl-character {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto;
+            display: block;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .owl-character:hover {
+            transform: scale(1.1);
+        }
+
+        .exp-bar {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 12px 0;
+        }
+
+        .exp-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #34D399, #059669);
+            transition: width 0.5s ease;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .stat-item {
+            background: #f8fafc;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- 게임 선택 화면 -->
+    <div id="gameSelectScreen" class="screen active">
+        <!-- 헤더 -->
+        <div class="header">
+            <div class="header-content">
+                <h1><i class="fas fa-gamepad mr-2"></i>학습 게임</h1>
+                <button onclick="goHome()" class="text-white hover:text-yellow-200 transition-colors">
+                    <i class="fas fa-home text-xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- 게임 목록 -->
+        <div class="game-grid">
+            <!-- 경제 퀴즈 -->
+            <div class="game-card game-quiz" onclick="showQuizGame()">
+                <div class="game-header">
+                    <div class="game-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <div class="game-info">
+                        <h3>경제 퀴즈</h3>
+                        <span class="game-difficulty">중급</span>
+                    </div>
+                </div>
+                <p class="game-description">
+                    다양한 경제 개념을 재미있는 퀴즈로 학습해보세요. 
+                    투자, 저축, 소비에 대한 지식을 쌓을 수 있습니다.
+                </p>
+                <div class="game-stats">
+                    <div class="stat-item">
+                        <div class="stat-value">15</div>
+                        <div class="stat-label">문제수</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">5분</div>
+                        <div class="stat-label">예상시간</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">+50</div>
+                        <div class="stat-label">포인트</div>
+                    </div>
+                </div>
+                <button class="game-button" onclick="showQuizGame()">
+                    <i class="fas fa-play mr-2"></i>게임 시작
+                </button>
+            </div>
+
+            <!-- 로켓 투자 -->
+            <div class="game-card game-rocket" onclick="showRocketGame()">
+                <div class="game-header">
+                    <div class="game-icon">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <div class="game-info">
+                        <h3>로켓 투자</h3>
+                        <span class="game-difficulty">고급</span>
+                    </div>
+                </div>
+                <p class="game-description">
+                    로켓을 조종하며 투자의 리스크와 수익을 체험해보세요. 
+                    시장의 변동성을 게임으로 이해할 수 있습니다.
+                </p>
+                <div class="game-stats">
+                    <div class="stat-item">
+                        <div class="stat-value">10</div>
+                        <div class="stat-label">레벨</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">10분</div>
+                        <div class="stat-label">예상시간</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">+100</div>
+                        <div class="stat-label">포인트</div>
+                    </div>
+                </div>
+                <button class="game-button" onclick="showRocketGame()">
+                    <i class="fas fa-play mr-2"></i>게임 시작
+                </button>
+            </div>
+
+            <!-- 똑부리 키우기 -->
+            <div class="game-card game-owl" onclick="showOwlGame()">
+                <div class="game-header">
+                    <div class="game-icon">
+                        <i class="fas fa-dove"></i>
+                    </div>
+                    <div class="game-info">
+                        <h3>똑부리 키우기</h3>
+                        <span class="game-difficulty">초급</span>
+                    </div>
+                </div>
+                <p class="game-description">
+                    귀여운 똑부리를 키우며 꾸준한 저축과 투자의 중요성을 배워보세요. 
+                    매일매일 성장하는 똑부리를 확인하세요.
+                </p>
+                <div class="game-stats">
+                    <div class="stat-item">
+                        <div class="stat-value">무제한</div>
+                        <div class="stat-label">플레이</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">지속적</div>
+                        <div class="stat-label">성장</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">+20</div>
+                        <div class="stat-label">포인트</div>
+                    </div>
+                </div>
+                <button class="game-button" onclick="showOwlGame()">
+                    <i class="fas fa-play mr-2"></i>게임 시작
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 퀴즈 게임 화면 -->
+    <div id="quizScreen" class="screen">
+        <div class="header">
+            <div class="header-content">
+                <button onclick="goHome()" class="text-white hover:text-yellow-200 transition-colors">
+                    <i class="fas fa-arrow-left text-xl"></i>
+                </button>
+                <h1><i class="fas fa-brain mr-2"></i>경제 퀴즈</h1>
+                <div class="text-white text-sm font-semibold">
+                    점수: <span id="quizScore">0</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="game-container" style="margin: 20px; margin-bottom: 120px;">
+            <div id="quizContainer">
+                <div class="text-center py-8">
+                    <div class="w-24 h-24 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-play text-white text-3xl"></i>
+                    </div>
+                    <h3 class="game-title mb-4">경제 퀴즈에 도전하세요!</h3>
+                    <p class="text-gray-600 mb-6">
+                        다양한 경제 개념을 재미있는 퀴즈로 학습해보세요.<br>
+                        올바른 답을 선택하여 점수를 획득하세요.
+                    </p>
+                    <button onclick="startEconomicQuiz()" class="game-button" style="background: linear-gradient(135deg, #3B82F6, #1D4ED8); max-width: 200px; margin: 0 auto;">
+                        <i class="fas fa-play mr-2"></i>퀴즈 시작
+                    </button>
+                </div>
+                
+                <div id="quizQuestionContainer" style="display: none;">
+                    <div class="mb-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="text-sm font-semibold text-gray-600">
+                                문제 <span id="questionNumber">1</span> / 15
+                            </span>
+                            <div class="flex items-center">
+                                <i class="fas fa-clock text-orange-500 mr-1"></i>
+                                <span id="quizTimer" class="text-sm font-semibold text-orange-500">30</span>
+                            </div>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div id="quizProgress" class="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full transition-all duration-300" style="width: 6.67%"></div>
+                        </div>
+                    </div>
+                    
+                    <div id="quizQuestion" class="quiz-question">
+                        <h3 class="text-lg font-semibold mb-4">문제가 여기에 표시됩니다</h3>
+                    </div>
+                    
+                    <div id="quizOptions" class="quiz-options">
+                        <!-- 선택지들이 여기에 동적으로 생성됩니다 -->
+                    </div>
+                    
+                    <div class="text-center mt-6">
+                        <button id="nextQuizBtn" onclick="nextQuiz()" class="game-button" style="background: linear-gradient(135deg, #10B981, #059669); display: none;">
+                            다음 문제
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="quizResultContainer" style="display: none;">
+                    <div class="text-center py-8">
+                        <div class="w-24 h-24 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i class="fas fa-trophy text-white text-3xl"></i>
+                        </div>
+                        <h3 class="game-title mb-4">퀴즈 완료!</h3>
+                        <div class="bg-gray-50 rounded-16 p-6 mb-6">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-blue-600" id="finalScore">0</div>
+                                    <div class="text-sm text-gray-600">최종 점수</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-green-600" id="correctAnswers">0</div>
+                                    <div class="text-sm text-gray-600">정답 수</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            <button onclick="startEconomicQuiz()" class="game-button" style="background: linear-gradient(135deg, #3B82F6, #1D4ED8);">
+                                <i class="fas fa-redo mr-2"></i>다시 도전
+                            </button>
+                            <button onclick="goHome()" class="game-button" style="background: linear-gradient(135deg, #6B7280, #4B5563);">
+                                <i class="fas fa-home mr-2"></i>게임 선택
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 로켓 게임 화면 -->
+    <div id="rocketScreen" class="screen">
+        <div class="header">
+            <div class="header-content">
+                <button onclick="goHome()" class="text-white hover:text-yellow-200 transition-colors">
+                    <i class="fas fa-arrow-left text-xl"></i>
+                </button>
+                <h1><i class="fas fa-rocket mr-2"></i>로켓 투자</h1>
+                <div class="text-white text-sm font-semibold">
+                    점수: <span id="rocketScoreDisplay">0</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="game-container" style="margin: 20px; margin-bottom: 120px;">
+            <div class="text-center mb-6">
+                <h3 class="game-title">로켓을 조종하여 투자 수익을 획득하세요!</h3>
+                <p class="text-gray-600 text-sm">
+                    화면을 터치하여 로켓을 좌우로 움직이고<br>
+                    좋은 투자 기회(초록색)는 수집하고 위험(빨간색)은 피하세요!
+                </p>
+            </div>
+            
+            <div class="rocket-game">
+                <canvas id="rocketCanvas" class="game-canvas" width="300" height="400"></canvas>
+                
+                <div class="game-controls">
+                    <button onclick="startRocketGame()" id="rocketStartBtn" class="control-button start-button">
+                        <i class="fas fa-play mr-2"></i>게임 시작
+                    </button>
+                    <button onclick="pauseRocketGame()" id="rocketPauseBtn" class="control-button pause-button" style="display: none;">
+                        <i class="fas fa-pause mr-2"></i>일시정지
+                    </button>
+                </div>
+                
+                <div class="text-center">
+                    <div class="bg-gray-50 rounded-12 p-4 inline-block">
+                        <div class="text-lg font-bold text-red-500" id="rocketScore">0</div>
+                        <div class="text-xs text-gray-600">투자 수익</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 똑부리 게임 화면 -->
+    <div id="owlScreen" class="screen">
+        <div class="header">
+            <div class="header-content">
+                <button onclick="goHome()" class="text-white hover:text-yellow-200 transition-colors">
+                    <i class="fas fa-arrow-left text-xl"></i>
+                </button>
+                <h1><i class="fas fa-dove mr-2"></i>똑부리 키우기</h1>
+                <div class="text-white text-sm font-semibold">
+                    코인: <span id="owlMoneyDisplay">1,250</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="game-container" style="margin: 20px; margin-bottom: 120px;">
+            <div class="owl-container">
+                <div class="owl-character" onclick="petOwl()">
+                    🦉
+                </div>
+                
+                <div class="text-center mb-6">
+                    <h4 class="text-xl font-bold text-gray-800" id="owlName">똑부리</h4>
+                    <p class="text-gray-600" id="owlLevel">레벨 1 - 초보 투자자</p>
+                    
+                    <div class="w-full bg-gray-200 rounded-full h-3 mt-4 mb-2">
+                        <div class="bg-gradient-to-r from-orange-400 to-orange-600 h-3 rounded-full transition-all duration-300" id="owlExpBar" style="width: 30%"></div>
+                    </div>
+                    <p class="text-xs text-gray-500" id="owlExp">경험치: 300 / 1000</p>
+                </div>
+                
+                <div class="owl-stats">
+                    <div class="owl-stat">
+                        <div class="text-xl font-bold text-blue-600" id="owlKnowledge">85</div>
+                        <div class="text-xs text-gray-600">경제 지식</div>
+                    </div>
+                    <div class="owl-stat">
+                        <div class="text-xl font-bold text-green-600" id="owlInvestment">42</div>
+                        <div class="text-xs text-gray-600">투자 실력</div>
+                    </div>
+                    <div class="owl-stat">
+                        <div class="text-xl font-bold text-purple-600" id="owlHappiness">78</div>
+                        <div class="text-xs text-gray-600">행복도</div>
+                    </div>
+                    <div class="owl-stat">
+                        <div class="text-xl font-bold text-orange-600" id="owlMoney">1,250</div>
+                        <div class="text-xs text-gray-600">보유 코인</div>
+                    </div>
+                </div>
+                
+                <div class="owl-actions">
+                    <button onclick="feedOwl()" class="owl-button feed-button">
+                        <i class="fas fa-hamburger mr-2"></i>먹이주기
+                    </button>
+                    <button onclick="studyWithOwl()" class="owl-button study-button">
+                        <i class="fas fa-book mr-2"></i>공부하기
+                    </button>
+                    <button onclick="investWithOwl()" class="owl-button invest-button">
+                        <i class="fas fa-chart-line mr-2"></i>투자하기
+                    </button>
+                    <button onclick="petOwl()" class="owl-button pet-button">
+                        <i class="fas fa-heart mr-2"></i>쓰다듬기
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- 게임 화면 -->
+<div id="gameScreen" class="screen">
+    <div class="min-h-screen bg-gray-100">
+        <!-- 상단 헤더 -->
+        <div class="bg-white shadow-sm p-4">
+            <div class="flex items-center justify-between max-w-md mx-auto">
+                <button onclick="goToMainPage()" class="text-gray-600">
+                    <i class="fas fa-arrow-left text-xl"></i>
+                </button>
+                <h1 class="text-xl font-bold">게임</h1>
+                <button onclick="refreshGames()" class="text-green-500">
+                    <i class="fas fa-sync-alt text-xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="max-w-md mx-auto px-4 py-6">
+            
+            <!-- 경제 퀴즈 -->
+            <div class="game-card">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center space-x-3">
+                        <i class="fas fa-brain text-3xl text-purple-500"></i>
+                        <div>
+                            <h3 class="text-lg font-bold">경제 퀴즈</h3>
+                            <p class="text-sm text-gray-500">경제 지식을 테스트해보세요</p>
+                        </div>
+                    </div>
+                    <div class="ranking-badge">
+                        <i class="fas fa-crown"></i>
+                        1등: 김경제
+                    </div>
+                </div>
+                
+                <div id="quizContainer">
+                    <div class="text-center py-6">
+                        <i class="fas fa-play-circle text-4xl text-purple-500 mb-4"></i>
+                        <p class="text-gray-600 mb-4">AI가 생성하는 다양한 경제 문제를 풀어보세요!</p>
+                        <button onclick="startEconomicQuiz()" class="game-button">
+                            <i class="fas fa-play mr-2"></i>퀴즈 시작
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 로켓빵야 -->
+            <div class="game-card">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center space-x-3">
+                        <i class="fas fa-rocket text-3xl text-red-500"></i>
+                        <div>
+                            <h3 class="text-lg font-bold">로켓빵야</h3>
+                            <p class="text-sm text-gray-500">터치로 우주선을 조작하세요</p>
+                        </div>
+                    </div>
+                    <div class="ranking-badge">
+                        <i class="fas fa-crown"></i>
+                        1등: 박투자
+                    </div>
+                </div>
+                
+                <div id="rocketGameContainer">
+                    <canvas id="rocketCanvas" class="game-canvas" width="320" height="400"></canvas>
+                    <div class="text-center">
+                        <p class="text-sm text-gray-600 mb-2">점수: <span id="rocketScore">0</span></p>
+                        <button onclick="startRocketGame()" id="rocketStartBtn" class="game-button">
+                            <i class="fas fa-play mr-2"></i>게임 시작
+                        </button>
+                        <button onclick="pauseRocketGame()" id="rocketPauseBtn" class="game-button" style="display: none;">
+                            <i class="fas fa-pause mr-2"></i>일시정지
+                        </button>
+                    </div>
+                    <div class="text-xs text-gray-500 text-center mt-2">
+                        화면을 터치하여 로켓을 좌우로 움직이세요
+                    </div>
+                </div>
+            </div>
+
+            <!-- 똑부리 키우기 -->
+            <div class="game-card mb-24">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center space-x-3">
+                        <i class="fas fa-seedling text-3xl text-green-500"></i>
+                        <div>
+                            <h3 class="text-lg font-bold">똑부리 키우기</h3>
+                            <p class="text-sm text-gray-500">경제 지식으로 똑부리를 키워보세요</p>
+                        </div>
+                    </div>
+                    <div class="ranking-badge">
+                        <i class="fas fa-crown"></i>
+                        1등: 이금융
+                    </div>
+                </div>
+                
+                <div id="owlGameContainer" class="text-center">
+                    <img src="https://page.gensparksite.com/v1/base64_upload/8f76d2282f082e1c88ea19dba80d0d9d" 
+                         alt="똑부리" class="owl-character" onclick="petOwl()">
+                    
+                    <div class="mt-4">
+                        <h4 class="font-bold text-lg" id="owlName">똑부리</h4>
+                        <p class="text-sm text-gray-600" id="owlLevel">레벨 1 - 초보 투자자</p>
+                    </div>
+                    
+                    <div class="exp-bar">
+                        <div class="exp-fill" id="owlExpBar" style="width: 30%;"></div>
+                    </div>
+                    <p class="text-xs text-gray-500" id="owlExp">경험치: 300 / 1000</p>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="text-lg font-bold text-blue-600" id="owlKnowledge">85</div>
+                            <div class="text-xs text-gray-600">경제 지식</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="text-lg font-bold text-green-600" id="owlInvestment">42</div>
+                            <div class="text-xs text-gray-600">투자 실력</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="text-lg font-bold text-purple-600" id="owlHappiness">78</div>
+                            <div class="text-xs text-gray-600">행복도</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="text-lg font-bold text-orange-600" id="owlMoney">1,250</div>
+                            <div class="text-xs text-gray-600">보유 코인</div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 space-x-2">
+                        <button onclick="feedOwl()" class="game-button">
+                            <i class="fas fa-hamburger mr-2"></i>먹이주기
+                        </button>
+                        <button onclick="studyWithOwl()" class="game-button">
+                            <i class="fas fa-book mr-2"></i>공부하기
+                        </button>
+                        <button onclick="investWithOwl()" class="game-button">
+                            <i class="fas fa-chart-line mr-2"></i>투자하기
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 하단 네비게이션 -->
+        <div class="bottom-navigation">
+            <div class="nav-container">
+                <button onclick="goToMainPage()" class="nav-item">
+                    <i class="fas fa-home text-gray-400"></i>
+                    <span class="text-gray-400">홈</span>
+                </button>
+                <button onclick="goToNewsPage()" class="nav-item">
+                    <i class="fas fa-newspaper text-gray-400"></i>
+                    <span class="text-gray-400">뉴스</span>
+                </button>
+                <div class="nav-center">
+                    <div id="navLevelBadge" class="level-badge-nav level-yellow" onclick="goToGradePage()">
+                        YELLOW
+                    </div>
+                </div>
+                <button onclick="goToGamePage()" class="nav-item active">
+                    <i class="fas fa-gamepad"></i>
+                    <span>게임</span>
+                </button>
+                <button onclick="goToMorePage()" class="nav-item">
+                    <i class="fas fa-ellipsis-h text-gray-400"></i>
+                    <span class="text-gray-400">더보기</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// 전역 게임 변수들
+var currentUser = JSON.parse(localStorage.getItem('fineu_current_user')) || { name: '사용자', level: 'yellow', exp: 0 };
+var quizQuestions = [];
+var currentQuizIndex = 0;
+var quizScore = 0;
+
+// 로켓 게임 변수들
+var rocketGame = {
+    canvas: null,
+    ctx: null,
+    rocket: { x: 160, y: 350, width: 40, height: 60 },
+    enemies: [],
+    bullets: [],
+    score: 0,
+    gameLoop: null,
+    isRunning: false,
+    keys: {}
+};
+
+// 똑부리 게임 변수들
+var owlData = JSON.parse(localStorage.getItem('owlData')) || {
+    name: '똑부리',
+    level: 1,
+    exp: 300,
+    maxExp: 1000,
+    knowledge: 85,
+    investment: 42,
+    happiness: 78,
+    money: 1250
+};
+
+// 페이지 로드 시 초기화
+document.addEventListener('DOMContentLoaded', function() {
+    updateUserLevel();
+    updateOwlDisplay();
+});
+
+// 사용자 레벨 업데이트
+function updateUserLevel() {
+    if (currentUser) {
+        var levelBadge = document.getElementById('navLevelBadge');
+        if (levelBadge) {
+            var levelClass = 'level-' + (currentUser.level || 'yellow');
+            var levelName = (currentUser.level || 'yellow').toUpperCase();
+            levelBadge.className = 'level-badge-nav ' + levelClass;
+            levelBadge.textContent = levelName;
+        }
+    }
+}
+
+// 경험치 추가 및 동기화
+function addExperience(amount) {
+    if (currentUser) {
+        currentUser.exp = (currentUser.exp || 0) + amount;
+        localStorage.setItem('fineu_current_user', JSON.stringify(currentUser));
+        localStorage.setItem('user_' + currentUser.id, JSON.stringify(currentUser));
+    }
+}
+
+// 페이지 이동 함수들
+function goToMainPage() {
+    window.location.href = 'index.html?v=' + Date.now();
+}
+
+function goToNewsPage() {
+    window.location.href = 'a2.html?v=' + Date.now();
+}
+
+function goToGradePage() {
+    window.location.href = 'a5.html?v=' + Date.now();
+}
+
+function goToGamePage() {
+    window.location.href = 'a4.html?v=' + Date.now();
+}
+
+function goToMorePage() {
+    window.location.href = 'a3.html?v=' + Date.now();
+}
+
+// 경제 퀴즈 시작
+function startEconomicQuiz() {
+    generateQuizQuestions();
+    currentQuizIndex = 0;
+    quizScore = 0;
+    showQuizQuestion();
+}
+
+// 퀴즈 문제 생성
+function generateQuizQuestions() {
+    quizQuestions = [
+        {
+            question: "GDP는 무엇의 줄임말인가요?",
+            options: ["Gross Domestic Product", "Global Development Program", "General Data Processing", "Great Digital Platform"],
+            correct: 0,
+            explanation: "GDP는 Gross Domestic Product(국내총생산)의 줄임말로, 한 나라의 경제 규모를 나타내는 지표입니다."
+        },
+        {
+            question: "중앙은행의 기준금리 인상 효과는?",
+            options: ["경기 부양", "인플레이션 억제", "수출 증가", "실업률 감소"],
+            correct: 1,
+            explanation: "기준금리 인상은 시중의 돈의 양을 줄여 인플레이션을 억제하는 효과가 있습니다."
+        },
+        {
+            question: "주식의 PER이 높다는 것은?",
+            options: ["저평가", "고평가", "적정가치", "위험 낮음"],
+            correct: 1,
+            explanation: "PER이 높다는 것은 주가가 수익에 비해 높게 평가되고 있다는 의미입니다."
+        },
+        {
+            question: "분산투자의 목적은?",
+            options: ["수익 극대화", "위험 감소", "거래비용 절약", "세금 절약"],
+            correct: 1,
+            explanation: "분산투자는 여러 자산에 투자하여 위험을 분산시키는 것이 주목적입니다."
+        },
+        {
+            question: "인플레이션의 원인이 아닌 것은?",
+            options: ["통화량 증가", "수요 증가", "공급 감소", "저축 증가"],
+            correct: 3,
+            explanation: "저축 증가는 소비 감소를 의미하므로 인플레이션과는 반대 효과를 가져옵니다."
+        }
+    ];
+    
+    // 문제 순서 랜덤화
+    quizQuestions.sort(() => Math.random() - 0.5);
+}
+
+// 퀴즈 문제 표시
+function showQuizQuestion() {
+    if (currentQuizIndex >= quizQuestions.length) {
+        showQuizResult();
+        return;
+    }
+    
+    var question = quizQuestions[currentQuizIndex];
+    var html = '<div class="mb-6">';
+    html += '<h4 class="text-lg font-bold mb-4">문제 ' + (currentQuizIndex + 1) + '/' + quizQuestions.length + '</h4>';
+    html += '<p class="text-gray-700 mb-4">' + question.question + '</p>';
+    
+    question.options.forEach(function(option, index) {
+        html += '<div class="bg-gray-50 p-3 rounded-lg mb-2 cursor-pointer hover:bg-blue-50 transition-colors" onclick="selectAnswer(' + index + ')">';
+        html += '<span>' + (index + 1) + '. ' + option + '</span>';
+        html += '</div>';
+    });
+    
+    html += '</div>';
+    document.getElementById('quizContainer').innerHTML = html;
+}
+
+// 퀴즈 답 선택
+function selectAnswer(selectedIndex) {
+    var question = quizQuestions[currentQuizIndex];
+    var isCorrect = selectedIndex === question.correct;
+    
+    if (isCorrect) {
+        quizScore++;
+        gainOwlExp(50);
+        addExperience(50);
+    }
+    
+    // 정답 표시
+    var options = document.querySelectorAll('#quizContainer .bg-gray-50');
+    options.forEach(function(option, index) {
+        option.onclick = null;
+        if (index === question.correct) {
+            option.classList.add('bg-green-100', 'border-green-500');
+            option.classList.remove('bg-gray-50');
+        } else if (index === selectedIndex && !isCorrect) {
+            option.classList.add('bg-red-100', 'border-red-500');
+            option.classList.remove('bg-gray-50');
+        }
+    });
+    
+    // 설명 표시
+    setTimeout(function() {
+        var explanation = document.createElement('div');
+        explanation.className = 'mt-4 p-4 bg-blue-50 rounded-lg';
+        explanation.innerHTML = '<p class="text-sm text-blue-800"><strong>해설:</strong> ' + question.explanation + '</p>';
+        document.getElementById('quizContainer').appendChild(explanation);
+        
+        var nextBtn = document.createElement('button');
+        nextBtn.className = 'game-button mt-4';
+        nextBtn.textContent = currentQuizIndex < quizQuestions.length - 1 ? '다음 문제' : '결과 보기';
+        nextBtn.onclick = function() {
+            currentQuizIndex++;
+            showQuizQuestion();
+        };
+        document.getElementById('quizContainer').appendChild(nextBtn);
+    }, 1500);
+}
+
+// 퀴즈 결과 표시
+function showQuizResult() {
+    var percentage = Math.round((quizScore / quizQuestions.length) * 100);
+    var expGained = quizScore * 100;
+    
+    var html = '<div class="text-center py-6">';
+    html += '<i class="fas fa-trophy text-6xl text-yellow-500 mb-4"></i>';
+    html += '<h3 class="text-2xl font-bold mb-4">퀴즈 완료!</h3>';
+    html += '<p class="text-lg mb-2">점수: ' + quizScore + '/' + quizQuestions.length + ' (' + percentage + '%)</p>';
+    html += '<p class="text-green-600 font-semibold mb-4">획득 EXP: +' + expGained + '</p>';
+    
+    if (percentage >= 80) {
+        html += '<p class="text-blue-600 mb-4">🎉 훌륭합니다!</p>';
+    } else if (percentage >= 60) {
+        html += '<p class="text-green-600 mb-4">👍 좋은 성과입니다!</p>';
+    } else {
+        html += '<p class="text-orange-600 mb-4">💪 더 열심히 공부해보세요!</p>';
+    }
+    
+    html += '<button onclick="startEconomicQuiz()" class="game-button mr-2">다시 도전</button>';
+    html += '<button onclick="location.reload()" class="game-button">메인으로</button>';
+    html += '</div>';
+    
+    document.getElementById('quizContainer').innerHTML = html;
+    gainOwlExp(expGained);
+    addExperience(expGained);
+}
+
+// 로켓 게임 시작
+function startRocketGame() {
+    rocketGame.canvas = document.getElementById('rocketCanvas');
+    rocketGame.ctx = rocketGame.canvas.getContext('2d');
+    
+    // 터치 이벤트 추가
+    rocketGame.canvas.addEventListener('touchstart', handleTouch, { passive: false });
+    rocketGame.canvas.addEventListener('touchmove', handleTouch, { passive: false });
+    
+    // 클릭 이벤트 추가
+    rocketGame.canvas.addEventListener('click', handleClick);
+    
+    resetRocketGame();
+    rocketGame.isRunning = true;
+    document.getElementById('rocketStartBtn').style.display = 'none';
+    document.getElementById('rocketPauseBtn').style.display = 'inline-block';
+    
+    rocketGame.gameLoop = setInterval(updateRocketGame, 16);
+}
+
+// 터치 이벤트 처리
+function handleTouch(e) {
+    e.preventDefault();
+    var rect = rocketGame.canvas.getBoundingClientRect();
+    var touch = e.touches[0] || e.changedTouches[0];
+    var x = touch.clientX - rect.left;
+    
+    // 로켓을 터치 위치로 이동
+    rocketGame.rocket.x = Math.max(0, Math.min(x - rocketGame.rocket.width / 2, rocketGame.canvas.width - rocketGame.rocket.width));
+}
+
+// 클릭 이벤트 처리
+function handleClick(e) {
+    var rect = rocketGame.canvas.getBoundingClientRect();
+    var x = e.clientX - rect.left;
+    
+    // 로켓을 클릭 위치로 이동
+    rocketGame.rocket.x = Math.max(0, Math.min(x - rocketGame.rocket.width / 2, rocketGame.canvas.width - rocketGame.rocket.width));
+}
+
+// 로켓 게임 초기화
+function resetRocketGame() {
+    rocketGame.rocket.x = 160;
+    rocketGame.rocket.y = 350;
+    rocketGame.enemies = [];
+    rocketGame.bullets = [];
+    rocketGame.score = 0;
+    updateRocketScore();
+}
+
+// 로켓 게임 업데이트
+function updateRocketGame() {
+    if (!rocketGame.isRunning) return;
+    
+    var ctx = rocketGame.ctx;
+    var canvas = rocketGame.canvas;
+    
+    // 화면 클리어
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // 적 생성
+    if (Math.random() < 0.02) {
+        rocketGame.enemies.push({
+            x: Math.random() * (canvas.width - 30),
+            y: -30,
+            type: Math.random() > 0.5 ? 'good' : 'bad'
+        });
+    }
+    
+    // 총알 자동 발사
+    if (Math.random() < 0.1) {
+        rocketGame.bullets.push({
+            x: rocketGame.rocket.x + rocketGame.rocket.width / 2 - 2,
+            y: rocketGame.rocket.y
+        });
+    }
+    
+    // 로켓 그리기
+    ctx.fillStyle = '#EF4444';
+    ctx.beginPath();
+    ctx.moveTo(rocketGame.rocket.x + rocketGame.rocket.width / 2, rocketGame.rocket.y);
+    ctx.lineTo(rocketGame.rocket.x, rocketGame.rocket.y + rocketGame.rocket.height);
+    ctx.lineTo(rocketGame.rocket.x + rocketGame.rocket.width, rocketGame.rocket.y + rocketGame.rocket.height);
+    ctx.closePath();
+    ctx.fill();
+    
+    // 적들 업데이트 및 그리기
+    rocketGame.enemies = rocketGame.enemies.filter(function(enemy) {
+        enemy.y += 2;
+        
+        // 적 그리기
+        ctx.fillStyle = enemy.type === 'good' ? '#10B981' : '#EF4444';
+        ctx.beginPath();
+        ctx.arc(enemy.x + 15, enemy.y + 15, 15, 0, 2 * Math.PI);
+        ctx.fill();
+        
+        // 적이 화면 하단에 도달하면 제거
+        if (enemy.y > canvas.height) {
+            return false;
+        }
+        
+        // 로켓과 충돌 체크
+        if (enemy.x < rocketGame.rocket.x + rocketGame.rocket.width &&
+            enemy.x + 30 > rocketGame.rocket.x &&
+            enemy.y < rocketGame.rocket.y + rocketGame.rocket.height &&
+            enemy.y + 30 > rocketGame.rocket.y) {
+            
+            if (enemy.type === 'good') {
+                rocketGame.score += 100;
+                updateRocketScore();
+            } else {
+                gameOver();
+            }
+            return false;
+        }
+        
+        return true;
+    });
+    
+    // 총알들 업데이트 및 그리기
+    rocketGame.bullets = rocketGame.bullets.filter(function(bullet) {
+        bullet.y -= 5;
+        
+        // 총알 그리기
+        ctx.fillStyle = '#FCD34D';
+        ctx.fillRect(bullet.x, bullet.y, 4, 12);
+        
+        // 화면 밖으로 나가면 제거
+        if (bullet.y < 0) return false;
+        
+        // 적과 충돌 체크
+        var hit = false;
+        rocketGame.enemies = rocketGame.enemies.filter(function(enemy) {
+            if (bullet.x < enemy.x + 30 &&
+                bullet.x + 4 > enemy.x &&
+                bullet.y < enemy.y + 30 &&
+                bullet.y + 12 > enemy.y) {
+                
+                if (enemy.type === 'good') {
+                    rocketGame.score += 50;
+                } else {
+                    rocketGame.score += 100;
+                }
+                updateRocketScore();
+                hit = true;
+                return false;
+            }
+            return true;
+        });
+        
+        return !hit;
+    });
+}
+
+// 로켓 게임 점수 업데이트
+function updateRocketScore() {
+    document.getElementById('rocketScore').textContent = rocketGame.score;
+}
+
+// 로켓 게임 일시정지
+function pauseRocketGame() {
+    rocketGame.isRunning = false;
+    clearInterval(rocketGame.gameLoop);
+    document.getElementById('rocketStartBtn').style.display = 'inline-block';
+    document.getElementById('rocketPauseBtn').style.display = 'none';
+}
+
+// 게임 오버
+function gameOver() {
+    pauseRocketGame();
+    var expGained = Math.floor(rocketGame.score / 10);
+    gainOwlExp(expGained);
+    addExperience(expGained);
+    alert('게임 오버! 점수: ' + rocketGame.score + '\n경험치 +' + expGained);
+}
+
+// 똑부리 쓰다듬기
+function petOwl() {
+    owlData.happiness = Math.min(100, owlData.happiness + 5);
+    gainOwlExp(10);
+    addExperience(10);
+    updateOwlDisplay();
+    
+    // 애니메이션 효과
+    var owl = document.querySelector('.owl-character');
+    owl.style.transform = 'scale(1.2)';
+    setTimeout(function() {
+        owl.style.transform = 'scale(1)';
+    }, 200);
+    
+    showMessage('똑부리가 좋아합니다! 행복도 +5, 경험치 +10');
+}
+
+// 똑부리 먹이주기
+function feedOwl() {
+    if (owlData.money >= 50) {
+        owlData.money -= 50;
+        owlData.happiness = Math.min(100, owlData.happiness + 15);
+        gainOwlExp(30);
+        addExperience(30);
+        updateOwlDisplay();
+        showMessage('똑부리에게 먹이를 줬습니다! 행복도 +15, 경험치 +30');
+    } else {
+        showMessage('코인이 부족합니다! (필요: 50코인)');
+    }
+}
+
+// 똑부리와 공부하기
+function studyWithOwl() {
+    if (owlData.money >= 100) {
+        owlData.money -= 100;
+        owlData.knowledge = Math.min(100, owlData.knowledge + 8);
+        gainOwlExp(80);
+        addExperience(80);
+        updateOwlDisplay();
+        showMessage('똑부리와 함께 공부했습니다! 경제 지식 +8, 경험치 +80');
+    } else {
+        showMessage('코인이 부족합니다! (필요: 100코인)');
+    }
+}
+
+// 똑부리와 투자하기
+function investWithOwl() {
+    if (owlData.money >= 200) {
+        var success = Math.random() > 0.3; // 70% 성공률
+        owlData.money -= 200;
+        
+        if (success) {
+            var profit = Math.floor(Math.random() * 300) + 100;
+            owlData.money += profit;
+            owlData.investment = Math.min(100, owlData.investment + 5);
+            gainOwlExp(100);
+            addExperience(100);
+            showMessage('투자 성공! +' + profit + '코인, 투자 실력 +5, 경험치 +100');
+        } else {
+            owlData.investment = Math.min(100, owlData.investment + 2);
+            gainOwlExp(50);
+            addExperience(50);
+            showMessage('투자 실패... 하지만 경험은 쌓였습니다! 투자 실력 +2, 경험치 +50');
+        }
+        updateOwlDisplay();
+    } else {
+        showMessage('코인이 부족합니다! (필요: 200코인)');
+    }
+}
+
+// 똑부리 경험치 획득
+function gainOwlExp(amount) {
+    owlData.exp += amount;
+    
+    // 레벨업 체크
+    if (owlData.exp >= owlData.maxExp) {
+        owlData.level++;
+        owlData.exp = 0;
+        owlData.maxExp = owlData.level * 1000;
+        owlData.money += owlData.level * 100;
+        
+        var levelNames = ['초보 투자자', '견습 투자자', '숙련 투자자', '전문 투자자', '투자 마스터'];
+        var levelName = levelNames[Math.min(owlData.level - 1, levelNames.length - 1)];
+        
+        showMessage('레벨업! 레벨 ' + owlData.level + ' - ' + levelName + '\n보너스 코인 +' + (owlData.level * 100));
+    }
+    
+    updateOwlDisplay();
+    saveOwlData();
+}
+
+// 똑부리 정보 업데이트
+function updateOwlDisplay() {
+    document.getElementById('owlLevel').textContent = '레벨 ' + owlData.level + ' - ' + getLevelName();
+    document.getElementById('owlExp').textContent = '경험치: ' + owlData.exp + ' / ' + owlData.maxExp;
+    document.getElementById('owlExpBar').style.width = (owlData.exp / owlData.maxExp * 100) + '%';
+    
+    document.getElementById('owlKnowledge').textContent = owlData.knowledge;
+    document.getElementById('owlInvestment').textContent = owlData.investment;
+    document.getElementById('owlHappiness').textContent = owlData.happiness;
+    document.getElementById('owlMoney').textContent = owlData.money.toLocaleString();
+}
+
+// 레벨 이름 가져오기
+function getLevelName() {
+    var levelNames = ['초보 투자자', '견습 투자자', '숙련 투자자', '전문 투자자', '투자 마스터'];
+    return levelNames[Math.min(owlData.level - 1, levelNames.length - 1)];
+}
+
+// 메시지 표시
+function showMessage(message) {
+    alert(message);
+}
+
+// 똑부리 데이터 저장
+function saveOwlData() {
+    localStorage.setItem('owlData', JSON.stringify(owlData));
+}
+
+// 게임 새로고침
+function refreshGames() {
+    location.reload();
+}
+
+// 게임 화면 전환 함수들
+function showQuizGame() {
+    hideAllScreens();
+    document.getElementById('quizScreen').classList.add('active');
+}
+
+function showRocketGame() {
+    hideAllScreens();
+    document.getElementById('rocketScreen').classList.add('active');
+    initRocketGame();
+}
+
+function showOwlGame() {
+    hideAllScreens();
+    document.getElementById('owlScreen').classList.add('active');
+    updateOwlDisplay();
+}
+
+function goHome() {
+    hideAllScreens();
+    document.getElementById('gameSelectScreen').classList.add('active');
+}
+
+function hideAllScreens() {
+    var screens = document.querySelectorAll('.screen');
+    screens.forEach(function(screen) {
+        screen.classList.remove('active');
+    });
+}
+</script>
+
+    <!-- 하단 네비게이션 -->
+    <div class="bottom-navigation">
+        <div class="nav-container">
+            <button onclick="goToMainPage()" class="nav-item">
+                <i class="fas fa-home"></i>
+                <span>홈</span>
+            </button>
+            <button onclick="goToNewsPage()" class="nav-item">
+                <i class="fas fa-newspaper"></i>
+                <span>뉴스</span>
+            </button>
+            <div class="nav-center">
+                <div id="navLevelBadge" class="level-badge-nav level-yellow" onclick="goToGradePage()">
+                    YELLOW
+                </div>
+            </div>
+            <button onclick="goToGamePage()" class="nav-item active">
+                <i class="fas fa-gamepad"></i>
+                <span>게임</span>
+            </button>
+            <button onclick="goToMorePage()" class="nav-item">
+                <i class="fas fa-ellipsis-h"></i>
+                <span>더보기</span>
+            </button>
+        </div>
+    </div>
+
+</body>
+</html>
