@@ -160,69 +160,115 @@
             padding: 20px;
         }
         
-        /* 공통 레이어 스타일 - a2.html 방식 */
-        .layer {
-            position: relative;
-            background: transparent;
-            margin-bottom: 16px;
-            border-radius: 12px;
+        /* 공통 레이어 스타일 - 메인페이지 최종.html 방식 */
+        .container { 
+            position: relative; 
+            width: 100%; 
+            max-width: 414px; 
+            height: 100vh; 
+            background: #f0f0f0; 
+            margin: 0 auto; 
             overflow: hidden;
+        }
+        
+        .layer { 
+            position: absolute; 
+            border: 1px solid rgba(204,204,204,0.3); 
+            background: rgba(255,255,255,0.1);
+            transition: all 0.3s ease;
         }
         
         .layer img {
             width: 100%;
-            height: auto;
-            max-width: 100%;
+            height: 100%;
+            object-fit: cover;
             display: block;
             -webkit-user-drag: none;
-            -moz-user-drag: none;
-            -o-user-drag: none;
-            user-drag: none;
+            -moz-user-select: none;
+            -webkit-user-select: none;
+            user-select: none;
             pointer-events: none;
-            border-radius: 8px;
         }
         
-        /* 클릭 가능한 레이어 - a2.html 카드 방식 */
+        /* 클릭 가능한 레이어 */
         .layer[onclick] {
             cursor: pointer;
-            background: white;
-            border-radius: 16px;
-            padding: 16px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
             transition: all 0.3s ease;
-            margin-bottom: 16px;
         }
         
         .layer[onclick]:hover {
-            transform: translateY(-2px);
+            transform: scale(1.05);
             box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            z-index: 10;
         }
         
         .layer[onclick]:active {
-            transform: translateY(0);
+            transform: scale(0.98);
         }
         
-        /* a2.html 방식 반응형 디자인 */
+        /* 레이어별 개별 스타일 */
+        .layer_1 { left: 19%; top: 9%; width: 99px; height: 95px; }
+        .layer_2 { left: 17%; top: 8.5%; width: 113px; height: 112px; }
+        .layer_3 { left: 32%; top: 9%; width: 359px; height: 12px; }
+        .layer_4 { left: 30%; top: 7.5%; width: 463px; height: 149px; }
+        .layer_5 { left: 29%; top: 7%; width: 471px; height: 157px; }
+        .layer_6 { left: 28.5%; top: 7%; width: 479px; height: 165px; }
+        .layer_7 { right: 5%; top: 8.5%; width: 96px; height: 115px; }
+        .layer_8 { left: 17%; top: 18.5%; width: 220px; height: 46px; }
+        .layer_9 { left: 35%; top: 26%; width: 222px; height: 215px; }
+        .layer_10 { left: 30%; top: 25%; width: 258px; height: 260px; }
+        .layer_11 { left: 46%; top: 25.5%; width: 141px; height: 37px; }
+        .layer_12 { left: 39%; top: 25%; width: 308px; height: 70px; }
+        .layer_13 { left: 44%; top: 30%; width: 196px; height: 48px; }
+        .layer_14 { left: 40%; top: 34%; width: 300px; height: 29px; }
+        .layer_15 { right: 5%; top: 25%; width: 58px; height: 61px; }
+        .layer_16 { left: 17%; top: 23%; width: 88%; height: 345px; }
+        .layer_17 { left: 17%; top: 40%; width: 204px; height: 46px; }
+        .layer_18 { left: 31%; top: 46%; width: 95px; height: 91px; }
+        .layer_19 { left: 71%; top: 47%; width: 376px; height: 52px; }
+        .layer_20 { left: 31%; top: 51.5%; width: 873px; height: 48px; }
+        .layer_21 { left: 31%; top: 55%; width: 444px; height: 48px; }
+        .layer_22 { left: 17%; top: 44.5%; width: 88%; height: 345px; }
+        .layer_23 { left: 18%; top: 61.5%; width: 295px; height: 46px; }
+        .layer_24 { left: 19%; top: 66%; width: 88%; height: 492px; }
+        .layer_25 { left: 45%; bottom: 12%; width: 119px; height: 32px; }
+        .layer_26 { left: 42%; bottom: 8%; width: 181px; height: 181px; }
+        .layer_27 { left: 23%; bottom: 6%; width: 95px; height: 96px; }
+        .layer_28 { left: 75%; bottom: 6%; width: 76px; height: 96px; }
+        .layer_29 { right: 7%; bottom: 6%; width: 93px; height: 93px; }
+        .layer_30 { right: 5%; bottom: 4%; width: 60px; height: 12px; }
+        .layer_31 { left: 0px; top: 0px; width: 100%; height: 100%; }
+        .layer_32 { left: 0px; top: 0px; width: 100%; height: 100%; }
+        
+        /* 반응형 디자인 */
         @media (max-width: 480px) {
-            .main-container {
+            .container {
                 max-width: 100%;
-                padding: 16px;
             }
             
-            .layer[onclick] {
-                padding: 12px;
-                margin-bottom: 12px;
+            .layer_4, .layer_5, .layer_6 {
+                width: 60%;
+                left: 25%;
+            }
+            
+            .layer_19, .layer_20 {
+                width: 60%;
+                font-size: 18px;
             }
         }
         
         @media (max-width: 360px) {
-            .main-container {
-                padding: 12px;
+            .layer_4, .layer_5, .layer_6 {
+                width: 55%;
+                left: 22%;
             }
             
-            .layer[onclick] {
-                padding: 10px;
-                margin-bottom: 10px;
+            .layer_19 {
+                font-size: 16px;
+            }
+            
+            .layer_20 {
+                font-size: 14px;
             }
         }
         
@@ -1105,77 +1151,154 @@
     <div id="messageContainer" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1000;"></div>
 </div>
 
-    <!-- 메인 화면 - a2.html 방식으로 단순화 -->
+    <!-- 메인 화면 - 메인페이지 최종.html 구조 반영 -->
     <div id="mainScreen" class="screen main-container">
-        <!-- 배경/헤더 영역 -->
-        <div class="layer">
-            <img src="메인images/image/배경.png" alt="배경" loading="eager" />
-        </div>
-        
-        <!-- FINEU 로고 영역 -->
-        <div class="layer">
-            <img src="메인images/image/FINE 1.png" alt="FINE 1" loading="eager" />
-        </div>
-        
-        <!-- 프로필 섹션 -->
-        <div class="layer" onclick="openProfileSettings()">
-            <img src="메인images/image/PROFILE.png" alt="PROFILE" loading="eager" />
-        </div>
-        
-        <div class="layer" onclick="openProfileSettings()">
-            <img src="메인images/image/프로필.png" alt="프로필" loading="lazy" />
-        </div>
-        
-        <!-- 사용자 정보 -->
-        <div class="layer">
-            <img src="메인images/image/똑부리 님.png" alt="똑부리 님" loading="lazy" />
-        </div>
-        
-        <div class="layer">
-            <img src="메인images/image/FINE U와 함께한 지 317일.png" alt="FINE U와 함께한 지 317일" loading="lazy" />
-        </div>
-        
-        <!-- ASSETS 섹션 -->
-        <div class="layer">
-            <img src="메인images/image/ASSETS.png" alt="ASSETS" loading="lazy" />
-        </div>
-        
-        <div class="layer">
-            <img src="메인images/image/자산.png" alt="자산" loading="lazy" />
-        </div>
-        
-        <!-- PORTFOLIO 섹션 -->
-        <div class="layer">
-            <img src="메인images/image/PORTFOLIO.png" alt="PORTFOLIO" loading="lazy" />
-        </div>
-        
-        <!-- 네비게이션 -->
-        <div class="layer" onclick="goToHome()">
-            <img src="메인images/image/집.png" alt="홈" loading="eager" />
-        </div>
-        
-        <div class="layer" onclick="goToDocuments()">
-            <img src="메인images/image/문서.png" alt="문서" loading="eager" />
-        </div>
-        
-        <div class="layer" onclick="openChat()">
-            <img src="메인images/image/채팅.png" alt="채팅" loading="eager" />
-        </div>
-        
-        <div class="layer" onclick="showMoreMenu()">
-            <img src="메인images/image/더보기.png" alt="더보기" loading="eager" />
-        </div>
-        
-        <div class="layer" onclick="showLevelInfo()">
-            <img src="메인images/image/등급.png" alt="등급" loading="eager" />
-        </div>
-        
-        <div class="layer" onclick="showLevelInfo()">
-            <img src="메인images/image/원.png" alt="원" loading="eager" />
-        </div>
-        
-        <div class="layer">
-            <img src="메인images/image/BLACK-1.png" alt="BLACK-1" loading="lazy" />
+        <div class='container' style='position: relative; width: 100%; max-width: 414px; height: 100vh; background: #f0f0f0; margin: 0 auto; overflow: hidden;'>
+            
+            <!-- 배경 레이어 (layer_32, layer_31) -->
+            <div class='layer_32 layer' style='position: absolute; left: 0px; top: 0px; width: 100%; height: 100%;'>
+                <img src="메인images/image/배경.png" alt="배경" style="width: 100%; height: 100%; object-fit: cover;" loading="eager" />
+            </div>
+            
+            <div class='layer_31 layer' style='position: absolute; left: 0px; top: 0px; width: 100%; height: 100%;'>
+                <img src="메인images/image/레이어.png" alt="레이어" style="width: 100%; height: 100%; object-fit: cover;" loading="eager" />
+            </div>
+
+            <!-- 상단바 그룹 -->
+            <!-- 프로필 복사 그룹 -->
+            <div class='layer_1 layer' style='position: absolute; left: 19%; top: 9%; width: 99px; height: 95px;' onclick="openProfileSettings()">
+                <img src="메인images/image/똑부리.png" alt="똑부리" style="width: 100%; height: 100%; object-fit: cover;" loading="eager" />
+            </div>
+            
+            <div class='layer_2 layer' style='position: absolute; left: 17%; top: 8.5%; width: 113px; height: 112px;' onclick="openProfileSettings()">
+                <img src="메인images/image/프로필 복사.png" alt="프로필 복사" style="width: 100%; height: 100%; object-fit: cover;" loading="eager" />
+            </div>
+
+            <!-- 제목 그룹 -->
+            <div class='layer_3 layer' style='position: absolute; left: 32%; top: 9%; width: 359px; height: 12px;'>
+                <img src="메인images/image/빛 반사.png" alt="빛 반사" style="width: 100%; height: 100%; object-fit: cover;" loading="eager" />
+            </div>
+            
+            <div class='layer_4 layer' style='position: absolute; left: 30%; top: 7.5%; width: 463px; height: 149px;'>
+                <img src="메인images/image/FINE 1.png" alt="FINE 1" style="width: 100%; height: 100%; object-fit: cover;" loading="eager" />
+            </div>
+            
+            <div class='layer_5 layer' style='position: absolute; left: 29%; top: 7%; width: 471px; height: 157px;'>
+                <img src="메인images/image/FINE U 2.png" alt="FINE U 2" style="width: 100%; height: 100%; object-fit: cover;" loading="eager" />
+            </div>
+            
+            <div class='layer_6 layer' style='position: absolute; left: 28.5%; top: 7%; width: 479px; height: 165px;'>
+                <img src="메인images/image/FINE U 3.png" alt="FINE U 3" style="width: 100%; height: 100%; object-fit: cover;" loading="eager" />
+            </div>
+
+            <!-- 알림 -->
+            <div class='layer_7 layer' style='position: absolute; right: 5%; top: 8.5%; width: 96px; height: 115px;'>
+                <img src="메인images/image/알림.png" alt="알림" style="width: 100%; height: 100%; object-fit: cover;" loading="eager" />
+            </div>
+
+            <!-- 프로필 그룹 -->
+            <div class='layer_8 layer' style='position: absolute; left: 17%; top: 18.5%; width: 220px; height: 46px;'>
+                <img src="메인images/image/PROFILE.png" alt="PROFILE" style="width: 100%; height: 100%; object-fit: cover;" loading="eager" />
+            </div>
+            
+            <div class='layer_16 layer' style='position: absolute; left: 17%; top: 23%; width: 88%; height: 345px; background: rgba(255,255,255,0.9); border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);'>
+                <img src="메인images/image/사각형.png" alt="사각형" style="width: 100%; height: 100%; object-fit: cover; border-radius: 16px;" loading="eager" />
+            </div>
+            
+            <div class='layer_9 layer' style='position: absolute; left: 35%; top: 26%; width: 222px; height: 215px;'>
+                <img src="메인images/image/레이어 1.png" alt="레이어 1" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" loading="eager" />
+            </div>
+            
+            <div class='layer_10 layer' style='position: absolute; left: 30%; top: 25%; width: 258px; height: 260px;' onclick="openProfileSettings()">
+                <img src="메인images/image/프로필.png" alt="프로필" style="width: 100%; height: 100%; object-fit: cover;" loading="eager" />
+            </div>
+
+            <!-- 등급 그룹 -->
+            <div class='layer_11 layer' style='position: absolute; left: 46%; top: 25.5%; width: 141px; height: 37px;'>
+                <img src="메인images/image/BLACK.png" alt="BLACK" style="width: 100%; height: 100%; object-fit: cover;" loading="eager" />
+            </div>
+            
+            <div class='layer_12 layer' style='position: absolute; left: 39%; top: 25%; width: 308px; height: 70px;' onclick="showLevelInfo()">
+                <img src="메인images/image/등급.png" alt="등급" style="width: 100%; height: 100%; object-fit: cover;" loading="eager" />
+            </div>
+            
+            <div class='layer_13 layer' style='position: absolute; left: 44%; top: 30%; width: 196px; height: 48px;'>
+                <img src="메인images/image/똑부리 님.png" alt="똑부리 님" style="width: 100%; height: 100%; object-fit: cover;" loading="eager" />
+            </div>
+            
+            <div class='layer_14 layer' style='position: absolute; left: 40%; top: 34%; width: 300px; height: 29px;'>
+                <img src="메인images/image/FINE U와 함께한 지 317일.png" alt="FINE U와 함께한 지 317일" style="width: 100%; height: 100%; object-fit: cover;" loading="eager" />
+            </div>
+            
+            <div class='layer_15 layer' style='position: absolute; right: 5%; top: 25%; width: 58px; height: 61px;'>
+                <img src="메인images/image/환경설정.png" alt="환경설정" style="width: 100%; height: 100%; object-fit: cover;" loading="eager" />
+            </div>
+
+            <!-- 자산 그룹 -->
+            <div class='layer_17 layer' style='position: absolute; left: 17%; top: 40%; width: 204px; height: 46px;'>
+                <img src="메인images/image/ASSETS.png" alt="ASSETS" style="width: 100%; height: 100%; object-fit: cover;" loading="eager" />
+            </div>
+            
+            <div class='layer_22 layer' style='position: absolute; left: 17%; top: 44.5%; width: 88%; height: 345px; background: rgba(255,255,255,0.9); border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);'>
+                <img src="메인images/image/사각형.png" alt="사각형" style="width: 100%; height: 100%; object-fit: cover; border-radius: 16px;" loading="eager" />
+            </div>
+            
+            <div class='layer_18 layer' style='position: absolute; left: 31%; top: 46%; width: 95px; height: 91px;'>
+                <div style="width: 100%; height: 100%; background: #ffd700; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 36px;">⭐</div>
+            </div>
+            
+            <div class='layer_19 layer' style='position: absolute; left: 71%; top: 47%; width: 376px; height: 52px; font-size: 24px; font-weight: bold; color: #333; display: flex; align-items: center;'>
+                19,990,102
+            </div>
+            
+            <div class='layer_20 layer' style='position: absolute; left: 31%; top: 51.5%; width: 873px; height: 48px; font-size: 16px; color: #333; display: flex; align-items: center;'>
+                삼성전자 (100주) <span style="color: #27ae60; margin-left: auto;">+1.8%</span>
+            </div>
+            
+            <div class='layer_21 layer' style='position: absolute; left: 31%; top: 55%; width: 444px; height: 48px; font-size: 16px; color: #333; display: flex; align-items: center;'>
+                청년희망적금 (3.0%)
+            </div>
+
+            <!-- 포트폴리오 그룹 -->
+            <div class='layer_23 layer' style='position: absolute; left: 18%; top: 61.5%; width: 295px; height: 46px;'>
+                <img src="메인images/image/PORTFOLIO.png" alt="PORTFOLIO" style="width: 100%; height: 100%; object-fit: cover;" loading="eager" />
+            </div>
+            
+            <div class='layer_24 layer' style='position: absolute; left: 19%; top: 66%; width: 88%; height: 492px; background: rgba(255,255,255,0.9); border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);'>
+                <img src="메인images/image/사각형.png" alt="사각형" style="width: 100%; height: 100%; object-fit: cover; border-radius: 16px;" loading="eager" />
+                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: #999;">
+                    <div style="font-size: 48px; margin-bottom: 16px;">📊</div>
+                    <p>포트폴리오 분석을 준비중입니다</p>
+                </div>
+            </div>
+
+            <!-- 하단바 그룹 -->
+            <!-- 등급 원형 -->
+            <div class='layer_26 layer' style='position: absolute; left: 42%; bottom: 8%; width: 181px; height: 181px;' onclick="showLevelInfo()">
+                <img src="메인images/image/원.png" alt="원" style="width: 100%; height: 100%; object-fit: cover;" loading="eager" />
+            </div>
+            
+            <div class='layer_25 layer' style='position: absolute; left: 45%; bottom: 12%; width: 119px; height: 32px;'>
+                <img src="메인images/image/BLACK-1.png" alt="BLACK" style="width: 100%; height: 100%; object-fit: cover;" loading="eager" />
+            </div>
+
+            <!-- 아이콘 그룹 -->
+            <div class='layer_27 layer' style='position: absolute; left: 23%; bottom: 6%; width: 95px; height: 96px;' onclick="goToHome()">
+                <img src="메인images/image/집.png" alt="집" style="width: 100%; height: 100%; object-fit: cover;" loading="eager" />
+            </div>
+            
+            <div class='layer_28 layer' style='position: absolute; left: 75%; bottom: 6%; width: 76px; height: 96px;' onclick="goToDocuments()">
+                <img src="메인images/image/문서.png" alt="문서" style="width: 100%; height: 100%; object-fit: cover;" loading="eager" />
+            </div>
+            
+            <div class='layer_29 layer' style='position: absolute; right: 7%; bottom: 6%; width: 93px; height: 93px;' onclick="openChat()">
+                <img src="메인images/image/채팅.png" alt="채팅" style="width: 100%; height: 100%; object-fit: cover;" loading="eager" />
+            </div>
+            
+            <div class='layer_30 layer' style='position: absolute; right: 5%; bottom: 4%; width: 60px; height: 12px;' onclick="showMoreMenu()">
+                <img src="메인images/image/더보기.png" alt="더보기" style="width: 100%; height: 100%; object-fit: cover;" loading="eager" />
+            </div>
+
         </div>
     </div>
 
