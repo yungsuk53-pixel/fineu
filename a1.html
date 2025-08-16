@@ -45,46 +45,33 @@
             width: 100vw;
             height: 100vh;
             overflow: hidden;
-            background: url('images/레이어.png') no-repeat center center;
-            background-size: cover;
+            background: #FFFFFF;
             z-index: 1000;
             box-sizing: border-box;
         }
         
         /* 모바일 디바이스별 최적화 - 1125x2436 기준 */
         @media (max-width: 768px) {
-            #mainScreen {
-                background-size: contain;
-                background-position: center top;
-            }
-            
-            #mainScreen > div {
-                justify-content: center !important;
-                padding: 5px !important;
-            }
-            
-            #mainScreen > div > div {
-                transform: scale(0.68) !important;
-                transform-origin: center top !important;
+            #mainScreen table {
+                transform: scale(0.31);
+                transform-origin: top left;
+                position: absolute;
+                left: 50%;
+                margin-left: -174px;
             }
         }
 
         @media (max-width: 480px) {
-            #mainScreen {
-                background-size: 100% auto;
-                background-position: center top;
-            }
-            
-            #mainScreen > div > div {
-                transform: scale(0.43) !important;
-                width: 100vw !important;
-                max-width: 100vw !important;
+            #mainScreen table {
+                transform: scale(0.27);
+                margin-left: -152px;
             }
         }
 
         @media (max-width: 375px) {
-            #mainScreen > div > div {
-                transform: scale(0.33) !important;
+            #mainScreen table {
+                transform: scale(0.24);
+                margin-left: -135px;
             }
         }
 
@@ -262,7 +249,7 @@
     <!-- index.html과 완전히 동일한 구조 -->
     <div style="width: 100%; height: 100vh; overflow: auto; background-color: #FFFFFF; display: flex; justify-content: center; align-items: flex-start;">
         <!-- 1125x2436 테이블 구조 - index.html과 동일 -->
-        <table width="1125" height="2436" border="0" cellpadding="0" cellspacing="0" style="background-color: #FFFFFF; max-width: 100%; height: auto; position: relative;">
+        <table width="1125" height="2436" border="0" cellpadding="0" cellspacing="0" style="background-color: #FFFFFF; position: relative;">
             <!-- 테이블 내부에 모든 요소를 절대 위치로 배치 -->
             <tr>
                 <td style="position: relative; width: 100%; height: 2436px; background: #f8f9fa;">
@@ -291,7 +278,6 @@
                     <img src="images/레이어 1.png" style="position: absolute; left: 130px; top: 610px; width: 257px; height: 259px; z-index: 986; cursor: pointer;" alt="프로필 이미지" onclick="openProfileSettings()" loading="eager">
                     
                     <!-- 환경설정 -->
-                                        <!-- 환경설정 -->
                     <img src="images/환경설정.png" style="position: absolute; left: 951px; top: 614px; width: 58px; height: 61px; z-index: 985; cursor: pointer;" alt="환경설정" onclick="showSettings()" loading="eager">
                     
                     <!-- 자산 섹션 -->
@@ -344,30 +330,6 @@
                 </td>
             </tr>
         </table>
-    </div>
-</div>
-            
-            <!-- 프로필 이미지 -->
-            <img src="images/레이어 1.png" style="position: absolute; left: 255px; top: 615px; width: 258px; height: 258px; z-index: 986; cursor: pointer;" alt="프로필 이미지" onclick="openProfileSettings()" loading="eager">
-            
-            <!-- PROFILE 이미지 -->
-            <img src="images/PROFILE.png" style="position: absolute; left: 228px; top: 465px; width: 672px; height: 396px; z-index: 987;" alt="PROFILE" loading="eager">
-            
-            <!-- 상단 -->
-            <!-- 알림 -->
-            <img src="images/알림.png" style="position: absolute; left: 1050px; top: 210px; width: 96px; height: 114px; z-index: 988; cursor: pointer;" alt="알림" onclick="showNotifications()" loading="eager">
-            
-            <!-- 빛 반사 -->
-            <img src="images/빛 반사.png" style="position: absolute; left: 480px; top: 195px; width: 468px; height: 153px; z-index: 989;" alt="빛 반사" loading="eager">
-            
-            <!-- 프로필 아이콘 -->
-            <img src="images/똑부리.png" style="position: absolute; left: 255px; top: 225px; width: 111px; height: 111px; z-index: 990; cursor: pointer;" alt="똑부리" onclick="openProfileSettings()" loading="eager">
-            
-            <!-- 동적 컨텐츠 오버레이 -->
-            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1001; pointer-events: none;">
-            </div>
-            
-        </div>
     </div>
 </div>
 
