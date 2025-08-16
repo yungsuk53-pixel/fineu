@@ -94,26 +94,6 @@
             text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
         }
         
-        .level-badge-nav {
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            color: white;
-            font-size: 12px;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-            position: absolute;
-            top: -8px;
-            left: 50%;
-            transform: translateX(-50%);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            z-index: 10;
-            cursor: pointer;
-        }
-        
         .level-yellow { background: linear-gradient(135deg, #FCD34D, #F59E0B); }
         .level-orange { background: linear-gradient(135deg, #FB923C, #EA580C); }
         .level-green { background: linear-gradient(135deg, #34D399, #059669); }
@@ -131,7 +111,7 @@
             display: block !important;
         }
         
-        /* 메인 화면 - 포토샵 기반 디자인 */
+        /* 메인 화면 - 모바일 최적화 */
         #mainScreen {
             position: fixed;
             top: 0;
@@ -144,263 +124,33 @@
             box-sizing: border-box;
         }
         
-        /* 포토샵 캔버스 스타일 */
-        .photoshop-canvas {
-            position: relative;
-            width: 1125px;
-            height: 2436px;
-            background: white;
-            box-shadow: 0 0 50px rgba(0,0,0,0.2);
-            overflow: hidden;
-            transform-origin: top left;
-        }
-
-        /* 모든 레이어 공통 스타일 */
-        .layer {
-            position: absolute;
-        }
-
-        /* 숨겨진 레이어 */
-        .layer.hidden {
-            display: none;
-        }
-
-        /* 각 레이어별 스타일 (메페.html 기준) */
-        .layer-1 { /* 배경 */
-            left: 3px;
-            top: 3px;
-            width: 1125px;
-            height: 2436px;
-            z-index: 969;
-        }
-
-        .layer-2 { /* 레이어 */
-            left: 3px;
-            top: 3px;
-            width: 1125px;
-            height: 2436px;
-            z-index: 970;
-        }
-
-        .layer-3 { /* 더보기 */
-            left: 951px;
-            top: 2275px;
-            width: 60px;
-            height: 12px;
-            z-index: 971;
-        }
-
-        .layer-4 { /* 채팅 */
-            left: 728px;
-            top: 2233px;
-            width: 93px;
-            height: 93px;
-            z-index: 972;
-        }
-
-        .layer-5 { /* 문서 */
-            left: 315px;
-            top: 2230px;
-            width: 76px;
-            height: 96px;
-            z-index: 973;
-        }
-
-        .layer-6 { /* 집 */
-            left: 100px;
-            top: 2230px;
-            width: 95px;
-            height: 96px;
-            z-index: 974;
-        }
-
-        .layer-7 { /* BLACK */
-            left: 476px;
-            top: 2098px;
-            width: 180px;
-            height: 180px;
-            z-index: 975;
-        }
-
-        .layer-8 { /* 사각형 */
-            left: 83px;
-            top: 1607px;
-            width: 987px;
-            height: 491px;
-            z-index: 976;
-        }
-
-        .layer-9 { /* 원 그래프 */
-            left: 374px;
-            top: 1648px;
-            width: 408px;
-            height: 409px;
-            z-index: 977;
-        }
-
-        .layer-10 { /* PORTFOLIO */
-            left: 78px;
-            top: 1498px;
-            width: 296px;
-            height: 46px;
-            z-index: 978;
-            font-size: 50px;
-            font-family: "Jalnan2", "Malgun Gothic", sans-serif;
-            color: #333333;
-            text-align: left;
-            line-height: 1.4;
-            white-space: pre-wrap;
-        }
-
-        .layer-11 { /* 사각형 */
-            left: 76px;
-            top: 1087px;
-            width: 988px;
-            height: 345px;
-            z-index: 979;
-        }
-
-        .layer-12 { /* 청년희망적금 */
-            left: 132px;
-            top: 1339px;
-            width: 444px;
-            height: 48px;
-            z-index: 980;
-            font-size: 41px;
-            font-family: "Jalnan2", "Malgun Gothic", sans-serif;
-            color: #333333;
-            text-align: left;
-            line-height: 1.4;
-            white-space: pre-wrap;
-        }
-
-        .layer-13 { /* 삼성전자 */
-            left: 131px;
-            top: 1260px;
-            width: 874px;
-            height: 48px;
-            z-index: 981;
-            font-size: 41px;
-            font-family: "Jalnan2", "Malgun Gothic", sans-serif;
-            color: #333333;
-            text-align: left;
-            line-height: 1.4;
-            white-space: pre-wrap;
-        }
-
-        .layer-14 { /* 총자산 금액 */
-            left: 296px;
-            top: 1144px;
-            width: 375px;
-            height: 52px;
-            z-index: 982;
-            font-size: 41px;
-            font-family: "Jalnan2", "Malgun Gothic", sans-serif;
-            color: #333333;
-            text-align: center;
-            line-height: 1.4;
-            white-space: pre-wrap;
-        }
-
-        .layer-15 { /* ASSETS */
-            left: 74px;
-            top: 978px;
-            width: 203px;
-            height: 238px;
-            z-index: 983;
-        }
-
-        .layer-16 { /* 사각형 */
-            left: 73px;
-            top: 567px;
-            width: 988px;
-            height: 345px;
-            z-index: 984;
-        }
-
-        .layer-17 { /* 환경설정 */
-            left: 951px;
-            top: 614px;
-            width: 58px;
-            height: 61px;
-            z-index: 985;
-        }
-
-        .layer-18 { /* 레이어 1 */
-            left: 130px;
-            top: 610px;
-            width: 257px;
-            height: 259px;
-            z-index: 986;
-        }
-
-        .layer-19 { /* PROFILE */
-            left: 76px;
-            top: 460px;
-            width: 670px;
-            height: 395px;
-            z-index: 987;
-        }
-
-        .layer-20 { /* 알림 */
-            left: 963px;
-            top: 211px;
-            width: 96px;
-            height: 115px;
-            z-index: 988;
-        }
-
-        .layer-21 { /* 빛 반사 */
-            left: 332px;
-            top: 190px;
-            width: 467px;
-            height: 153px;
-            z-index: 989;
-        }
-
-        .layer-22 { /* 똑부리 */
-            left: 74px;
-            top: 213px;
-            width: 112px;
-            height: 111px;
-            z-index: 990;
-        }
-
-        /* 반응형 스케일링 - 모바일 최적화 */
-        @media (max-width: 1200px) {
-            .photoshop-canvas {
-                transform: scale(0.9);
+        /* 모바일 반응형 최적화 */
+        @media (max-width: 450px) {
+            #mainScreen > div {
+                padding-left: 5% !important;
+            }
+            
+            #mainScreen > div > div {
+                width: 100vw !important;
+                max-width: 100vw !important;
+                transform: scale(0.9) !important;
             }
         }
 
-        @media (max-width: 1000px) {
-            .photoshop-canvas {
-                transform: scale(0.7);
+        @media (max-width: 350px) {
+            #mainScreen > div {
+                padding-left: 2% !important;
             }
-        }
-
-        @media (max-width: 800px) {
-            .photoshop-canvas {
-                transform: scale(0.6);
-            }
-        }
-
-        @media (max-width: 600px) {
-            .photoshop-canvas {
-                transform: scale(0.45);
-            }
-        }
-
-        @media (max-width: 400px) {
-            .photoshop-canvas {
-                transform: scale(0.35);
+            
+            #mainScreen > div > div {
+                transform: scale(0.8) !important;
             }
         }
 
         /* 클릭 가능한 요소들 */
         img[onclick], div[onclick] {
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
         }
 
         img[onclick]:hover, div[onclick]:hover {
@@ -422,34 +172,6 @@
             font-weight: bold;
             color: #333;
             text-align: center;
-        }
-
-        .asset-amount {
-            font-size: 41px;
-            color: #333333;
-        }
-
-        .stock-info {
-            font-size: 41px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 20px;
-        }
-
-        .profit-color {
-            color: #DC2626;
-            font-weight: bold;
-        }
-
-        .loss-color {
-            color: #2563EB;
-            font-weight: bold;
-        }
-
-        .savings-info {
-            font-size: 41px;
-            color: #333333;
         }
         
         .asset-category {
@@ -1260,97 +982,88 @@
     <!-- 메인 화면 - 포토샵 디자인 기반 모바일 최적화 -->
     <div id="mainScreen" class="screen">
         <!-- 포토샵 디자인 캔버스 (1125x2436) -->
-        <div style="width: 100%; height: 100vh; overflow: auto; background-color: #FFFFFF; display: flex; justify-content: center; align-items: flex-start;">
-            <div style="position: relative; width: 1125px; height: 2436px; background: white; box-shadow: 0 0 50px rgba(0,0,0,0.2); overflow: hidden; max-width: 100%; transform-origin: top left; transform: scale(0.35);">
+        <div style="width: 100%; height: 100vh; overflow: auto; background-color: #FFFFFF; display: flex; justify-content: flex-start; align-items: flex-start; padding-left: 10%;">
+            <div style="position: relative; width: 375px; height: 812px; background: white; overflow: hidden; transform-origin: top left; transform: scale(1);">
                 
                 <!-- 배경 (z-index: 969) -->
-                <img src="images/배경.png" style="position: absolute; left: 3px; top: 3px; width: 1125px; height: 2436px; z-index: 969;" alt="배경" loading="eager">
+                <img src="images/배경.png" style="position: absolute; left: 50px; top: 0px; width: 375px; height: 812px; z-index: 969; object-fit: cover;" alt="배경" loading="eager">
                 
                 <!-- 레이어 (z-index: 970) -->
-                <img src="images/레이어.png" style="position: absolute; left: 3px; top: 3px; width: 1125px; height: 2436px; z-index: 970;" alt="레이어" loading="eager">
+                <img src="images/레이어.png" style="position: absolute; left: 50px; top: 0px; width: 375px; height: 812px; z-index: 970; object-fit: cover;" alt="레이어" loading="eager">
                 
-                <!-- 더보기 (z-index: 971) -->
-                <img src="images/더보기.png" style="position: absolute; left: 951px; top: 2275px; width: 60px; height: 12px; z-index: 971; cursor: pointer;" alt="더보기" onclick="showMoreMenu()" loading="eager">
+                <!-- 하단 네비게이션 -->
+                <!-- 더보기 -->
+                <img src="images/더보기.png" style="position: absolute; left: 350px; top: 750px; width: 20px; height: 4px; z-index: 971; cursor: pointer;" alt="더보기" onclick="showMoreMenu()" loading="eager">
                 
-                <!-- 채팅 (z-index: 972) -->
-                <img src="images/채팅.png" style="position: absolute; left: 728px; top: 2233px; width: 93px; height: 93px; z-index: 972; cursor: pointer;" alt="채팅" onclick="openChat()" loading="eager">
+                <!-- 채팅 -->
+                <img src="images/채팅.png" style="position: absolute; left: 290px; top: 730px; width: 31px; height: 31px; z-index: 972; cursor: pointer;" alt="채팅" onclick="openChat()" loading="eager">
                 
-                <!-- 문서 (z-index: 973) -->
-                <img src="images/문서.png" style="position: absolute; left: 315px; top: 2230px; width: 76px; height: 96px; z-index: 973; cursor: pointer;" alt="문서" onclick="goToDocuments()" loading="eager">
+                <!-- 문서 -->
+                <img src="images/문서.png" style="position: absolute; left: 165px; top: 730px; width: 25px; height: 32px; z-index: 973; cursor: pointer;" alt="문서" onclick="goToDocuments()" loading="eager">
                 
-                <!-- 집 (z-index: 974) -->
-                <img src="images/집.png" style="position: absolute; left: 100px; top: 2230px; width: 95px; height: 96px; z-index: 974; cursor: pointer;" alt="집" onclick="goToHome()" loading="eager">
+                <!-- 집 -->
+                <img src="images/집.png" style="position: absolute; left: 95px; top: 730px; width: 32px; height: 32px; z-index: 974; cursor: pointer;" alt="집" onclick="goToHome()" loading="eager">
                 
-                <!-- BLACK 등급 (z-index: 975) -->
-                <img src="images/BLACK.png" style="position: absolute; left: 476px; top: 2098px; width: 180px; height: 180px; z-index: 975; cursor: pointer;" alt="BLACK" onclick="showLevelInfo()" loading="eager">
+                <!-- 포트폴리오 섹션 -->
+                <img src="images/사각형.png" style="position: absolute; left: 78px; top: 530px; width: 330px; height: 160px; z-index: 976; object-fit: cover;" alt="포트폴리오 배경" loading="eager">
                 
-                <!-- 포트폴리오 사각형 배경 (z-index: 976) -->
-                <img src="images/사각형.png" style="position: absolute; left: 83px; top: 1607px; width: 987px; height: 491px; z-index: 976;" alt="포트폴리오 배경" loading="eager">
-                
-                <!-- 원 그래프 (z-index: 977) -->
-                <div style="position: absolute; left: 374px; top: 1648px; width: 408px; height: 409px; z-index: 977;">
-                    <canvas id="portfolioChart" width="408" height="409" style="width: 100%; height: 100%;"></canvas>
+                <!-- 원 그래프 -->
+                <div style="position: absolute; left: 245px; top: 545px; width: 140px; height: 140px; z-index: 977;">
+                    <canvas id="portfolioChart" width="140" height="140" style="width: 100%; height: 100%;"></canvas>
                 </div>
                 
-                <!-- PORTFOLIO 텍스트 (z-index: 978) -->
-                <div style="position: absolute; left: 78px; top: 1498px; width: 296px; height: 46px; z-index: 978; font-size: 50px; font-family: 'Jalnan2', 'Malgun Gothic', sans-serif; color: #333333; text-align: left; line-height: 1.4; white-space: pre-wrap; display: flex; align-items: center;">PORTFOLIO</div>
+                <!-- PORTFOLIO 텍스트 -->
+                <div style="position: absolute; left: 85px; top: 500px; width: 120px; height: 18px; z-index: 978; font-size: 18px; font-family: 'Jalnan2', 'Malgun Gothic', sans-serif; color: #333333; text-align: left; line-height: 1.4; white-space: pre-wrap; display: flex; align-items: center;">PORTFOLIO</div>
                 
-                <!-- 자산 사각형 배경 (z-index: 979) -->
-                <img src="images/사각형.png" style="position: absolute; left: 76px; top: 1087px; width: 988px; height: 345px; z-index: 979;" alt="자산 배경" loading="eager">
+                <!-- 자산 섹션 -->
+                <img src="images/사각형.png" style="position: absolute; left: 75px; top: 360px; width: 330px; height: 115px; z-index: 979; object-fit: cover;" alt="자산 배경" loading="eager">
                 
-                <!-- 청년희망적금 텍스트 (z-index: 980) -->
-                <div style="position: absolute; left: 132px; top: 1339px; width: 444px; height: 48px; z-index: 980; font-size: 41px; font-family: 'Jalnan2', 'Malgun Gothic', sans-serif; color: #333333; text-align: left; line-height: 1.4; white-space: pre-wrap; display: flex; align-items: center;">
-                    <span id="savingsInfo">청년희망적금 (3.0%)</span>
+                <!-- 현금 표시 (ASSETS 이미지 옆에) -->
+                <img src="images/ASSETS.png" style="position: absolute; left: 85px; top: 325px; width: 68px; height: 79px; z-index: 983;" alt="ASSETS" loading="eager">
+                <div style="position: absolute; left: 160px; top: 345px; width: 200px; height: 40px; z-index: 984; font-size: 28px; font-family: 'Jalnan2', 'Malgun Gothic', sans-serif; color: #333333; font-weight: bold; display: flex; align-items: center;">
+                    <span id="cashAmount">₩10,000,000</span>
                 </div>
                 
-                <!-- 삼성전자 주식 정보 (z-index: 981) -->
-                <div style="position: absolute; left: 131px; top: 1260px; width: 874px; height: 48px; z-index: 981; font-size: 41px; font-family: 'Jalnan2', 'Malgun Gothic', sans-serif; color: #333333; text-align: left; line-height: 1.4; white-space: pre-wrap; display: flex; align-items: center; justify-content: space-between;">
-                    <span id="stockInfo">삼성전자 (100주)</span>
-                    <span id="stockChange" style="color: #DC2626; font-weight: bold;">+ 1.8%</span>
+                <!-- 투자 자산 리스트 -->
+                <div id="investmentList" style="position: absolute; left: 85px; top: 390px; width: 310px; height: 80px; z-index: 985; overflow: hidden;">
+                    <!-- 동적으로 생성되는 투자 자산 목록 -->
                 </div>
                 
-                <!-- 총 자산 금액 (z-index: 982) -->
-                <div style="position: absolute; left: 296px; top: 1144px; width: 375px; height: 52px; z-index: 982; font-size: 41px; font-family: 'Jalnan2', 'Malgun Gothic', sans-serif; color: #333333; text-align: center; line-height: 1.4; white-space: pre-wrap; display: flex; align-items: center; justify-content: center;">
-                    <span id="totalAssets">19,990,102</span>
+                <!-- 총 자산 금액 -->
+                <div style="position: absolute; left: 150px; top: 375px; width: 150px; height: 20px; z-index: 982; font-size: 16px; font-family: 'Jalnan2', 'Malgun Gothic', sans-serif; color: #333333; text-align: center; line-height: 1.4; white-space: pre-wrap; display: flex; align-items: center; justify-content: center;">
+                    <span id="totalAssets">₩19,990,102</span>
                 </div>
                 
-                <!-- ASSETS 이미지 (z-index: 983) -->
-                <img src="images/ASSETS.png" style="position: absolute; left: 74px; top: 978px; width: 203px; height: 238px; z-index: 983;" alt="ASSETS" loading="eager">
+                <!-- 프로필 섹션 -->
+                <img src="images/사각형.png" style="position: absolute; left: 73px; top: 190px; width: 330px; height: 115px; z-index: 984; object-fit: cover;" alt="프로필 배경" loading="eager">
                 
-                <!-- 프로필 사각형 배경 (z-index: 984) -->
-                <img src="images/사각형.png" style="position: absolute; left: 73px; top: 567px; width: 988px; height: 345px; z-index: 984;" alt="프로필 배경" loading="eager">
+                <!-- 환경설정 -->
+                <img src="images/환경설정.png" style="position: absolute; left: 360px; top: 200px; width: 19px; height: 20px; z-index: 985; cursor: pointer;" alt="환경설정" onclick="openProfileSettings()" loading="eager">
                 
-                <!-- 환경설정 (z-index: 985) -->
-                <img src="images/환경설정.png" style="position: absolute; left: 951px; top: 614px; width: 58px; height: 61px; z-index: 985; cursor: pointer;" alt="환경설정" onclick="openProfileSettings()" loading="eager">
+                <!-- 프로필 이미지 -->
+                <img src="images/레이어 1.png" style="position: absolute; left: 85px; top: 205px; width: 86px; height: 86px; z-index: 986; cursor: pointer;" alt="프로필 이미지" onclick="openProfileSettings()" loading="eager">
                 
-                <!-- 레이어 1 (프로필 이미지) (z-index: 986) -->
-                <img src="images/레이어 1.png" style="position: absolute; left: 130px; top: 610px; width: 257px; height: 259px; z-index: 986; cursor: pointer;" alt="프로필 이미지" onclick="openProfileSettings()" loading="eager">
+                <!-- PROFILE 이미지 -->
+                <img src="images/PROFILE.png" style="position: absolute; left: 76px; top: 155px; width: 224px; height: 132px; z-index: 987;" alt="PROFILE" loading="eager">
                 
-                <!-- PROFILE 이미지 (z-index: 987) -->
-                <img src="images/PROFILE.png" style="position: absolute; left: 76px; top: 460px; width: 670px; height: 395px; z-index: 987;" alt="PROFILE" loading="eager">
+                <!-- 상단 -->
+                <!-- 알림 -->
+                <img src="images/알림.png" style="position: absolute; left: 350px; top: 70px; width: 32px; height: 38px; z-index: 988; cursor: pointer;" alt="알림" onclick="showNotifications()" loading="eager">
                 
-                <!-- 알림 (z-index: 988) -->
-                <img src="images/알림.png" style="position: absolute; left: 963px; top: 211px; width: 96px; height: 115px; z-index: 988; cursor: pointer;" alt="알림" onclick="showNotifications()" loading="eager">
+                <!-- 빛 반사 -->
+                <img src="images/빛 반사.png" style="position: absolute; left: 160px; top: 65px; width: 156px; height: 51px; z-index: 989;" alt="빛 반사" loading="eager">
                 
-                <!-- 빛 반사 (z-index: 989) -->
-                <img src="images/빛 반사.png" style="position: absolute; left: 332px; top: 190px; width: 467px; height: 153px; z-index: 989;" alt="빛 반사" loading="eager">
-                
-                <!-- 똑부리 (프로필 아이콘) (z-index: 990) -->
-                <img src="images/똑부리.png" style="position: absolute; left: 74px; top: 213px; width: 112px; height: 111px; z-index: 990; cursor: pointer;" alt="똑부리" onclick="openProfileSettings()" loading="eager">
+                <!-- 프로필 아이콘 -->
+                <img src="images/똑부리.png" style="position: absolute; left: 85px; top: 75px; width: 37px; height: 37px; z-index: 990; cursor: pointer;" alt="똑부리" onclick="openProfileSettings()" loading="eager">
                 
                 <!-- 동적 컨텐츠 오버레이 -->
                 <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1001; pointer-events: none;">
                     <!-- 사용자 이름 표시 영역 -->
-                    <div id="dynamicUserName" style="position: absolute; left: 200px; top: 250px; font-size: 32px; font-weight: bold; color: #333; pointer-events: auto;">
+                    <div id="dynamicUserName" style="position: absolute; left: 130px; top: 85px; font-size: 16px; font-weight: bold; color: #333; pointer-events: auto;">
                         <span id="userName">똑부리</span>
                     </div>
                     
-                    <!-- 등급 표시 영역 -->
-                    <div id="dynamicLevel" style="position: absolute; left: 400px; top: 680px; font-size: 28px; font-weight: bold; color: #333; pointer-events: auto;">
-                        <span id="userLevel">BLACK</span>
-                    </div>
-                    
-                    <!-- 실시간 데이터 업데이트 영역들은 기존 위치에 오버레이로 표시 -->
+                    <!-- 등급 표시 영역 (제거됨) -->
                 </div>
                 
             </div>
@@ -2271,28 +1984,92 @@ function updateDisplay() {
 // 새로운 메인 화면 데이터 업데이트
 function updateMainScreenData() {
     try {
+        // 현금 표시 업데이트
+        updateCashDisplay();
+        
+        // 투자 자산 리스트 업데이트
+        updateInvestmentList();
+        
         // 총 자산 업데이트
-        updateTotalAssets();
-        
-        // 주식 정보 업데이트
-        updateStockInfo();
-        
-        // 적금 정보 업데이트
-        updateSavingsInfo();
+        updateTotalAssetsDisplay();
         
         // 포트폴리오 차트 업데이트
         updatePortfolioChart();
-        
-        // 실시간 데이터 업데이트 (5초마다)
-        setInterval(function() {
-            updateTotalAssets();
-            updateStockInfo();
-        }, 5000);
         
         updateDebugInfo('메인 화면 데이터 업데이트 완료');
         
     } catch (error) {
         updateDebugInfo('메인 화면 데이터 업데이트 오류: ' + error.message);
+    }
+}
+
+// 현금 표시 업데이트
+function updateCashDisplay() {
+    var cashElement = document.getElementById('cashAmount');
+    if (cashElement && currentUser) {
+        var cashValue = currentUser.cash || cash;
+        cashElement.textContent = '₩' + formatNumber(cashValue);
+    }
+}
+
+// 투자 자산 리스트 업데이트
+function updateInvestmentList() {
+    var listElement = document.getElementById('investmentList');
+    if (!listElement || !currentUser) return;
+    
+    var html = '';
+    var yPosition = 0;
+    
+    if (currentUser.portfolio) {
+        // 주식 자산
+        if (currentUser.portfolio.stock && currentUser.portfolio.stock.length > 0) {
+            currentUser.portfolio.stock.forEach(function(stock, index) {
+                var totalValue = stock.quantity * stock.avgPrice;
+                var changePercent = (Math.random() * 4 - 2).toFixed(1); // 임시 변동률
+                var isPositive = parseFloat(changePercent) >= 0;
+                
+                html += '<div style="position: absolute; left: 0px; top: ' + yPosition + 'px; width: 310px; height: 18px; font-size: 14px; font-family: \'Jalnan2\', \'Malgun Gothic\', sans-serif; color: #333; display: flex; justify-content: space-between; align-items: center;">';
+                html += '<span>' + (stock.productName || '삼성전자') + ' (' + stock.quantity + '주)</span>';
+                html += '<span style="color: ' + (isPositive ? '#DC2626' : '#2563EB') + '; font-weight: bold;">' + (isPositive ? '+' : '') + changePercent + '%</span>';
+                html += '</div>';
+                yPosition += 20;
+            });
+        }
+        
+        // 예적금 자산
+        if (currentUser.portfolio.deposit && currentUser.portfolio.deposit.length > 0) {
+            currentUser.portfolio.deposit.forEach(function(deposit, index) {
+                html += '<div style="position: absolute; left: 0px; top: ' + yPosition + 'px; width: 310px; height: 18px; font-size: 14px; font-family: \'Jalnan2\', \'Malgun Gothic\', sans-serif; color: #333; display: flex; justify-content: space-between; align-items: center;">';
+                html += '<span>' + (deposit.productName || '청년희망적금') + ' (3.0%)</span>';
+                html += '<span style="color: #27ae60; font-weight: bold;">+3.0%</span>';
+                html += '</div>';
+                yPosition += 20;
+            });
+        }
+    }
+    
+    // 기본값이 없을 경우 샘플 데이터 표시
+    if (html === '') {
+        html += '<div style="position: absolute; left: 0px; top: 0px; width: 310px; height: 18px; font-size: 14px; font-family: \'Jalnan2\', \'Malgun Gothic\', sans-serif; color: #333; display: flex; justify-content: space-between; align-items: center;">';
+        html += '<span>삼성전자 (100주)</span>';
+        html += '<span style="color: #DC2626; font-weight: bold;">+1.8%</span>';
+        html += '</div>';
+        
+        html += '<div style="position: absolute; left: 0px; top: 20px; width: 310px; height: 18px; font-size: 14px; font-family: \'Jalnan2\', \'Malgun Gothic\', sans-serif; color: #333; display: flex; justify-content: space-between; align-items: center;">';
+        html += '<span>청년희망적금 (3.0%)</span>';
+        html += '<span style="color: #27ae60; font-weight: bold;">+3.0%</span>';
+        html += '</div>';
+    }
+    
+    listElement.innerHTML = html;
+}
+
+// 총 자산 표시 업데이트
+function updateTotalAssetsDisplay() {
+    var totalElement = document.getElementById('totalAssets');
+    if (totalElement && currentUser) {
+        var totalValue = currentUser.totalAssets || totalAssets;
+        totalElement.textContent = '₩' + formatNumber(totalValue);
     }
 }
 
@@ -2334,29 +2111,62 @@ function updateSavingsInfo() {
     }
 }
 
-// 포트폴리오 차트 업데이트 - 포토샵 디자인 최적화
+// 포트폴리오 차트 업데이트 - 모바일 최적화
 function updatePortfolioChart() {
     var canvas = document.getElementById('portfolioChart');
     if (canvas) {
         var ctx = canvas.getContext('2d');
         
-        // 캔버스 크기 설정 (408x409 픽셀에 맞춤)
-        canvas.width = 408;
-        canvas.height = 409;
+        // 캔버스 크기 설정 (140x140 픽셀에 맞춤)
+        canvas.width = 140;
+        canvas.height = 140;
         
-        // 원그래프 데이터
-        var data = [
-            { label: '삼성전자', value: 15990102, color: '#3498db' },
-            { label: '적금', value: 4000000, color: '#2ecc71' }
-        ];
+        // 원그래프 데이터 - 실제 사용자 데이터 기반
+        var data = [];
+        if (currentUser && currentUser.portfolio) {
+            // 주식 자산
+            if (currentUser.portfolio.stock && currentUser.portfolio.stock.length > 0) {
+                var stockValue = 0;
+                currentUser.portfolio.stock.forEach(function(stock) {
+                    stockValue += stock.quantity * stock.avgPrice;
+                });
+                if (stockValue > 0) {
+                    data.push({ label: '주식', value: stockValue, color: '#3498db' });
+                }
+            }
+            
+            // 예적금 자산
+            if (currentUser.portfolio.deposit && currentUser.portfolio.deposit.length > 0) {
+                var depositValue = 0;
+                currentUser.portfolio.deposit.forEach(function(deposit) {
+                    depositValue += deposit.quantity * deposit.avgPrice;
+                });
+                if (depositValue > 0) {
+                    data.push({ label: '예적금', value: depositValue, color: '#2ecc71' });
+                }
+            }
+            
+            // 현금
+            if (currentUser.cash > 0) {
+                data.push({ label: '현금', value: currentUser.cash, color: '#95a5a6' });
+            }
+        }
+        
+        // 기본값 설정
+        if (data.length === 0) {
+            data = [
+                { label: '주식', value: 15990102, color: '#3498db' },
+                { label: '예적금', value: 4000000, color: '#2ecc71' }
+            ];
+        }
         
         var total = data.reduce((sum, item) => sum + item.value, 0);
-        var centerX = 408 / 2;
-        var centerY = 409 / 2;
-        var radius = Math.min(408, 409) / 3;
+        var centerX = 70;
+        var centerY = 70;
+        var radius = 50;
         
         // 배경 지우기
-        ctx.clearRect(0, 0, 408, 409);
+        ctx.clearRect(0, 0, 140, 140);
         
         // 원그래프 그리기
         var currentAngle = -Math.PI / 2; // 12시 방향부터 시작
@@ -2372,26 +2182,19 @@ function updatePortfolioChart() {
             ctx.fillStyle = item.color;
             ctx.fill();
             
-            // 텍스트 표시
-            var textAngle = currentAngle + sliceAngle / 2;
-            var textX = centerX + Math.cos(textAngle) * (radius * 0.7);
-            var textY = centerY + Math.sin(textAngle) * (radius * 0.7);
-            
-            ctx.fillStyle = '#fff';
-            ctx.font = 'bold 20px "Jalnan2", "Malgun Gothic", sans-serif';
-            ctx.textAlign = 'center';
-            ctx.fillText(Math.round((item.value / total) * 100) + '%', textX, textY);
+            // 테두리
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 2;
+            ctx.stroke();
             
             currentAngle += sliceAngle;
         });
         
-        // 중앙에 총액 표시
-        ctx.fillStyle = '#333';
-        ctx.font = 'bold 18px "Jalnan2", "Malgun Gothic", sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText('총 자산', centerX, centerY - 20);
-        ctx.font = '16px "Jalnan2", "Malgun Gothic", sans-serif';
-        ctx.fillText(formatNumber(total) + '원', centerX, centerY + 20);
+        // 중앙에 작은 원 그리기 (도넛 차트 효과)
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, 20, 0, 2 * Math.PI);
+        ctx.fillStyle = '#fff';
+        ctx.fill();
     }
 }
 
@@ -2485,19 +2288,17 @@ function updateMainPortfolioChart() {
     }
 }
 
-// 레벨 표시 업데이트 (계속)
+// 레벨 표시 업데이트
 function updateLevelDisplay() {
     try {
         var level = levelSystem[userLevel];
         if (!level) return;
         
-        var levelElements = document.querySelectorAll('#userLevel, #navLevelBadge');
+        var levelElements = document.querySelectorAll('#userLevel');
         
         levelElements.forEach(function(element) {
             if (element) {
-                element.className = element.className.includes('level-badge-profile') ? 
-                    'level-badge-profile ' + level.class : 
-                    'level-badge-nav ' + level.class;
+                element.className = 'level-badge-profile ' + level.class;
                 element.textContent = level.name;
             }
         });
@@ -3052,8 +2853,12 @@ document.addEventListener('DOMContentLoaded', async function() {
                 totalAssets: 19990102,
                 cash: 4000000,
                 portfolio: {
-                    stock: [{ productName: '삼성전자', quantity: 100, avgPrice: 159901.02 }],
-                    deposit: [{ productName: '청년희망적금', quantity: 1, avgPrice: 4000000 }]
+                    stock: [
+                        { productName: '삼성전자', quantity: 100, avgPrice: 159901.02 }
+                    ],
+                    deposit: [
+                        { productName: '청년희망적금', quantity: 1, avgPrice: 4000000 }
+                    ]
                 },
                 isSpecialAccount: true,
                 specialType: '테스트 계정'
@@ -3074,7 +2879,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             
             if (mainScreen) {
                 mainScreen.classList.add('active');
-                updateDebugInfo('테스트용 메인 화면 표시 - 포토샵 디자인 적용');
+                updateDebugInfo('테스트용 메인 화면 표시 - 모바일 최적화 완료');
                 
                 // 화면 데이터 업데이트
                 updateMainScreenData();
