@@ -122,296 +122,329 @@
         .level-black { background: linear-gradient(135deg, #374151, #111827); }
         .level-red { background: linear-gradient(135deg, #EF4444, #DC2626); }
         
-        /* 메인 화면 고정 스타일 - 드래그 방지 */
-        #mainScreen {
-            position: fixed;
-            top: 0;
-            left: 0;
+        /* 메인 화면 새로운 디자인 - 메인페이지.html 기반 */
+        .main-container {
+            position: relative;
             width: 100vw;
             height: 100vh;
+            max-width: 1125px;
+            max-height: 2436px;
+            margin: 0 auto;
             overflow: hidden;
             background-color: #f5f5f5;
-            user-select: none;
-            -webkit-user-select: none;
-            -webkit-touch-callout: none;
-            -webkit-user-drag: none;
         }
         
-        /* 고정된 배경 */
-        .main-background-fixed {
-            position: fixed;
-            top: 0;
+        /* 배경 레이어 */
+        .main-background-layer {
+            position: absolute;
             left: 0;
-            width: 100vw;
-            height: 100vh;
+            top: 0;
+            width: 100%;
+            height: 100%;
             z-index: 1;
-            pointer-events: none;
         }
         
-        .background-image-fixed {
+        .main-bg-image {
             width: 100%;
             height: 100%;
             object-fit: cover;
             object-position: center;
-            -webkit-user-drag: none;
-            -moz-user-drag: none;
-            -o-user-drag: none;
         }
         
-        /* 상단 헤더 영역 */
-        .header-section {
-            position: fixed;
-            top: 60px;
-            left: 0;
-            right: 0;
-            height: 80px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 50px;
-            z-index: 10;
-        }
-        
-        .header-profile-left {
-            width: 50px;
-            height: 50px;
-        }
-        
-        .profile-circle-gray {
-            width: 50px;
-            height: 50px;
-            background-color: #9CA3AF;
-            border-radius: 50%;
-            cursor: pointer;
-        }
-        
-        .header-logo {
-            flex: 1;
-            text-align: center;
-        }
-        
-        .logo-text {
-            font-size: 48px;
-            font-weight: bold;
-            background: linear-gradient(135deg, #60A5FA, #3B82F6, #FCD34D);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        .header-notification {
-            width: 50px;
-            height: 50px;
-        }
-        
-        .notification-bell {
-            width: 50px;
-            height: 50px;
-            background-color: #FDE047;
-            border-radius: 50%;
-            position: relative;
-            cursor: pointer;
-        }
-        
-        .notification-bell::before {
-            content: '🔔';
+        /* PORTFOLIO 텍스트 레이어 */
+        .portfolio-text-layer {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 24px;
-        }
-        
-        /* PROFILE 섹션 */
-        .profile-section {
-            position: fixed;
-            top: 180px;
-            left: 50px;
-            right: 50px;
+            left: 75px;
+            top: 1495px;
+            width: 296px;
+            height: 46px;
             z-index: 10;
         }
         
-        .section-title {
-            font-size: 36px;
-            font-weight: bold;
-            color: #1F2937;
-            margin-bottom: 30px;
-            text-align: left;
-        }
-        
-        .profile-container {
-            display: flex;
-            align-items: center;
-            gap: 30px;
-            position: relative;
-        }
-        
-        .profile-photo-box {
-            width: 120px;
-            height: 120px;
-            background-color: #9CA3AF;
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
-        
-        .profile-placeholder-gray {
+        .portfolio-text {
             width: 100%;
             height: 100%;
-            background-color: #9CA3AF;
-            border-radius: 15px;
+            object-fit: contain;
         }
         
-        .level-badge-black {
-            background-color: #374151;
-            color: white;
-            padding: 8px 20px;
-            border-radius: 25px;
-            font-weight: bold;
-            font-size: 16px;
+        /* 등급 아이콘 레이어 */
+        .level-icon-layer {
+            position: absolute;
+            left: 473px;
+            top: 2095px;
+            width: 180px;
+            height: 180px;
+            z-index: 10;
             cursor: pointer;
         }
         
-        .settings-icon {
+        .level-icon {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+        
+        .level-icon:hover {
+            transform: scale(1.05);
+        }
+        
+        /* 네비게이션 아이콘들 */
+        .nav-icons-layer {
             position: absolute;
-            right: 0;
+            z-index: 10;
+        }
+        
+        .nav-home-layer {
+            position: absolute;
+            left: 97px;
+            top: 2227px;
+            width: 95px;
+            height: 96px;
+            cursor: pointer;
+        }
+        
+        .nav-home-icon {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+        
+        .nav-home-icon:hover {
+            transform: scale(1.1);
+        }
+        
+        .nav-docs-layer {
+            position: absolute;
+            left: 312px;
+            top: 2227px;
+            width: 76px;
+            height: 96px;
+            cursor: pointer;
+        }
+        
+        .nav-docs-icon {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+        
+        .nav-docs-icon:hover {
+            transform: scale(1.1);
+        }
+        
+        .nav-more-layer {
+            position: absolute;
+            left: 725px;
+            top: 2230px;
+            width: 93px;
+            height: 93px;
+            cursor: pointer;
+        }
+        
+        .nav-more-icon {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+        
+        .nav-more-icon:hover {
+            transform: scale(1.1);
+        }
+        
+        .nav-chat-layer {
+            position: absolute;
+            left: 948px;
+            top: 2272px;
+            width: 60px;
+            height: 12px;
+            cursor: pointer;
+        }
+        
+        .nav-chat-icon {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+        
+        .nav-chat-icon:hover {
+            transform: scale(1.1);
+        }
+        
+        /* 동적 콘텐츠 오버레이 */
+        .dynamic-content-overlay {
+            position: absolute;
             top: 0;
-            width: 40px;
-            height: 40px;
-            background-color: #6B7280;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 15;
+            pointer-events: none;
+        }
+        
+        .dynamic-content-overlay > * {
+            pointer-events: auto;
+        }
+        
+        /* 사용자 정보 영역 */
+        .user-info-area {
+            position: absolute;
+            top: 200px;
+            left: 100px;
+            right: 100px;
+        }
+        
+        .profile-photo-area {
+            position: absolute;
+            top: 50px;
+            left: 50px;
+            width: 120px;
+            height: 120px;
+        }
+        
+        .profile-placeholder-main {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
+            color: #1976d2;
+            font-size: 40px;
             cursor: pointer;
+            transition: transform 0.3s ease;
         }
         
-        .settings-icon i {
-            color: white;
-            font-size: 18px;
+        .profile-placeholder-main:hover {
+            transform: scale(1.05);
         }
         
-        .user-name-display {
+        .user-name-area {
             position: absolute;
-            left: 160px;
-            top: 60px;
+            top: 80px;
+            left: 200px;
             font-size: 24px;
             font-weight: bold;
             color: #1F2937;
         }
         
-        .name-suffix {
+        .user-suffix {
             font-weight: normal;
             color: #6B7280;
         }
         
-        .join-date-display {
+        .user-level-area {
             position: absolute;
-            left: 160px;
-            top: 90px;
+            top: 50px;
+            left: 500px;
+            background: #FCD34D;
+            color: #92400E;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .join-date-area {
+            position: absolute;
+            top: 120px;
+            left: 200px;
             font-size: 14px;
             color: #6B7280;
         }
         
-        .days-highlight {
+        .days-number {
             color: #F59E0B;
             font-weight: bold;
         }
         
-        /* ASSETS 섹션 */
-        .assets-section {
-            position: fixed;
-            top: 380px;
-            left: 50px;
-            right: 50px;
-            z-index: 10;
+        /* 자산 정보 영역 */
+        .assets-info-area {
+            position: absolute;
+            top: 400px;
+            left: 100px;
+            right: 100px;
         }
         
-        .total-assets {
+        .total-assets-display {
             display: flex;
             align-items: center;
             gap: 15px;
             margin-bottom: 30px;
         }
         
-        .star-icon {
+        .asset-star {
             font-size: 32px;
         }
         
-        .asset-amount {
+        .total-amount {
             font-size: 48px;
             font-weight: bold;
             color: #1F2937;
         }
         
-        .asset-items {
+        .asset-items-list {
             display: flex;
             flex-direction: column;
             gap: 15px;
         }
         
-        .asset-item {
+        .asset-item-row {
             display: flex;
             align-items: center;
-            gap: 10px;
-            font-size: 18px;
+            gap: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
         
-        .asset-name {
+        .asset-label {
+            font-weight: bold;
+            color: #374151;
+            min-width: 100px;
+        }
+        
+        .asset-value {
+            font-size: 18px;
             font-weight: bold;
             color: #1F2937;
-        }
-        
-        .asset-info {
-            color: #6B7280;
+            flex: 1;
         }
         
         .asset-change {
-            margin-left: auto;
             font-weight: bold;
-        }
-        
-        .asset-change.positive {
             color: #EF4444;
         }
         
-        /* PORTFOLIO 섹션 */
-        .portfolio-section {
-            position: fixed;
-            top: 580px;
-            left: 50px;
-            right: 50px;
-            bottom: 120px;
-            z-index: 10;
-        }
-        
+        /* 포트폴리오 차트 영역 */
         .portfolio-chart-area {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-        }
-        
-        .chart-container {
-            position: relative;
-            width: 300px;
-            height: 300px;
-        }
-        
-        .chart-legend {
             position: absolute;
-            right: -80px;
-            top: 50%;
-            transform: translateY(-50%);
+            top: 800px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 400px;
+        }
+        
+        .chart-container-main {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 50px;
+        }
+        
+        .chart-legend-main {
             display: flex;
             flex-direction: column;
             gap: 15px;
         }
         
-        .legend-item {
+        .legend-item-main {
             display: flex;
             align-items: center;
             gap: 10px;
@@ -426,216 +459,77 @@
             border-radius: 50%;
         }
         
-        .legend-color.red {
-            background-color: #EF4444;
+        .cash-color {
+            background-color: #10B981;
         }
         
-        .legend-color.blue {
-            background-color: #60A5FA;
+        .stock-color {
+            background-color: #3B82F6;
         }
         
-        .legend-color.yellow {
-            background-color: #FDE047;
+        .savings-color {
+            background-color: #F59E0B;
         }
         
-        /* 하단 네비게이션 고정 */
-        .bottom-navigation-fixed {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 100px;
-            background-color: #F3F4F6;
-            display: flex;
-            align-items: center;
-            justify-content: space-around;
-            z-index: 20;
-            border-top: 1px solid #E5E7EB;
+        /* 반응형 디자인 */
+        @media (max-width: 1200px) {
+            .main-container {
+                transform: scale(0.9);
+                transform-origin: top center;
+            }
         }
         
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            width: 60px;
-            height: 60px;
-            cursor: pointer;
-            border-radius: 12px;
-            transition: background-color 0.3s ease;
+        @media (max-width: 1000px) {
+            .main-container {
+                transform: scale(0.8);
+                transform-origin: top center;
+            }
         }
         
-        .nav-item:hover {
-            background-color: #E5E7EB;
-        }
-        
-        .nav-item.active {
-            background-color: #FDE047;
-        }
-        
-        .nav-icon {
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-        }
-        
-        .home-icon {
-            background-color: #FDE047;
-        }
-        
-        .news-icon {
-            background-color: #FDE047;
-        }
-        
-        .more-icon {
-            background-color: #FDE047;
-        }
-        
-        .game-icon {
-            background-color: #FDE047;
-        }
-        
-        .nav-level-circle {
-            width: 50px;
-            height: 50px;
-            background-color: #374151;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 12px;
-        }
-        
-        /* 모바일 반응형 */
         @media (max-width: 768px) {
-            .header-section {
-                padding: 0 20px;
-                top: 40px;
+            .main-container {
+                transform: scale(0.7);
+                transform-origin: top center;
             }
             
-            .logo-text {
+            .user-info-area {
+                left: 50px;
+                right: 50px;
+            }
+            
+            .assets-info-area {
+                left: 50px;
+                right: 50px;
+            }
+            
+            .total-amount {
                 font-size: 36px;
-            }
-            
-            .profile-section {
-                top: 140px;
-                left: 20px;
-                right: 20px;
-            }
-            
-            .section-title {
-                font-size: 28px;
-            }
-            
-            .profile-photo-box {
-                width: 100px;
-                height: 100px;
-            }
-            
-            .user-name-display {
-                left: 130px;
-                top: 50px;
-                font-size: 20px;
-            }
-            
-            .join-date-display {
-                left: 130px;
-                top: 75px;
-                font-size: 12px;
-            }
-            
-            .assets-section {
-                top: 320px;
-                left: 20px;
-                right: 20px;
-            }
-            
-            .asset-amount {
-                font-size: 36px;
-            }
-            
-            .portfolio-section {
-                top: 480px;
-                left: 20px;
-                right: 20px;
-            }
-            
-            .chart-container {
-                width: 250px;
-                height: 250px;
-            }
-            
-            .chart-legend {
-                right: -60px;
             }
         }
         
         @media (max-width: 480px) {
-            .header-section {
-                padding: 0 15px;
-                top: 30px;
+            .main-container {
+                transform: scale(0.6);
+                transform-origin: top center;
             }
             
-            .logo-text {
-                font-size: 28px;
+            .user-info-area {
+                left: 20px;
+                right: 20px;
             }
             
-            .profile-section {
-                top: 120px;
-                left: 15px;
-                right: 15px;
+            .assets-info-area {
+                left: 20px;
+                right: 20px;
             }
             
-            .section-title {
-                font-size: 24px;
+            .portfolio-chart-area {
+                width: 350px;
             }
             
-            .profile-container {
+            .chart-container-main {
                 flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
-            }
-            
-            .user-name-display {
-                position: static;
-                font-size: 18px;
-            }
-            
-            .join-date-display {
-                position: static;
-                font-size: 12px;
-            }
-            
-            .assets-section {
-                top: 280px;
-                left: 15px;
-                right: 15px;
-            }
-            
-            .asset-amount {
-                font-size: 28px;
-            }
-            
-            .portfolio-section {
-                top: 420px;
-                left: 15px;
-                right: 15px;
-            }
-            
-            .chart-container {
-                width: 200px;
-                height: 200px;
-            }
-            
-            .chart-legend {
-                right: -50px;
-                gap: 10px;
-            }
-            
-            .legend-item {
-                font-size: 14px;
+                gap: 20px;
             }
         }
         
@@ -1446,147 +1340,130 @@
 
 <!-- 메인 화면 -->
 <div id="mainScreen" class="screen">
-    <!-- 고정된 배경 이미지 -->
-    <div class="main-background-fixed">
-        <img src="images/메인페이지 배경.png" alt="메인페이지 배경" class="background-image-fixed">
-    </div>
-    
-    <!-- 상단 헤더 영역 -->
-    <div class="header-section">
-        <!-- 왼쪽 프로필 아이콘 (회색 원) -->
-        <div class="header-profile-left">
-            <div class="profile-circle-gray"></div>
+    <!-- 메인 화면 컨테이너 -->
+    <div class="main-container">
+        <!-- 배경 이미지 -->
+        <div class="main-background-layer">
+            <img src="메인images/배경.png" alt="메인 배경" class="main-bg-image">
         </div>
         
-        <!-- 중앙 FINE U 로고 -->
-        <div class="header-logo">
-            <span class="logo-text">FINE U</span>
+        <!-- PORTFOLIO 텍스트 -->
+        <div class="portfolio-text-layer">
+            <img src="메인images/PORTFOLIO.png" alt="PORTFOLIO" class="portfolio-text">
         </div>
         
-        <!-- 오른쪽 알림 아이콘 (노란 종) -->
-        <div class="header-notification">
-            <div class="notification-bell"></div>
+        <!-- 등급 아이콘 -->
+        <div class="level-icon-layer">
+            <img src="메인images/등급.png" alt="등급" class="level-icon" id="levelIconMain" onclick="navigateToPage('a5.html')">
         </div>
-    </div>
-    
-    <!-- PROFILE 섹션 -->
-    <div class="profile-section">
-        <h2 class="section-title">PROFILE</h2>
         
-        <div class="profile-container">
-            <!-- 프로필 사진 (회색 사각형) -->
-            <div class="profile-photo-box">
-                <img id="mainProfileImage" src="" alt="Profile" style="display: none;">
-                <div id="mainProfilePlaceholder" class="profile-placeholder-gray"></div>
+        <!-- 하단 네비게이션 아이콘들 -->
+        <div class="nav-icons-layer">
+            <!-- 홈 아이콘 -->
+            <div class="nav-home-layer">
+                <img src="메인images/집.png" alt="홈" class="nav-home-icon" onclick="showMainScreen()">
             </div>
             
-            <!-- 등급 뱃지 (BLACK) -->
-            <div class="level-badge-black" id="levelBadgeMain">
-                <span id="mainUserLevel">BLACK</span>
+            <!-- 문서 아이콘 -->
+            <div class="nav-docs-layer">
+                <img src="메인images/문서.png" alt="문서" class="nav-docs-icon" onclick="navigateToPage('a2.html')">
             </div>
             
-            <!-- 설정 아이콘 -->
-            <div class="settings-icon" onclick="showProfileModal()">
-                <i class="fas fa-cog"></i>
+            <!-- 더보기 아이콘 -->
+            <div class="nav-more-layer">
+                <img src="메인images/더보기.png" alt="더보기" class="nav-more-icon" onclick="navigateToPage('a3.html')">
             </div>
             
-            <!-- 사용자 이름 -->
-            <div class="user-name-display">
-                <span id="mainUserName">정여진</span>
-                <span class="name-suffix">님</span>
-            </div>
-            
-            <!-- 가입일 -->
-            <div class="join-date-display">
-                <span>FINE U와 함께한 지 </span>
-                <span id="mainJoinDays" class="days-highlight">1</span>
-                <span>일</span>
+            <!-- 채팅 아이콘 -->
+            <div class="nav-chat-layer">
+                <img src="메인images/채팅.png" alt="채팅" class="nav-chat-icon" onclick="navigateToPage('a4.html')">
             </div>
         </div>
-    </div>
-    
-    <!-- ASSETS 섹션 -->
-    <div class="assets-section">
-        <h2 class="section-title">ASSETS</h2>
         
-        <!-- 총 자산 -->
-        <div class="total-assets">
-            <div class="star-icon">⭐</div>
-            <span class="asset-amount" id="mainTotalAssets">19,990,102</span>
-        </div>
-        
-        <!-- 개별 자산 항목들 -->
-        <div class="asset-items">
-            <!-- 삼성전자 -->
-            <div class="asset-item">
-                <span class="asset-name">삼성전자</span>
-                <span class="asset-info">(100주)</span>
-                <span class="asset-change positive">+1.8%</span>
-            </div>
-            
-            <!-- 청년희망적금 -->
-            <div class="asset-item">
-                <span class="asset-name">청년희망적금</span>
-                <span class="asset-info">(3.0%)</span>
-            </div>
-        </div>
-    </div>
-    
-    <!-- PORTFOLIO 섹션 -->
-    <div class="portfolio-section">
-        <h2 class="section-title">PORTFOLIO</h2>
-        
-        <!-- 포트폴리오 차트 -->
-        <div class="portfolio-chart-area">
-            <div class="chart-container">
-                <canvas id="mainPortfolioChart" width="300" height="300"></canvas>
+        <!-- 동적 콘텐츠 오버레이 -->
+        <div class="dynamic-content-overlay">
+            <!-- 사용자 정보 영역 -->
+            <div class="user-info-area">
+                <!-- 프로필 사진 -->
+                <div class="profile-photo-area">
+                    <img id="mainProfileImage" src="" alt="Profile" style="display: none;">
+                    <div id="mainProfilePlaceholder" class="profile-placeholder-main">
+                        <i class="fas fa-user"></i>
+                    </div>
+                </div>
                 
-                <!-- 범례 -->
-                <div class="chart-legend">
-                    <div class="legend-item">
-                        <div class="legend-color red"></div>
-                        <span>주식</span>
+                <!-- 사용자 이름 -->
+                <div class="user-name-area">
+                    <span id="mainUserName">사용자</span>
+                    <span class="user-suffix">님</span>
+                </div>
+                
+                <!-- 등급 표시 -->
+                <div class="user-level-area">
+                    <span id="mainUserLevel">YELLOW</span>
+                </div>
+                
+                <!-- 가입일 표시 -->
+                <div class="join-date-area">
+                    <span>FINE U와 함께한 지 </span>
+                    <span id="mainJoinDays" class="days-number">1</span>
+                    <span>일</span>
+                </div>
+            </div>
+            
+            <!-- 자산 정보 영역 -->
+            <div class="assets-info-area">
+                <!-- 총 자산 -->
+                <div class="total-assets-display">
+                    <div class="asset-star">⭐</div>
+                    <span class="total-amount" id="mainTotalAssets">10,000,000</span>
+                </div>
+                
+                <!-- 개별 자산 항목 -->
+                <div class="asset-items-list">
+                    <!-- 현금 -->
+                    <div class="asset-item-row">
+                        <span class="asset-label">현금보유량</span>
+                        <span class="asset-value" id="mainCashAmount">10,000,000원</span>
                     </div>
-                    <div class="legend-item">
-                        <div class="legend-color blue"></div>
-                        <span>별</span>
+                    
+                    <!-- 주식 -->
+                    <div class="asset-item-row">
+                        <span class="asset-label">주식</span>
+                        <span class="asset-value" id="mainStockValue">0원</span>
+                        <span class="asset-change" id="mainStockChange">0%</span>
                     </div>
-                    <div class="legend-item">
-                        <div class="legend-color yellow"></div>
-                        <span>적금</span>
+                    
+                    <!-- 적금 -->
+                    <div class="asset-item-row">
+                        <span class="asset-label">적금</span>
+                        <span class="asset-value" id="mainSavingsValue">0원</span>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-    
-    <!-- 하단 네비게이션 -->
-    <div class="bottom-navigation-fixed">
-        <!-- 홈 버튼 -->
-        <div class="nav-item active" onclick="showMainScreen()">
-            <div class="nav-icon home-icon"></div>
-        </div>
-        
-        <!-- 뉴스 버튼 -->
-        <div class="nav-item" onclick="navigateToPage('a2.html')">
-            <div class="nav-icon news-icon"></div>
-        </div>
-        
-        <!-- BLACK 등급 버튼 -->
-        <div class="nav-item level-item">
-            <div class="nav-level-circle" id="levelBadgeNav">
-                <span id="navUserLevel">BLACK</span>
+            
+            <!-- 포트폴리오 차트 영역 -->
+            <div class="portfolio-chart-area">
+                <div class="chart-container-main">
+                    <canvas id="mainPortfolioChart" width="300" height="300"></canvas>
+                    
+                    <!-- 차트 범례 -->
+                    <div class="chart-legend-main">
+                        <div class="legend-item-main">
+                            <div class="legend-color cash-color"></div>
+                            <span>현금</span>
+                        </div>
+                        <div class="legend-item-main">
+                            <div class="legend-color stock-color"></div>
+                            <span>주식</span>
+                        </div>
+                        <div class="legend-item-main">
+                            <div class="legend-color savings-color"></div>
+                            <span>적금</span>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
-        
-        <!-- 더보기 버튼 -->
-        <div class="nav-item" onclick="navigateToPage('a3.html')">
-            <div class="nav-icon more-icon"></div>
-        </div>
-        
-        <!-- 게임 버튼 -->
-        <div class="nav-item" onclick="navigateToPage('a4.html')">
-            <div class="nav-icon game-icon"></div>
         </div>
     </div>
 </div>
@@ -3282,6 +3159,42 @@ document.addEventListener('visibilitychange', async function() {
         }
     }
 });
+
+// 새로운 메인 화면 네비게이션 함수들
+function goToHome() {
+    showMainScreen();
+}
+
+function goToDocuments() {
+    navigateToPage('a2.html');
+}
+
+function showMoreMenu() {
+    navigateToPage('a3.html');
+}
+
+function openChat() {
+    navigateToPage('a4.html');
+}
+
+function showLevelInfo() {
+    navigateToPage('a5.html');
+}
+
+function openProfileSettings() {
+    // 프로필 설정 페이지 열기 또는 모달 표시
+    console.log('프로필 설정 열기');
+}
+
+function openNotifications() {
+    // 알림 페이지 열기 또는 모달 표시
+    console.log('알림 열기');
+}
+
+function openSettings() {
+    // 설정 페이지 열기
+    console.log('설정 열기');
+}
 
 updateDebugInfo('Firebase Realtime Database 연동 메인 페이지 스크립트 로드 완료 - gunwoo55 - 2025년 8월 9일 13:06:13 KST');
 </script>
