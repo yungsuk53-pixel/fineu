@@ -830,62 +830,62 @@
     <!-- FINEU 이미지 기반 로그인 디자인 - FINEU-복사.html과 동일한 구조 -->
     <div style="width: 100%; height: 100vh; overflow: auto; background-color: #FFFFFF; display: flex; justify-content: center; align-items: center;">
         <!-- 1125x2436 테이블 구조 재현 -->
-        <table width="1125" height="2436" border="0" cellpadding="0" cellspacing="0" style="background-color: #FFFFFF;">
+        <table width="1125" height="2436" border="0" cellpadding="0" cellspacing="0" style="background-color: #FFFFFF; max-width: 100%; height: auto;">
             <tr>
-                <td colspan="3">
-                    <img src="images/FINEU-복사_01.png" width="1125" height="1520" border="0" alt="">
+                <td colspan="3" style="width: 100%; height: auto;">
+                    <img src="images/FINEU-복사_01.png" style="width: 100%; height: auto; max-width: 1125px; display: block;" alt="">
                 </td>
             </tr>
             <tr>
-                <td rowspan="6">
-                    <img src="images/FINEU-복사_02.png" width="243" height="916" border="0" alt="">
+                <td rowspan="6" style="width: 21.6%; height: auto;">
+                    <img src="images/FINEU-복사_02.png" style="width: 100%; height: auto; display: block;" alt="">
                 </td>
-                <td style="position: relative;">
-                    <img src="images/아이디입력창.png" width="640" height="89" border="0" alt="">
+                <td style="position: relative; width: 56.9%; height: auto;">
+                    <img src="images/아이디입력창.png" style="width: 100%; height: auto; display: block;" alt="">
                     <input type="text" id="userId" value="gunwoo55"
                            onkeypress="if(event.key==='Enter') performLogin()"
                            style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-                                  width: 85%; height: 60%; border: none; background: transparent; font-size: 16px; 
+                                  width: 85%; height: 60%; border: none; background: transparent; font-size: clamp(12px, 4vw, 18px); 
                                   text-align: center; outline: none; color: #333; font-weight: bold;">
                 </td>
-                <td rowspan="6">
-                    <img src="images/FINEU-복사_04.png" width="242" height="916" border="0" alt="">
+                <td rowspan="6" style="width: 21.5%; height: auto;">
+                    <img src="images/FINEU-복사_04.png" style="width: 100%; height: auto; display: block;" alt="">
                 </td>
             </tr>
             <tr>
-                <td>
-                    <img src="images/FINEU-복사_05.png" width="640" height="33" border="0" alt="">
+                <td style="width: 56.9%; height: auto;">
+                    <img src="images/FINEU-복사_05.png" style="width: 100%; height: auto; display: block;" alt="">
                 </td>
             </tr>
             <tr>
-                <td style="position: relative;">
-                    <img src="images/비밀번호입력창.png" width="640" height="89" border="0" alt="">
+                <td style="position: relative; width: 56.9%; height: auto;">
+                    <img src="images/pw입력창.png" style="width: 100%; height: auto; display: block;" alt="">
                     <input type="password" id="userPassword" value="test123"
                            onkeypress="if(event.key==='Enter') performLogin()"
                            style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-                                  width: 85%; height: 60%; border: none; background: transparent; font-size: 16px; 
+                                  width: 85%; height: 60%; border: none; background: transparent; font-size: clamp(12px, 4vw, 18px); 
                                   text-align: center; outline: none; color: #333; font-weight: bold;">
                 </td>
             </tr>
             <tr>
-                <td>
-                    <img src="images/FINEU-복사_07.png" width="640" height="33" border="0" alt="">
+                <td style="width: 56.9%; height: auto;">
+                    <img src="images/FINEU-복사_07.png" style="width: 100%; height: auto; display: block;" alt="">
                 </td>
             </tr>
             <tr>
-                <td style="position: relative; cursor: pointer;" onclick="performLogin()">
-                    <img src="images/로그인버튼.png" width="640" height="89" border="0" alt="">
+                <td style="position: relative; cursor: pointer; width: 56.9%; height: auto;" onclick="performLogin()">
+                    <img src="images/로그인버튼.png" style="width: 100%; height: auto; display: block;" alt="">
                     <!-- 로딩 표시 -->
                     <div id="loginLoader" class="hidden" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
                         <div class="loading"></div>
                     </div>
                     <span id="loginBtnText" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-                                                  color: white; font-weight: bold; font-size: 16px; pointer-events: none; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); opacity: 0;">로그인</span>
+                                                  color: white; font-weight: bold; font-size: clamp(12px, 4vw, 18px); pointer-events: none; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); opacity: 0;">로그인</span>
                 </td>
             </tr>
             <tr>
-                <td>
-                    <img src="images/FINEU-복사_09.png" width="640" height="583" border="0" alt="">
+                <td style="width: 56.9%; height: auto;">
+                    <img src="images/FINEU-복사_09.png" style="width: 100%; height: auto; display: block;" alt="">
                 </td>
             </tr>
         </table>
