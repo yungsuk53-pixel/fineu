@@ -160,16 +160,38 @@
             padding: 20px;
         }
         
-        /* 공통 레이어 스타일 - 메인페이지 최종.html 정확한 픽셀 좌표 */
+        /* 공통 레이어 스타일 - 모바일 전체화면 최적화 */
+        #mainScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #f0f0f0;
+            overflow: hidden;
+            z-index: 1000;
+        }
+
+        .main-container {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            background: #f0f0f0;
+            position: relative;
+            overflow: hidden;
+        }
+
         .container { 
             position: relative; 
-            width: 1125px; 
-            height: 2436px; 
+            width: 100vw;
+            height: 100vh;
             background: #f0f0f0; 
-            margin: 20px auto; 
+            margin: 0;
+            padding: 0;
             overflow: hidden;
             transform-origin: top left;
-            transform: scale(0.35); /* 모바일에 맞게 축소 */
+            transform: none;
         }
         
         .layer { 
@@ -194,6 +216,8 @@
         .layer[onclick] {
             cursor: pointer;
             transition: all 0.3s ease;
+            min-height: 44px;
+            min-width: 44px;
         }
         
         .layer[onclick]:hover {
@@ -202,42 +226,43 @@
         }
         
         .layer[onclick]:active {
-            transform: scale(0.98);
+            transform: scale(0.95);
+            opacity: 0.8;
         }
         
-        /* 메인페이지 최종.html과 완전히 동일한 픽셀 좌표 */
-        .layer_1 { left: 79px; top: 222px; width: 99px; height: 95px; z-index: 32; }
-        .layer_2 { left: 71px; top: 209px; width: 113px; height: 112px; z-index: 31; }
-        .layer_3 { left: 356px; top: 214px; width: 359px; height: 12px; z-index: 30; }
-        .layer_4 { left: 332px; top: 189px; width: 463px; height: 149px; z-index: 29; }
-        .layer_5 { left: 328px; top: 185px; width: 471px; height: 157px; z-index: 28; }
-        .layer_6 { left: 324px; top: 181px; width: 479px; height: 165px; z-index: 27; }
-        .layer_7 { left: 960px; top: 208px; width: 96px; height: 115px; z-index: 26; }
-        .layer_8 { left: 72px; top: 456px; width: 220px; height: 46px; z-index: 25; }
-        .layer_9 { left: 145px; top: 629px; width: 222px; height: 215px; z-index: 24; }
-        .layer_10 { left: 126px; top: 606px; width: 258px; height: 260px; z-index: 23; }
-        .layer_11 { left: 520px; top: 621px; width: 141px; height: 37px; z-index: 22; }
-        .layer_12 { left: 435px; top: 606px; width: 308px; height: 70px; z-index: 21; }
-        .layer_13 { left: 492px; top: 728px; width: 196px; height: 48px; z-index: 20; }
-        .layer_14 { left: 442px; top: 823px; width: 300px; height: 29px; z-index: 19; }
-        .layer_15 { left: 948px; top: 611px; width: 58px; height: 61px; z-index: 18; }
-        .layer_16 { left: 70px; top: 564px; width: 988px; height: 345px; z-index: 17; }
-        .layer_17 { left: 70px; top: 975px; width: 204px; height: 46px; z-index: 16; }
-        .layer_18 { left: 127px; top: 1122px; width: 95px; height: 91px; z-index: 15; }
-        .layer_19 { left: 292px; top: 1140px; width: 376px; height: 52px; z-index: 14; }
-        .layer_20 { left: 128px; top: 1256px; width: 873px; height: 48px; z-index: 13; }
-        .layer_21 { left: 129px; top: 1335px; width: 444px; height: 48px; z-index: 12; }
-        .layer_22 { left: 72px; top: 1084px; width: 988px; height: 345px; z-index: 11; }
-        .layer_23 { left: 75px; top: 1494px; width: 295px; height: 46px; z-index: 10; }
-        .layer_24 { left: 79px; top: 1603px; width: 988px; height: 492px; z-index: 9; }
-        .layer_25 { left: 504px; top: 2169px; width: 119px; height: 32px; z-index: 8; }
-        .layer_26 { left: 472px; top: 2094px; width: 181px; height: 181px; z-index: 7; }
-        .layer_27 { left: 97px; top: 2227px; width: 95px; height: 96px; z-index: 6; }
-        .layer_28 { left: 312px; top: 2227px; width: 76px; height: 96px; z-index: 5; }
-        .layer_29 { left: 725px; top: 2230px; width: 93px; height: 93px; z-index: 4; }
-        .layer_30 { left: 948px; top: 2272px; width: 60px; height: 12px; z-index: 3; }
-        .layer_31 { left: 0px; top: 0px; width: 1125px; height: 2436px; z-index: 2; }
-        .layer_32 { left: 0px; top: 0px; width: 1125px; height: 2436px; z-index: 1; }
+        /* 모바일 화면 비율로 레이어 위치 (vw, vh 단위) */
+        .layer_1 { left: 7.02vw; top: 9.11vh; width: 8.8vw; height: 3.9vh; z-index: 32; }
+        .layer_2 { left: 6.31vw; top: 8.58vh; width: 10.04vw; height: 4.6vh; z-index: 31; }
+        .layer_3 { left: 31.64vw; top: 8.78vh; width: 31.91vw; height: 0.49vh; z-index: 30; }
+        .layer_4 { left: 29.51vw; top: 7.76vh; width: 41.16vw; height: 6.12vh; z-index: 29; }
+        .layer_5 { left: 29.16vw; top: 7.59vh; width: 41.87vw; height: 6.44vh; z-index: 28; }
+        .layer_6 { left: 28.8vw; top: 7.43vh; width: 42.58vw; height: 6.77vh; z-index: 27; }
+        .layer_7 { left: 85.33vw; top: 8.54vh; width: 8.53vw; height: 4.72vh; z-index: 26; }
+        .layer_8 { left: 6.4vw; top: 18.72vh; width: 19.56vw; height: 1.89vh; z-index: 25; }
+        .layer_9 { left: 12.89vw; top: 25.82vh; width: 19.73vw; height: 8.83vh; z-index: 24; }
+        .layer_10 { left: 11.2vw; top: 24.88vh; width: 22.93vw; height: 10.67vh; z-index: 23; }
+        .layer_11 { left: 46.22vw; top: 25.49vh; width: 12.53vw; height: 1.52vh; z-index: 22; }
+        .layer_12 { left: 38.67vw; top: 24.88vh; width: 27.38vw; height: 2.87vh; z-index: 21; }
+        .layer_13 { left: 43.73vw; top: 29.89vh; width: 17.42vw; height: 1.97vh; z-index: 20; }
+        .layer_14 { left: 39.29vw; top: 33.79vh; width: 26.67vw; height: 1.19vh; z-index: 19; }
+        .layer_15 { left: 84.27vw; top: 25.08vh; width: 5.16vw; height: 2.5vh; z-index: 18; }
+        .layer_16 { left: 6.22vw; top: 23.15vh; width: 87.82vw; height: 14.16vh; z-index: 17; }
+        .layer_17 { left: 6.22vw; top: 40.02vh; width: 18.13vw; height: 1.89vh; z-index: 16; }
+        .layer_18 { left: 11.29vw; top: 46.04vh; width: 8.44vw; height: 3.73vh; z-index: 15; }
+        .layer_19 { left: 25.96vw; top: 46.78vh; width: 33.42vw; height: 2.13vh; z-index: 14; }
+        .layer_20 { left: 11.38vw; top: 51.55vh; width: 77.6vw; height: 1.97vh; z-index: 13; }
+        .layer_21 { left: 11.47vw; top: 54.79vh; width: 39.47vw; height: 1.97vh; z-index: 12; }
+        .layer_22 { left: 6.4vw; top: 44.51vh; width: 87.82vw; height: 14.16vh; z-index: 11; }
+        .layer_23 { left: 6.67vw; top: 61.33vh; width: 26.22vw; height: 1.89vh; z-index: 10; }
+        .layer_24 { left: 7.02vw; top: 65.82vh; width: 87.82vw; height: 20.2vh; z-index: 9; }
+        .layer_25 { left: 44.8vw; top: 89.03vh; width: 10.58vw; height: 1.31vh; z-index: 8; }
+        .layer_26 { left: 41.96vw; top: 85.9vh; width: 16.09vw; height: 7.43vh; z-index: 7; }
+        .layer_27 { left: 8.62vw; top: 91.42vh; width: 8.44vw; height: 3.94vh; z-index: 6; }
+        .layer_28 { left: 27.73vw; top: 91.42vh; width: 6.76vw; height: 3.94vh; z-index: 5; }
+        .layer_29 { left: 64.44vw; top: 91.54vh; width: 8.27vw; height: 3.82vh; z-index: 4; }
+        .layer_30 { left: 84.27vw; top: 93.26vh; width: 5.33vw; height: 0.49vh; z-index: 3; }
+        .layer_31 { left: 0vw; top: 0vh; width: 100vw; height: 100vh; z-index: 2; }
+        .layer_32 { left: 0vw; top: 0vh; width: 100vw; height: 100vh; z-index: 1; }
         
         /* 동적 컨텐츠 스타일 */
         .dynamic-text {
@@ -248,19 +273,20 @@
             font-weight: bold;
             color: #333;
             text-align: center;
+            font-size: 3vw;
         }
         
         .asset-amount {
-            font-size: 24px;
+            font-size: 4vw;
             color: #2c5aa0;
         }
         
         .stock-info {
-            font-size: 16px;
+            font-size: 2.5vw;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 10px;
+            padding: 0 2vw;
         }
         
         .profit-color {
@@ -274,15 +300,23 @@
         }
         
         .savings-info {
-            font-size: 16px;
+            font-size: 2.5vw;
             color: #27ae60;
         }
         
-        /* 원그래프 스타일 */
+        /* 포트폴리오 차트를 올바른 위치에 배치 */
         .portfolio-chart {
-            width: 80%;
-            height: 60%;
-            margin: 20% auto;
+            position: absolute;
+            left: 42vw;
+            top: 75vh;
+            width: 16vw;
+            height: 8vh;
+            z-index: 15;
+        }
+
+        #portfolioChart {
+            width: 100%;
+            height: 100%;
         }
         
         /* 별 아이콘 스타일 */
@@ -294,39 +328,30 @@
             justify-content: center;
         }
         
-        /* 모바일 반응형 */
-        @media (max-width: 768px) {
-            .container {
-                transform: scale(0.35);
-                margin: -300px auto -800px auto;
-            }
+        /* 모바일 성능 최적화 */
+        .main-container {
+            will-change: transform;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
         }
-        
-        @media (max-width: 480px) {
-            .container {
-                transform: scale(0.3);
-                margin: -350px auto -900px auto;
-            }
+
+        .layer {
+            will-change: transform;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
         }
-        
-        @media (max-width: 375px) {
-            .container {
-                transform: scale(0.25);
-                margin: -400px auto -1000px auto;
+
+        /* iOS 사파리 최적화 */
+        @supports (-webkit-touch-callout: none) {
+            #mainScreen {
+                -webkit-overflow-scrolling: touch;
             }
-        }
-        
-        /* 스크롤 제거 */
-        #mainScreen {
-            overflow: hidden;
-            padding: 0;
-            margin: 0;
         }
         
         body, html {
             margin: 0;
             padding: 0;
-            overflow-x: hidden;
+            overflow: hidden;
         }
         
         /* 스크롤바 스타일링 */
@@ -2334,15 +2359,17 @@ function updateSavingsInfo() {
     }
 }
 
-// 포트폴리오 차트 업데이트
+// 포트폴리오 차트 업데이트 - 모바일 최적화
 function updatePortfolioChart() {
     var canvas = document.getElementById('portfolioChart');
     if (canvas) {
         var ctx = canvas.getContext('2d');
         
-        // 캔버스 크기 설정
-        canvas.width = 200;
-        canvas.height = 200;
+        // 모바일 화면 크기에 맞게 캔버스 크기 설정
+        var rect = canvas.getBoundingClientRect();
+        canvas.width = rect.width * window.devicePixelRatio;
+        canvas.height = rect.height * window.devicePixelRatio;
+        ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
         
         // 원그래프 데이터
         var data = [
@@ -2351,12 +2378,12 @@ function updatePortfolioChart() {
         ];
         
         var total = data.reduce((sum, item) => sum + item.value, 0);
-        var centerX = canvas.width / 2;
-        var centerY = canvas.height / 2;
-        var radius = 80;
+        var centerX = rect.width / 2;
+        var centerY = rect.height / 2;
+        var radius = Math.min(rect.width, rect.height) / 3;
         
         // 배경 지우기
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.clearRect(0, 0, rect.width, rect.height);
         
         // 원그래프 그리기
         var currentAngle = -Math.PI / 2; // 12시 방향부터 시작
@@ -2378,7 +2405,7 @@ function updatePortfolioChart() {
             var textY = centerY + Math.sin(textAngle) * (radius * 0.7);
             
             ctx.fillStyle = '#fff';
-            ctx.font = '12px Arial';
+            ctx.font = (rect.width * 0.06) + 'px Arial';
             ctx.textAlign = 'center';
             ctx.fillText(Math.round((item.value / total) * 100) + '%', textX, textY);
             
@@ -2387,11 +2414,11 @@ function updatePortfolioChart() {
         
         // 중앙에 총액 표시
         ctx.fillStyle = '#333';
-        ctx.font = 'bold 14px Arial';
+        ctx.font = 'bold ' + (rect.width * 0.07) + 'px Arial';
         ctx.textAlign = 'center';
-        ctx.fillText('총 자산', centerX, centerY - 10);
-        ctx.font = '12px Arial';
-        ctx.fillText(formatNumber(total) + '원', centerX, centerY + 10);
+        ctx.fillText('총 자산', centerX, centerY - rect.height * 0.08);
+        ctx.font = (rect.width * 0.06) + 'px Arial';
+        ctx.fillText(formatNumber(total) + '원', centerX, centerY + rect.height * 0.08);
     }
 }
 
