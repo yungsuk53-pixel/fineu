@@ -139,12 +139,13 @@
             width: 100vw;
             height: 100vh;
             overflow: auto;
-            background-color: red;
+            background-color: #f0f0f0;
             z-index: 1000;
             display: flex;
             justify-content: center;
             align-items: flex-start;
             padding-top: 20px;
+            box-sizing: border-box;
         }
         
         /* 메인 화면 - 메인페이지.html 완전 복제 스타일 */
@@ -159,6 +160,8 @@
             -webkit-user-select: none;
             -webkit-touch-callout: none;
             -webkit-user-drag: none;
+            box-sizing: border-box;
+            flex-shrink: 0;
         }
         
         /* 공통 레이어 스타일 */
@@ -193,46 +196,58 @@
         
         /* 반응형 디자인 */
         @media (max-width: 1200px) {
+            #mainScreen {
+                padding-top: 10px;
+            }
             .main-container {
-                transform: scale(0.9);
+                transform: scale(0.85);
                 transform-origin: top center;
                 margin-top: 0;
             }
         }
         
         @media (max-width: 1100px) {
+            #mainScreen {
+                padding-top: 5px;
+            }
             .main-container {
-                transform: scale(0.8);
+                transform: scale(0.75);
                 transform-origin: top center;
                 margin-top: 0;
             }
         }
         
         @media (max-width: 900px) {
+            #mainScreen {
+                padding-top: 0;
+                align-items: flex-start;
+            }
             .main-container {
-                transform: scale(0.7);
+                transform: scale(0.65);
                 transform-origin: top center;
                 margin-top: 0;
             }
         }
         
         @media (max-width: 768px) {
+            #mainScreen {
+                padding-top: 0;
+                overflow-x: auto;
+                overflow-y: auto;
+            }
             .main-container {
-                transform: scale(0.6);
+                transform: scale(0.55);
                 transform-origin: top center;
                 margin-top: 0;
+                height: auto;
+                min-height: 2436px;
             }
         }
         
         @media (max-width: 600px) {
-            .main-container {
-                transform: scale(0.5);
-                transform-origin: top center;
-                margin-top: 0;
+            #mainScreen {
+                padding-top: 0;
             }
-        }
-        
-        @media (max-width: 480px) {
             .main-container {
                 transform: scale(0.45);
                 transform-origin: top center;
@@ -240,11 +255,59 @@
             }
         }
         
-        @media (max-width: 400px) {
+        @media (max-width: 480px) {
+            #mainScreen {
+                padding-top: 0;
+            }
             .main-container {
-                transform: scale(0.4);
+                transform: scale(0.38);
                 transform-origin: top center;
                 margin-top: 0;
+            }
+        }
+        
+        @media (max-width: 400px) {
+            #mainScreen {
+                padding-top: 0;
+            }
+            .main-container {
+                transform: scale(0.32);
+                transform-origin: top center;
+                margin-top: 0;
+            }
+        }
+        
+        @media (max-width: 360px) {
+            #mainScreen {
+                padding-top: 0;
+            }
+            .main-container {
+                transform: scale(0.28);
+                transform-origin: top center;
+                margin-top: 0;
+            }
+        }
+        
+        /* 세로 모드 (모바일) */
+        @media (max-height: 800px) and (max-width: 768px) {
+            #mainScreen {
+                padding-top: 0;
+            }
+            .main-container {
+                transform: scale(0.32);
+                transform-origin: top center;
+            }
+        }
+        
+        @media (max-height: 700px) and (max-width: 480px) {
+            .main-container {
+                transform: scale(0.28);
+            }
+        }
+        
+        @media (max-height: 600px) and (max-width: 400px) {
+            .main-container {
+                transform: scale(0.24);
             }
         }
         
@@ -279,6 +342,47 @@
         
         .dynamic-overlay > * {
             pointer-events: auto;
+        }
+        
+        /* 모바일 터치 최적화 */
+        @media (pointer: coarse) {
+            .layer[onclick] {
+                min-height: 44px;
+                min-width: 44px;
+            }
+            
+            .layer[onclick]:hover {
+                transform: none;
+            }
+            
+            .layer[onclick]:active {
+                transform: scale(0.95);
+                transition: transform 0.1s ease;
+            }
+        }
+        
+        /* iOS 사파리 최적화 */
+        @supports (-webkit-touch-callout: none) {
+            #mainScreen {
+                -webkit-overflow-scrolling: touch;
+            }
+        }
+        
+        /* 모바일 성능 최적화 */
+        @media (max-width: 768px) {
+            .layer img {
+                will-change: transform;
+                backface-visibility: hidden;
+                -webkit-backface-visibility: hidden;
+            }
+            
+            #mainScreen {
+                will-change: scroll-position;
+            }
+            
+            .main-container {
+                will-change: transform;
+            }
         }
         
         .asset-category {
@@ -1090,12 +1194,12 @@
     <div id="mainScreen" class="screen main-container">>
         <!-- 배경 레이어 (layer_27) -->
         <div class="layer" style="left: 0px; top: 0px; width: 1125px; height: 2436px; z-index: 1;">
-            <img src="메인images/image/배경.png" alt="배경" style="width: 100%; height: 100%; object-fit: cover;" />
+            <img src="메인images/image/배경.png" alt="배경" style="width: 100%; height: 100%; object-fit: cover;" loading="eager" />
         </div>
         
         <!-- 레이어 (layer_26) -->
         <div class="layer" style="left: 0px; top: 0px; width: 1125px; height: 2436px; z-index: 2;">
-            <img src="메인images/image/레이어.png" alt="레이어" style="width: 100%; height: 100%; object-fit: cover;" />
+            <img src="메인images/image/레이어.png" alt="레이어" style="width: 100%; height: 100%; object-fit: cover;" loading="lazy" />
         </div>
         
         <!-- 상단바 그룹 -->
@@ -1208,22 +1312,22 @@
         
         <!-- 집 (layer_22) -->
         <div class="layer" style="left: 97px; top: 2227px; width: 95px; height: 96px; z-index: 10; cursor: pointer;" onclick="goToHome()">
-            <img src="메인images/image/집.png" alt="집" style="width: 100%; height: 100%; object-fit: contain;" />
+            <img src="메인images/image/집.png" alt="집" style="width: 100%; height: 100%; object-fit: contain;" loading="eager" />
         </div>
         
         <!-- 문서 (layer_23) -->
         <div class="layer" style="left: 312px; top: 2227px; width: 76px; height: 96px; z-index: 10; cursor: pointer;" onclick="goToDocuments()">
-            <img src="메인images/image/문서.png" alt="문서" style="width: 100%; height: 100%; object-fit: contain;" />
+            <img src="메인images/image/문서.png" alt="문서" style="width: 100%; height: 100%; object-fit: contain;" loading="eager" />
         </div>
         
         <!-- 채팅 (layer_24) -->
         <div class="layer" style="left: 725px; top: 2230px; width: 93px; height: 93px; z-index: 10; cursor: pointer;" onclick="openChat()">
-            <img src="메인images/image/채팅.png" alt="채팅" style="width: 100%; height: 100%; object-fit: contain;" />
+            <img src="메인images/image/채팅.png" alt="채팅" style="width: 100%; height: 100%; object-fit: contain;" loading="eager" />
         </div>
         
         <!-- 더보기 (layer_25) -->
         <div class="layer" style="left: 948px; top: 2272px; width: 60px; height: 12px; z-index: 10; cursor: pointer;" onclick="showMoreMenu()">
-            <img src="메인images/image/더보기.png" alt="더보기" style="width: 100%; height: 100%; object-fit: contain;" />
+            <img src="메인images/image/더보기.png" alt="더보기" style="width: 100%; height: 100%; object-fit: contain;" loading="eager" />
         </div>
     </div><!-- 회원가입 모달 -->
 <div id="registerModal" class="fixed inset-0 bg-black bg-opacity-50 modal hidden z-50">
