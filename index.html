@@ -282,6 +282,25 @@
         }
 
         /* 메인 화면 스타일 */
+        #mainScreen {
+            background: #FFFFFF;
+            overflow: auto;
+        }
+
+        /* 스페이서 이미지 대체 */
+        img[src*="스페이서.gif"] {
+            background: transparent;
+            border: none;
+            display: block;
+        }
+
+        /* 테이블 셀 기본 스타일 */
+        #mainScreen table td {
+            vertical-align: top;
+            padding: 0;
+            margin: 0;
+        }
+
         .main-header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -959,12 +978,11 @@
                 <td rowspan="41">
                     <img src="images/메인페이지-견본_08.png" width="70" height="2227" border="0" alt="">
                 </td>
-                <td colspan="10" style="position: relative;">
-                    <img src="images/메인페이지-견본_09.png" width="113" height="112" border="0" alt="">
-                    <!-- 프로필 아이콘 오버레이 -->
-                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); cursor: pointer;" onclick="showProfileModal()">
-                        <img id="headerProfileImage" src="" alt="Profile" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; display: none;">
-                        <i id="headerProfileIcon" class="fas fa-user" style="font-size: 24px; color: #666; display: block;"></i>
+                <td colspan="10" style="position: relative; background: #f8f9fa;">
+                    <!-- 상단 프로필 아이콘 영역을 코드로 구현 -->
+                    <div style="width: 113px; height: 112px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; cursor: pointer;" onclick="showProfileModal()">
+                        <img id="headerProfileImage" src="" alt="Profile" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; display: none; border: 3px solid white;">
+                        <i id="headerProfileIcon" class="fas fa-user" style="font-size: 32px; color: white; display: block;"></i>
                     </div>
                 </td>
                 <td colspan="7" rowspan="4">
@@ -1045,21 +1063,29 @@
                 <td colspan="6" rowspan="9">
                     <img src="images/메인페이지-견본_20.png" width="56" height="302" border="0" alt="">
                 </td>
-                <td colspan="13" rowspan="8" style="position: relative;">
-                    <img src="images/메인페이지-견본_21.png" width="258" height="260" border="0" alt="">
-                    <!-- 프로필 사진 영역 - 정확한 위치에 배치 -->
-                    <div style="position: absolute; top: 15px; left: 15px; width: 228px; height: 230px; border-radius: 50%; overflow: hidden; background: #f5f5f5; border: 2px solid #ddd; display: flex; align-items: center; justify-content: center;">
+                <td colspan="13" rowspan="8" style="position: relative; background: #f8f9fa; padding: 15px;">
+                    <!-- 프로필 사진 영역을 완전히 코드로 구현 -->
+                    <div style="width: 228px; height: 230px; border-radius: 50%; overflow: hidden; background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); border: 4px solid #2196f3; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 25px rgba(33, 150, 243, 0.3); cursor: pointer;" onclick="showProfileModal()">
                         <img id="mainProfileImage" src="" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; display: none;">
-                        <i id="mainProfileIcon" class="fas fa-user" style="font-size: 80px; color: #ccc; display: block;"></i>
+                        <div id="mainProfilePlaceholder" style="display: flex; flex-direction: column; align-items: center; justify-content: center; color: #1976d2;">
+                            <i id="mainProfileIcon" class="fas fa-user" style="font-size: 80px; margin-bottom: 10px;"></i>
+                            <span style="font-size: 14px; font-weight: 600;">프로필 사진</span>
+                        </div>
                     </div>
                 </td>
                 <td colspan="2" rowspan="9">
                     <img src="images/메인페이지-견본_22.png" width="52" height="302" border="0" alt="">
                 </td>
-                <td colspan="9" rowspan="3" style="position: relative;">
-                    <img src="images/메인페이지-견본_23.png" width="307" height="70" border="0" alt="">
-                    <!-- 등급 뱃지 텍스트 - 정확한 위치에 배치 -->
-                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-weight: bold; font-size: 18px; text-align: center;" id="mainUserLevel">YELLOW</div>
+                <td colspan="9" rowspan="3" style="position: relative; background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%); border-radius: 8px; padding: 10px;">
+                    <!-- 등급 뱃지를 완전히 코드로 구현 -->
+                    <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column;">
+                        <div style="background: rgba(255,255,255,0.2); border-radius: 20px; padding: 8px 16px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3);">
+                            <span id="mainUserLevel" style="color: white; font-weight: bold; font-size: 18px; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">YELLOW</span>
+                        </div>
+                        <div style="margin-top: 5px;">
+                            <i class="fas fa-star" style="color: white; font-size: 12px; text-shadow: 0 1px 2px rgba(0,0,0,0.3);"></i>
+                        </div>
+                    </div>
                 </td>
                 <td colspan="10">
                     <img src="images/메인페이지-견본_24.png" width="315" height="4" border="0" alt="">
@@ -1108,10 +1134,11 @@
                 <td colspan="3" rowspan="2">
                     <img src="images/메인페이지-견본_30.png" width="58" height="94" border="0" alt="">
                 </td>
-                <td colspan="4" style="position: relative;">
-                    <img src="images/메인페이지-견본_31.png" width="195" height="48" border="0" alt="">
-                    <!-- 이름 텍스트 - 정확한 위치에 배치 -->
-                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: bold; font-size: 16px; color: #333; text-align: center;" id="mainUserName">사용자</div>
+                <td colspan="4" style="position: relative; background: #f8f9fa; border-radius: 8px; padding: 5px;">
+                    <!-- 이름 표시 영역을 코드로 구현 -->
+                    <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%); border: 1px solid #e0e0e0; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                        <span id="mainUserName" style="font-weight: bold; font-size: 16px; color: #333; text-align: center;">사용자</span>
+                    </div>
                 </td>
                 <td colspan="2" rowspan="2">
                     <img src="images/메인페이지-견본_32.png" width="54" height="94" border="0" alt="">
@@ -1135,10 +1162,12 @@
                 <td rowspan="3">
                     <img src="images/메인페이지-견본_34.png" width="6" height="86" border="0" alt="">
                 </td>
-                <td colspan="8" style="position: relative;">
-                    <img src="images/메인페이지-견본_35.png" width="301" height="29" border="0" alt="">
-                    <!-- 가입일 텍스트 - 정확한 위치에 배치 -->
-                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 12px; color: #666; text-align: center;" id="mainJoinDays">FINE U와 함께한지 1일</div>
+                <td colspan="8" style="position: relative; background: #f8f9fa; border-radius: 6px; padding: 5px;">
+                    <!-- 가입일을 코드로 구현 -->
+                    <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%); border: 1px solid #4caf50; border-radius: 4px;">
+                        <i class="fas fa-calendar-alt" style="color: #388e3c; margin-right: 8px; font-size: 12px;"></i>
+                        <span id="mainJoinDays" style="font-size: 12px; color: #2e7d32; font-weight: 600;">FINE U와 함께한지 1일</span>
+                    </div>
                 </td>
                 <td>
                     <img src="images/스페이서.gif" width="1" height="29" alt="">
@@ -1233,10 +1262,14 @@
                 <td colspan="3" rowspan="3">
                     <img src="images/메인페이지-견본_49.png" width="71" height="116" border="0" alt="">
                 </td>
-                <td colspan="12" style="position: relative;">
-                    <img src="images/메인페이지-견본_50.png" width="375" height="52" border="0" alt="">
-                    <!-- 현금보유량 텍스트 - 정확한 위치에 배치 -->
-                    <div style="position: absolute; top: 50%; left: 20%; transform: translateY(-50%); font-weight: bold; font-size: 16px; color: #333;" id="mainCashAmount">10,000,000원</div>
+                <td colspan="12" style="position: relative; background: #f8f9fa; border-radius: 8px; padding: 8px;">
+                    <!-- 현금보유량을 코드로 구현 -->
+                    <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%); border: 2px solid #4caf50; border-radius: 6px; box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);">
+                        <div style="display: flex; align-items: center;">
+                            <i class="fas fa-won-sign" style="color: #2e7d32; font-size: 18px; margin-right: 8px;"></i>
+                            <span id="mainCashAmount" style="font-weight: bold; font-size: 16px; color: #1b5e20;">10,000,000원</span>
+                        </div>
+                    </div>
                 </td>
                 <td colspan="14" rowspan="3">
                     <img src="images/메인페이지-견본_51.png" width="393" height="116" border="0" alt="">
@@ -1269,10 +1302,15 @@
                 <td rowspan="4">
                     <img src="images/메인페이지-견본_54.png" width="1" height="172" border="0" alt="">
                 </td>
-                <td colspan="28" style="position: relative;">
-                    <img src="images/메인페이지-견본_55.png" width="874" height="48" border="0" alt="">
-                    <!-- 주식 텍스트 - 정확한 위치에 배치 -->
-                    <div style="position: absolute; top: 50%; left: 5%; transform: translateY(-50%); font-weight: bold; font-size: 14px; color: #333;">주식: <span id="mainStockValue">0원</span></div>
+                <td colspan="28" style="position: relative; background: #f8f9fa; border-radius: 8px; padding: 8px;">
+                    <!-- 주식 정보를 코드로 구현 -->
+                    <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: flex-start; background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); border: 2px solid #2196f3; border-radius: 6px; box-shadow: 0 4px 12px rgba(33, 150, 243, 0.2); padding-left: 15px;">
+                        <div style="display: flex; align-items: center;">
+                            <i class="fas fa-chart-line" style="color: #1565c0; font-size: 16px; margin-right: 8px;"></i>
+                            <span style="font-weight: bold; font-size: 14px; color: #0d47a1;">주식: </span>
+                            <span id="mainStockValue" style="font-weight: bold; font-size: 14px; color: #1565c0; margin-left: 4px;">0원</span>
+                        </div>
+                    </div>
                 </td>
                 <td colspan="5" rowspan="4">
                     <img src="images/메인페이지-견본_56.png" width="59" height="172" border="0" alt="">
@@ -1296,10 +1334,15 @@
                 <td rowspan="2">
                     <img src="images/메인페이지-견본_58.png" width="1" height="93" border="0" alt="">
                 </td>
-                <td colspan="16" style="position: relative;">
-                    <img src="images/메인페이지-견본_59.png" width="444" height="48" border="0" alt="">
-                    <!-- 적금 텍스트 - 정확한 위치에 배치 -->
-                    <div style="position: absolute; top: 50%; left: 5%; transform: translateY(-50%); font-weight: bold; font-size: 14px; color: #333;">적금: <span id="mainSavingsValue">0원</span></div>
+                <td colspan="16" style="position: relative; background: #f8f9fa; border-radius: 8px; padding: 8px;">
+                    <!-- 적금 정보를 코드로 구현 -->
+                    <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: flex-start; background: linear-gradient(135deg, #fff3e0 0%, #ffcc02 100%); border: 2px solid #ff9800; border-radius: 6px; box-shadow: 0 4px 12px rgba(255, 152, 0, 0.2); padding-left: 15px;">
+                        <div style="display: flex; align-items: center;">
+                            <i class="fas fa-piggy-bank" style="color: #e65100; font-size: 16px; margin-right: 8px;"></i>
+                            <span style="font-weight: bold; font-size: 14px; color: #bf360c;">적금: </span>
+                            <span id="mainSavingsValue" style="font-weight: bold; font-size: 14px; color: #e65100; margin-left: 4px;">0원</span>
+                        </div>
+                    </div>
                 </td>
                 <td colspan="11" rowspan="2">
                     <img src="images/메인페이지-견본_60.png" width="429" height="93" border="0" alt="">
@@ -1372,11 +1415,20 @@
                 <td colspan="14" rowspan="2">
                     <img src="images/메인페이지-견본_70.png" width="291" height="450" border="0" alt="">
                 </td>
-                <td colspan="13" style="position: relative;">
-                    <img src="images/메인페이지-견본_71.png" width="408" height="409" border="0" alt="">
-                    <!-- 포트폴리오 차트 - 정확한 위치에 배치 -->
-                    <div style="position: absolute; top: 20px; left: 20px; width: 368px; height: 369px;">
-                        <canvas id="mainPortfolioChart" width="368" height="369" style="width: 100%; height: 100%;"></canvas>
+                <td colspan="13" style="position: relative; background: #f8f9fa; border-radius: 12px; padding: 20px;">
+                    <!-- 포트폴리오 차트를 코드로 구현 -->
+                    <div style="width: 368px; height: 369px; background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%); border: 2px solid #e0e0e0; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; flex-direction: column;">
+                        <!-- 차트 제목 -->
+                        <div style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%); font-weight: bold; font-size: 16px; color: #333; z-index: 10;">
+                            포트폴리오
+                        </div>
+                        <!-- 실제 차트 캔버스 -->
+                        <canvas id="mainPortfolioChart" width="320" height="320" style="width: 320px; height: 320px; margin-top: 20px;"></canvas>
+                        <!-- 차트가 없을 때 표시되는 기본 내용 -->
+                        <div id="portfolioPlaceholder" style="display: none; flex-direction: column; align-items: center; justify-content: center; color: #666;">
+                            <i class="fas fa-chart-pie" style="font-size: 60px; margin-bottom: 15px; color: #ddd;"></i>
+                            <span style="font-size: 14px; text-align: center;">투자 내역이 없습니다</span>
+                        </div>
                     </div>
                 </td>
                 <td colspan="11" rowspan="2">
@@ -1401,10 +1453,17 @@
                 <td colspan="19">
                     <img src="images/메인페이지-견본_74.png" width="392" height="132" border="0" alt="">
                 </td>
-                <td colspan="3" rowspan="4" style="position: relative; cursor: pointer;" onclick="navigateToPage('a5.html')">
-                    <img src="images/메인페이지-견본_75.png" width="181" height="180" border="0" alt="">
-                    <!-- 등급 버튼 텍스트 - 정확한 위치에 배치 -->
-                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-weight: bold; font-size: 16px; text-align: center;" id="navUserLevel">YELLOW</div>
+                <td colspan="3" rowspan="4" style="position: relative; background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); border-radius: 12px; margin: 5px; cursor: pointer;" onclick="navigateToPage('a5.html')">
+                    <!-- 등급 버튼을 코드로 구현 -->
+                    <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column; color: white; padding: 10px;">
+                        <div style="background: rgba(255,255,255,0.2); border-radius: 20px; padding: 8px 16px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3); margin-bottom: 8px;">
+                            <span id="navUserLevel" style="font-weight: bold; font-size: 16px; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">YELLOW</span>
+                        </div>
+                        <div style="display: flex; align-items: center;">
+                            <i class="fas fa-award" style="font-size: 14px; margin-right: 5px;"></i>
+                            <span style="font-size: 12px; opacity: 0.9;">등급 확인</span>
+                        </div>
+                    </div>
                 </td>
                 <td colspan="16" rowspan="2">
                     <img src="images/메인페이지-견본_76.png" width="414" height="135" border="0" alt="">
@@ -1633,13 +1692,62 @@ var debugMode = false;
 
 // 레벨 시스템 설정
 var levelSystem = {
-    yellow: { name: 'YELLOW', exp: 0, max: 3000, class: 'level-yellow' },
-    orange: { name: 'ORANGE', exp: 3000, max: 6000, class: 'level-orange' },
-    green: { name: 'GREEN', exp: 6000, max: 10000, class: 'level-green' },
-    blue: { name: 'BLUE', exp: 10000, max: 15000, class: 'level-blue' },
-    brown: { name: 'BROWN', exp: 15000, max: 25000, class: 'level-brown' },
-    black: { name: 'BLACK', exp: 25000, max: 50000, class: 'level-black' },
-    red: { name: 'RED', exp: 50000, max: 100000, class: 'level-red' }
+    yellow: { 
+        name: 'YELLOW', 
+        exp: 0, 
+        max: 3000, 
+        class: 'level-yellow',
+        gradient: 'linear-gradient(135deg, #ff9800 0%, #f57c00 100%)',
+        color: '#ff9800'
+    },
+    orange: { 
+        name: 'ORANGE', 
+        exp: 3000, 
+        max: 6000, 
+        class: 'level-orange',
+        gradient: 'linear-gradient(135deg, #FF6B35 0%, #E55100 100%)',
+        color: '#FF6B35'
+    },
+    green: { 
+        name: 'GREEN', 
+        exp: 6000, 
+        max: 10000, 
+        class: 'level-green',
+        gradient: 'linear-gradient(135deg, #4CAF50 0%, #388E3C 100%)',
+        color: '#4CAF50'
+    },
+    blue: { 
+        name: 'BLUE', 
+        exp: 10000, 
+        max: 15000, 
+        class: 'level-blue',
+        gradient: 'linear-gradient(135deg, #2196F3 0%, #1565C0 100%)',
+        color: '#2196F3'
+    },
+    brown: { 
+        name: 'BROWN', 
+        exp: 15000, 
+        max: 25000, 
+        class: 'level-brown',
+        gradient: 'linear-gradient(135deg, #8D6E63 0%, #5D4037 100%)',
+        color: '#8D6E63'
+    },
+    black: { 
+        name: 'BLACK', 
+        exp: 25000, 
+        max: 50000, 
+        class: 'level-black',
+        gradient: 'linear-gradient(135deg, #424242 0%, #212121 100%)',
+        color: '#424242'
+    },
+    red: { 
+        name: 'RED', 
+        exp: 50000, 
+        max: 100000, 
+        class: 'level-red',
+        gradient: 'linear-gradient(135deg, #f44336 0%, #d32f2f 100%)',
+        color: '#f44336'
+    }
 };
 
 // 특별 계정 설정
@@ -2382,8 +2490,22 @@ function updateMainScreenData() {
         var navUserLevel = document.getElementById('navUserLevel');
         var level = levelSystem[userLevel];
         if (level) {
-            if (mainUserLevel) mainUserLevel.textContent = level.name;
-            if (navUserLevel) navUserLevel.textContent = level.name;
+            if (mainUserLevel) {
+                mainUserLevel.textContent = level.name;
+                // 등급 뱃지 배경색 업데이트
+                var mainLevelBadge = mainUserLevel.closest('td');
+                if (mainLevelBadge) {
+                    mainLevelBadge.style.background = level.gradient;
+                }
+            }
+            if (navUserLevel) {
+                navUserLevel.textContent = level.name;
+                // 네비게이션 등급 버튼 배경색 업데이트
+                var navLevelBadge = navUserLevel.closest('td');
+                if (navLevelBadge) {
+                    navLevelBadge.style.background = level.gradient;
+                }
+            }
         }
         
         // 가입일 업데이트
@@ -2426,20 +2548,41 @@ function updateMainScreenData() {
         // 프로필 이미지 업데이트
         var mainProfileImage = document.getElementById('mainProfileImage');
         var mainProfileIcon = document.getElementById('mainProfileIcon');
+        var mainProfilePlaceholder = document.getElementById('mainProfilePlaceholder');
+        var headerProfileImage = document.getElementById('headerProfileImage');
+        var headerProfileIcon = document.getElementById('headerProfileIcon');
+        
         if (currentUser.profileImage) {
+            // 메인 프로필 업데이트
             if (mainProfileImage) {
                 mainProfileImage.src = currentUser.profileImage;
                 mainProfileImage.style.display = 'block';
             }
-            if (mainProfileIcon) {
-                mainProfileIcon.style.display = 'none';
+            if (mainProfilePlaceholder) {
+                mainProfilePlaceholder.style.display = 'none';
+            }
+            // 헤더 프로필 업데이트
+            if (headerProfileImage) {
+                headerProfileImage.src = currentUser.profileImage;
+                headerProfileImage.style.display = 'block';
+            }
+            if (headerProfileIcon) {
+                headerProfileIcon.style.display = 'none';
             }
         } else {
+            // 메인 프로필 기본 상태
             if (mainProfileImage) {
                 mainProfileImage.style.display = 'none';
             }
-            if (mainProfileIcon) {
-                mainProfileIcon.style.display = 'block';
+            if (mainProfilePlaceholder) {
+                mainProfilePlaceholder.style.display = 'flex';
+            }
+            // 헤더 프로필 기본 상태
+            if (headerProfileImage) {
+                headerProfileImage.style.display = 'none';
+            }
+            if (headerProfileIcon) {
+                headerProfileIcon.style.display = 'block';
             }
         }
         
@@ -2452,12 +2595,13 @@ function updateMainScreenData() {
 function updateMainPortfolioChart() {
     try {
         var canvas = document.getElementById('mainPortfolioChart');
+        var placeholder = document.getElementById('portfolioPlaceholder');
         if (!canvas) return;
         
         var ctx = canvas.getContext('2d');
         var centerX = canvas.width / 2;
         var centerY = canvas.height / 2;
-        var radius = Math.min(centerX, centerY) - 10;
+        var radius = Math.min(centerX, centerY) - 20;
         
         // 캔버스 초기화
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -2467,12 +2611,14 @@ function updateMainPortfolioChart() {
         var totalValue = 0;
         
         // 현금
-        portfolioData.push({
-            label: '현금',
-            value: cash,
-            color: '#10B981'
-        });
-        totalValue += cash;
+        if (cash > 0) {
+            portfolioData.push({
+                label: '현금',
+                value: cash,
+                color: '#10B981'
+            });
+            totalValue += cash;
+        }
         
         // 주식
         if (currentUser.portfolio && currentUser.portfolio.stocks) {
@@ -2492,6 +2638,10 @@ function updateMainPortfolioChart() {
         
         // 포트폴리오가 있는 경우 차트 그리기
         if (portfolioData.length > 0 && totalValue > 0) {
+            // 차트 표시, placeholder 숨기기
+            canvas.style.display = 'block';
+            if (placeholder) placeholder.style.display = 'none';
+            
             var currentAngle = -Math.PI / 2; // 12시 방향부터 시작
             
             portfolioData.forEach(function(item) {
@@ -2504,35 +2654,40 @@ function updateMainPortfolioChart() {
                 ctx.fillStyle = item.color;
                 ctx.fill();
                 
+                // 테두리 그리기
+                ctx.strokeStyle = '#FFFFFF';
+                ctx.lineWidth = 3;
+                ctx.stroke();
+                
                 currentAngle += sliceAngle;
             });
             
             // 중앙에 원 그리기
             ctx.beginPath();
-            ctx.arc(centerX, centerY, radius * 0.5, 0, 2 * Math.PI);
+            ctx.arc(centerX, centerY, radius * 0.4, 0, 2 * Math.PI);
             ctx.fillStyle = '#FFFFFF';
             ctx.fill();
+            ctx.strokeStyle = '#E5E7EB';
+            ctx.lineWidth = 2;
+            ctx.stroke();
             
             // 총 자산 텍스트
             ctx.fillStyle = '#1F2937';
+            ctx.font = 'bold 16px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('총 자산', centerX, centerY - 8);
             ctx.font = 'bold 14px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText(totalValue.toLocaleString() + '원', centerX, centerY);
-        } else {
-            // 데이터가 없는 경우 기본 원 그리기
-            ctx.beginPath();
-            ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-            ctx.fillStyle = '#F3F4F6';
-            ctx.fill();
+            ctx.fillStyle = '#059669';
+            ctx.fillText(totalValue.toLocaleString() + '원', centerX, centerY + 12);
             
-            ctx.fillStyle = '#9CA3AF';
-            ctx.font = '12px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText('포트폴리오 없음', centerX, centerY);
+        } else {
+            // 데이터가 없는 경우 placeholder 표시
+            canvas.style.display = 'none';
+            if (placeholder) placeholder.style.display = 'flex';
         }
         
     } catch (error) {
-        updateDebugInfo('메인 포트폴리오 차트 오류: ' + error.message);
+        updateDebugInfo('포트폴리오 차트 업데이트 오류: ' + error.message);
     }
 }
 
