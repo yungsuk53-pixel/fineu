@@ -50,34 +50,108 @@
             box-sizing: border-box;
         }
         
-        /* 모바일 디바이스별 최적화 - 1125x2436 기준 */
-        @media (max-width: 768px) {
-            #mainScreen table {
-                transform: scale(0.31);
-                transform-origin: top left;
-                position: absolute;
-                left: 50%;
-                margin-left: -174px;
+        /* 반응형 테이블 컨테이너 */
+        .responsive-container {
+            width: 100%;
+            height: 100vh;
+            overflow: auto;
+            background-color: #FFFFFF;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        /* 기본 테이블 설정 */
+        .main-table {
+            width: 1125px;
+            height: 2436px;
+            background-color: #FFFFFF;
+            position: relative;
+            border: 0;
+            border-collapse: collapse;
+            border-spacing: 0;
+        }
+
+        /* 데스크톱 화면 (기본) */
+        @media (min-width: 1126px) {
+            .main-table {
+                width: 1125px;
+                height: 2436px;
             }
         }
 
-        @media (max-width: 480px) {
-            #mainScreen table {
-                transform: scale(0.27);
-                margin-left: -152px;
+        /* 태블릿 화면 */
+        @media (max-width: 1125px) and (min-width: 769px) {
+            .main-table {
+                width: 100%;
+                max-width: 768px;
+                height: auto;
+                transform: scale(0.68);
+                transform-origin: top center;
             }
         }
 
-        @media (max-width: 375px) {
-            #mainScreen table {
-                transform: scale(0.24);
-                margin-left: -135px;
+        /* 모바일 화면 - 큰 화면 */
+        @media (max-width: 768px) and (min-width: 481px) {
+            .responsive-container {
+                padding: 10px;
+            }
+            
+            .main-table {
+                width: 100%;
+                max-width: 400px;
+                height: auto;
+                transform: scale(0.35);
+                transform-origin: top center;
+                margin: 0 auto;
             }
         }
 
+        /* 모바일 화면 - 중간 화면 */
+        @media (max-width: 480px) and (min-width: 376px) {
+            .responsive-container {
+                padding: 5px;
+            }
+            
+            .main-table {
+                width: 100%;
+                max-width: 350px;
+                height: auto;
+                transform: scale(0.32);
+                transform-origin: top center;
+                margin: 0 auto;
+            }
+        }
+
+        /* 모바일 화면 - 작은 화면 */
+        @media (max-width: 375px) and (min-width: 321px) {
+            .responsive-container {
+                padding: 3px;
+            }
+            
+            .main-table {
+                width: 100%;
+                max-width: 320px;
+                height: auto;
+                transform: scale(0.28);
+                transform-origin: top center;
+                margin: 0 auto;
+            }
+        }
+
+        /* 모바일 화면 - 매우 작은 화면 */
         @media (max-width: 320px) {
-            #mainScreen > div > div {
-                transform: scale(0.28) !important;
+            .responsive-container {
+                padding: 2px;
+            }
+            
+            .main-table {
+                width: 100%;
+                max-width: 300px;
+                height: auto;
+                transform: scale(0.25);
+                transform-origin: top center;
+                margin: 0 auto;
             }
         }
 
@@ -95,6 +169,49 @@
         img[onclick]:active, div[onclick]:active {
             transform: scale(0.95);
             opacity: 0.8;
+        }
+
+        /* 모바일에서 터치 반응 최적화 */
+        @media (max-width: 768px) {
+            img[onclick], div[onclick] {
+                -webkit-tap-highlight-color: rgba(0,0,0,0.1);
+                tap-highlight-color: rgba(0,0,0,0.1);
+            }
+            
+            img[onclick]:active, div[onclick]:active {
+                transform: scale(0.98);
+                opacity: 0.7;
+            }
+        }
+
+        /* 텍스트 요소들 모바일 최적화 */
+        .dynamic-text {
+            font-size: clamp(12px, 3vw, 24px);
+        }
+        
+        /* 차트 컨테이너 반응형 */
+        #portfolioChart {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        /* 투자 리스트 모바일 최적화 */
+        @media (max-width: 768px) {
+            #investmentList {
+                font-size: clamp(10px, 2.5vw, 28px) !important;
+            }
+            
+            #investmentList div {
+                padding: 4px 0 !important;
+                line-height: 1.2 !important;
+            }
+        }
+
+        /* 현금 표시 모바일 최적화 */
+        @media (max-width: 768px) {
+            #cashAmount {
+                font-size: clamp(14px, 3.2vw, 36px) !important;
+            }
         }
 
         /* 동적 텍스트 스타일 */
@@ -246,86 +363,84 @@
 
 <!-- 메인 화면 - 레이어 배경 모바일 최적화 -->
 <div id="mainScreen">
-    <!-- index.html과 완전히 동일한 구조 -->
-    <div style="width: 100%; height: 100vh; overflow: auto; background-color: #FFFFFF; display: flex; justify-content: center; align-items: flex-start;">
-        <!-- 1125x2436 테이블 구조 - index.html과 동일 -->
-        <table width="1125" height="2436" border="0" cellpadding="0" cellspacing="0" style="background-color: #FFFFFF; position: relative;">
+    <!-- 반응형 컨테이너로 개선 -->
+    <div class="responsive-container">
+        <!-- 반응형 테이블 구조 -->
+        <table class="main-table" border="0" cellpadding="0" cellspacing="0">
             <!-- 테이블 내부에 모든 요소를 절대 위치로 배치 -->
             <tr>
                 <td style="position: relative; width: 100%; height: 2436px; background: #f8f9fa;">
                     
                     <!-- 레이어 배경 이미지 (배경 바로 위에 씌우는 레이어) -->
-                    <img src="images/레이어.png" style="position: absolute; top: 3px; left: 3px; width: 1125px; height: 2436px; object-fit: cover; z-index: 970;" alt="레이어" loading="eager">
+                    <img src="images/레이어.png" style="position: absolute; top: 3px; left: 3px; width: 100%; height: 100%; object-fit: cover; z-index: 970;" alt="레이어" loading="eager">
                     
                     <!-- 상단 아이콘들 -->
                     <!-- 똑부리 프로필 아이콘 -->
-                    <img src="images/똑부리.png" style="position: absolute; left: 74px; top: 213px; width: 112px; height: 111px; z-index: 990; cursor: pointer;" alt="똑부리" onclick="openProfileSettings()" loading="eager">
+                    <img src="images/똑부리.png" style="position: absolute; left: 6.6%; top: 8.7%; width: 9.9%; height: 4.5%; z-index: 990; cursor: pointer;" alt="똑부리" onclick="openProfileSettings()" loading="eager">
                     
                     <!-- 빛 반사 효과 -->
-                    <img src="images/빛 반사.png" style="position: absolute; left: 332px; top: 190px; width: 467px; height: 153px; z-index: 989;" alt="빛 반사" loading="eager">
+                    <img src="images/빛 반사.png" style="position: absolute; left: 29.5%; top: 7.8%; width: 41.5%; height: 6.3%; z-index: 989;" alt="빛 반사" loading="eager">
                     
                     <!-- 알림 -->
-                    <img src="images/알림.png" style="position: absolute; left: 963px; top: 211px; width: 96px; height: 115px; z-index: 988; cursor: pointer;" alt="알림" onclick="showNotifications()" loading="eager">
+                    <img src="images/알림.png" style="position: absolute; left: 85.6%; top: 8.6%; width: 8.5%; height: 4.7%; z-index: 988; cursor: pointer;" alt="알림" onclick="showNotifications()" loading="eager">
                     
                     <!-- 프로필 섹션 -->
                     <!-- PROFILE 이미지 -->
-                    <img src="images/PROFILE.png" style="position: absolute; left: 76px; top: 460px; width: 670px; height: 395px; z-index: 987;" alt="PROFILE" loading="eager">
+                    <img src="images/PROFILE.png" style="position: absolute; left: 6.8%; top: 18.9%; width: 59.6%; height: 16.2%; z-index: 987;" alt="PROFILE" loading="eager">
                     
                     <!-- 프로필 배경 -->
-                    <img src="images/사각형.png" style="position: absolute; left: 73px; top: 567px; width: 988px; height: 345px; z-index: 984;" alt="프로필 배경" loading="eager">
+                    <img src="images/사각형.png" style="position: absolute; left: 6.5%; top: 23.3%; width: 87.8%; height: 14.2%; z-index: 984;" alt="프로필 배경" loading="eager">
                     
                     <!-- 프로필 이미지 (레이어 1) -->
-                    <img src="images/레이어 1.png" style="position: absolute; left: 130px; top: 610px; width: 257px; height: 259px; z-index: 986; cursor: pointer;" alt="프로필 이미지" onclick="openProfileSettings()" loading="eager">
+                    <img src="images/레이어 1.png" style="position: absolute; left: 11.6%; top: 25.0%; width: 22.8%; height: 10.6%; z-index: 986; cursor: pointer;" alt="프로필 이미지" onclick="openProfileSettings()" loading="eager">
                     
                     <!-- 환경설정 -->
-                    <img src="images/환경설정.png" style="position: absolute; left: 951px; top: 614px; width: 58px; height: 61px; z-index: 985; cursor: pointer;" alt="환경설정" onclick="showSettings()" loading="eager">
-                    
-                    <!-- 자산 섹션 -->
+                    <img src="images/환경설정.png" style="position: absolute; left: 84.5%; top: 25.2%; width: 5.2%; height: 2.5%; z-index: 985; cursor: pointer;" alt="환경설정" onclick="showSettings()" loading="eager">
                     
                     <!-- 자산 섹션 -->
                     <!-- ASSETS 이미지 -->
-                    <img src="images/ASSETS.png" style="position: absolute; left: 74px; top: 978px; width: 203px; height: 238px; z-index: 983;" alt="ASSETS" loading="eager">
+                    <img src="images/ASSETS.png" style="position: absolute; left: 6.6%; top: 40.1%; width: 18.0%; height: 9.8%; z-index: 983;" alt="ASSETS" loading="eager">
                     
                     <!-- 자산 배경 (동적으로 높이 조정) -->
-                    <img id="assetBackground" src="images/사각형.png" style="position: absolute; left: 76px; top: 1087px; width: 988px; height: 345px; z-index: 979;" alt="자산 배경" loading="eager">
+                    <img id="assetBackground" src="images/사각형.png" style="position: absolute; left: 6.8%; top: 44.6%; width: 87.8%; height: 14.2%; z-index: 979;" alt="자산 배경" loading="eager">
                     
                     <!-- 현금 보유량 (실제 데이터) -->
-                    <div style="position: absolute; left: 250px; top: 1144px; width: 375px; height: 52px; z-index: 982; font-size: 41px; font-family: 'Jalnan2', 'Malgun Gothic', sans-serif; color: #333333; text-align: left; line-height: 1.4; white-space: pre-wrap; display: flex; align-items: center; font-weight: 900;">
+                    <div style="position: absolute; left: 22.2%; top: 47.0%; width: 33.3%; height: 2.1%; z-index: 982; font-size: clamp(16px, 3.6vw, 41px); font-family: 'Jalnan2', 'Malgun Gothic', sans-serif; color: #333333; text-align: left; line-height: 1.4; white-space: pre-wrap; display: flex; align-items: center; font-weight: 900;">
                         <span id="cashAmount">₩10,000,000</span>
                     </div>
                     
                     <!-- 투자 자산 리스트 (동적으로 생성) - 위치 조정 -->
-                    <div id="investmentList" style="position: absolute; left: 131px; top: 1280px; width: 874px; z-index: 981; font-size: 32px; font-family: 'Jalnan2', 'Malgun Gothic', sans-serif; color: #333333;">
+                    <div id="investmentList" style="position: absolute; left: 11.6%; top: 52.5%; width: 77.7%; z-index: 981; font-size: clamp(12px, 2.8vw, 32px); font-family: 'Jalnan2', 'Malgun Gothic', sans-serif; color: #333333;">
                         <!-- 동적으로 생성되는 투자 자산 목록 -->
                     </div>
                     
                     <!-- 포트폴리오 섹션 -->
                     <!-- 포트폴리오 제목 이미지 -->
-                    <img src="images/PORTFOLIO.png" style="position: absolute; left: 78px; top: 1498px; width: 296px; height: 46px; z-index: 988;" alt="포트폴리오" loading="eager">
+                    <img src="images/PORTFOLIO.png" style="position: absolute; left: 6.9%; top: 61.5%; width: 26.3%; height: 1.9%; z-index: 988;" alt="포트폴리오" loading="eager">
                     
                     <!-- 포트폴리오 배경 -->
-                    <img src="images/사각형.png" style="position: absolute; left: 83px; top: 1607px; width: 987px; height: 491px; z-index: 976;" alt="포트폴리오 배경" loading="eager">
+                    <img src="images/사각형.png" style="position: absolute; left: 7.4%; top: 66.0%; width: 87.7%; height: 20.2%; z-index: 976;" alt="포트폴리오 배경" loading="eager">
                     
                     <!-- 포트폴리오 차트 -->
-                    <div style="position: absolute; left: 374px; top: 1648px; width: 408px; height: 409px; z-index: 978;">
+                    <div style="position: absolute; left: 33.2%; top: 67.6%; width: 36.3%; height: 16.8%; z-index: 978;">
                         <canvas id="portfolioChart" style="width: 100%; height: 100%;"></canvas>
                     </div>
                     
                     <!-- BLACK 원형 요소 -->
-                    <img src="images/BLACK.png" style="position: absolute; left: 476px; top: 2098px; width: 180px; height: 180px; z-index: 975;" alt="BLACK" loading="eager">
+                    <img src="images/BLACK.png" style="position: absolute; left: 42.3%; top: 86.1%; width: 16.0%; height: 7.4%; z-index: 975;" alt="BLACK" loading="eager">
                     
                     <!-- 하단 네비게이션 (메페.html과 동일한 위치) -->
                     <!-- 집 -->
-                    <img src="images/집.png" style="position: absolute; left: 100px; top: 2230px; width: 95px; height: 96px; z-index: 974; cursor: pointer;" alt="홈" onclick="goHome()" loading="eager">
+                    <img src="images/집.png" style="position: absolute; left: 8.9%; top: 91.5%; width: 8.4%; height: 3.9%; z-index: 974; cursor: pointer;" alt="홈" onclick="goHome()" loading="eager">
                     
                     <!-- 문서 -->
-                    <img src="images/문서.png" style="position: absolute; left: 315px; top: 2230px; width: 76px; height: 96px; z-index: 973; cursor: pointer;" alt="문서" onclick="showDocuments()" loading="eager">
+                    <img src="images/문서.png" style="position: absolute; left: 28.0%; top: 91.5%; width: 6.8%; height: 3.9%; z-index: 973; cursor: pointer;" alt="문서" onclick="showDocuments()" loading="eager">
                     
                     <!-- 채팅 -->
-                    <img src="images/채팅.png" style="position: absolute; left: 728px; top: 2233px; width: 93px; height: 93px; z-index: 972; cursor: pointer;" alt="채팅" onclick="openChat()" loading="eager">
+                    <img src="images/채팅.png" style="position: absolute; left: 64.7%; top: 91.7%; width: 8.3%; height: 3.8%; z-index: 972; cursor: pointer;" alt="채팅" onclick="openChat()" loading="eager">
                     
                     <!-- 더보기 -->
-                    <img src="images/더보기.png" style="position: absolute; left: 951px; top: 2275px; width: 60px; height: 12px; z-index: 971; cursor: pointer;" alt="더보기" onclick="showMoreMenu()" loading="eager">
+                    <img src="images/더보기.png" style="position: absolute; left: 84.5%; top: 93.4%; width: 5.3%; height: 0.5%; z-index: 971; cursor: pointer;" alt="더보기" onclick="showMoreMenu()" loading="eager">
                     
                 </td>
             </tr>
