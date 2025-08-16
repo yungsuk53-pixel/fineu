@@ -827,43 +827,80 @@
 
 <!-- 로그인 화면 -->
 <div id="loginScreen" class="screen active">
-    <!-- FINEU 이미지 기반 로그인 디자인 - 1125x2436 비율 기준 -->
-    <div style="width: 100%; height: 100vh; background-image: url('images/배경.png'); background-size: cover; background-position: center; background-repeat: no-repeat; display: flex; justify-content: center; align-items: center; background-color: #f0f0f0;">
-        <div style="width: 100%; max-width: 1125px; height: 100vh; max-height: 2436px; position: relative; display: flex; flex-direction: column; justify-content: flex-start; padding-top: 62.3%;"> <!-- 1520/2436 = 62.3% -->
+    <!-- FINEU 이미지 기반 로그인 디자인 - FINEU-복사.html 구조 기준 -->
+    <div style="width: 100%; height: 100vh; overflow: auto; background-color: #FFFFFF; display: flex; justify-content: center; align-items: center;">
+        <!-- 1125x2436 테이블 구조 재현 -->
+        <div style="width: 100%; max-width: 1125px; height: 100%; max-height: 2436px; position: relative; background-color: #FFFFFF;">
             
-            <!-- 로그인 영역 컨테이너 -->
-            <div style="width: 100%; padding: 0 21.6% 0 21.6%; box-sizing: border-box; display: flex; flex-direction: column; align-items: center;"> <!-- 좌우 여백: 243/1125 = 21.6% -->
+            <!-- 상단 배경 이미지 (1125x1520) -->
+            <div style="width: 100%; height: 62.3%; position: relative; overflow: hidden;">
+                <img src="images/FINEU-복사_01.png" style="width: 100%; height: 100%; object-fit: cover;" alt="배경">
+            </div>
+            
+            <!-- 하단 로그인 영역 (1125x916) -->
+            <div style="width: 100%; height: 37.7%; display: flex; position: relative;">
                 
-                <!-- 아이디 입력창 - 640x89 -->
-                <div style="position: relative; width: 100%; height: 89px; max-width: 640px; margin-bottom: 33px;">
-                    <img src="images/아이디입력창.png" style="width: 100%; height: 100%; object-fit: contain;" alt="아이디 입력창">
-                    <input type="text" id="userId" placeholder="" value="gunwoo55"
-                           onkeypress="if(event.key==='Enter') performLogin()"
-                           style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-                                  width: 85%; height: 60%; border: none; background: transparent; font-size: 16px; 
-                                  text-align: center; outline: none; color: #333; font-weight: bold;">
+                <!-- 좌측 배경 (243x916) -->
+                <div style="width: 21.6%; height: 100%;">
+                    <img src="images/FINEU-복사_02.png" style="width: 100%; height: 100%; object-fit: cover;" alt="좌측 배경">
                 </div>
                 
-                <!-- 비밀번호 입력창 - 640x89 -->
-                <div style="position: relative; width: 100%; height: 89px; max-width: 640px; margin-bottom: 33px;">
-                    <img src="images/비밀번호입력창.png" style="width: 100%; height: 100%; object-fit: contain;" alt="비밀번호 입력창">
-                    <input type="password" id="userPassword" placeholder="" value="test123"
-                           onkeypress="if(event.key==='Enter') performLogin()"
-                           style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-                                  width: 85%; height: 60%; border: none; background: transparent; font-size: 16px; 
-                                  text-align: center; outline: none; color: #333; font-weight: bold;">
-                </div>
-                
-                <!-- 로그인 버튼 - 640x89 -->
-                <div style="position: relative; cursor: pointer; width: 100%; height: 89px; max-width: 640px;" onclick="performLogin()">
-                    <img src="images/로그인버튼.png" style="width: 100%; height: 100%; object-fit: contain;" alt="로그인 버튼">
-                    <!-- 로딩 표시 -->
-                    <div id="loginLoader" class="hidden" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
-                        <div class="loading"></div>
+                <!-- 중앙 로그인 영역 (640x916) -->
+                <div style="width: 56.9%; height: 100%; display: flex; flex-direction: column; position: relative;">
+                    
+                    <!-- 아이디 입력창 (640x89) -->
+                    <div style="width: 100%; height: 9.7%; position: relative;">
+                        <img src="images/아이디입력창.png" style="width: 100%; height: 100%; object-fit: cover;" alt="아이디 입력창">
+                        <input type="text" id="userId" placeholder="" value="gunwoo55"
+                               onkeypress="if(event.key==='Enter') performLogin()"
+                               style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+                                      width: 85%; height: 60%; border: none; background: transparent; font-size: 16px; 
+                                      text-align: center; outline: none; color: #333; font-weight: bold;">
                     </div>
-                    <span id="loginBtnText" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-                                                  color: white; font-weight: bold; font-size: 16px; pointer-events: none; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); opacity: 0;">로그인</span>
+                    
+                    <!-- 간격 (640x33) -->
+                    <div style="width: 100%; height: 3.6%;">
+                        <img src="images/FINEU-복사_05.png" style="width: 100%; height: 100%; object-fit: cover;" alt="간격">
+                    </div>
+                    
+                    <!-- 비밀번호 입력창 (640x89) -->
+                    <div style="width: 100%; height: 9.7%; position: relative;">
+                        <img src="images/비밀번호입력창.png" style="width: 100%; height: 100%; object-fit: cover;" alt="비밀번호 입력창">
+                        <input type="password" id="userPassword" placeholder="" value="test123"
+                               onkeypress="if(event.key==='Enter') performLogin()"
+                               style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+                                      width: 85%; height: 60%; border: none; background: transparent; font-size: 16px; 
+                                      text-align: center; outline: none; color: #333; font-weight: bold;">
+                    </div>
+                    
+                    <!-- 간격 (640x33) -->
+                    <div style="width: 100%; height: 3.6%;">
+                        <img src="images/FINEU-복사_07.png" style="width: 100%; height: 100%; object-fit: cover;" alt="간격">
+                    </div>
+                    
+                    <!-- 로그인 버튼 (640x89) -->
+                    <div style="width: 100%; height: 9.7%; position: relative; cursor: pointer;" onclick="performLogin()">
+                        <img src="images/로그인버튼.png" style="width: 100%; height: 100%; object-fit: cover;" alt="로그인 버튼">
+                        <!-- 로딩 표시 -->
+                        <div id="loginLoader" class="hidden" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                            <div class="loading"></div>
+                        </div>
+                        <span id="loginBtnText" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+                                                      color: white; font-weight: bold; font-size: 16px; pointer-events: none; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); opacity: 0;">로그인</span>
+                    </div>
+                    
+                    <!-- 하단 배경 (640x583) -->
+                    <div style="width: 100%; height: 63.6%;">
+                        <img src="images/FINEU-복사_09.png" style="width: 100%; height: 100%; object-fit: cover;" alt="하단 배경">
+                    </div>
+                    
                 </div>
+                
+                <!-- 우측 배경 (242x916) -->
+                <div style="width: 21.5%; height: 100%;">
+                    <img src="images/FINEU-복사_04.png" style="width: 100%; height: 100%; object-fit: cover;" alt="우측 배경">
+                </div>
+                
             </div>
         </div>
     </div>
