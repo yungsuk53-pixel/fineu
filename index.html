@@ -2399,52 +2399,6 @@ function formatNumber(num) {
 function showNotifications() {
     alert('📱 새 알림이 없습니다.');
 }
-        
-        // 가입일 업데이트
-        var mainJoinDays = document.getElementById('mainJoinDays');
-        if (mainJoinDays) {
-            var joinDate = currentUser.joinDate ? new Date(currentUser.joinDate) : new Date();
-            var today = new Date();
-            var diffTime = Math.abs(today - joinDate);
-            var diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            mainJoinDays.textContent = diffDays.toString();
-        }
-        
-        // 총 자산 업데이트 (19,990,102 고정)
-        var mainTotalAssets = document.getElementById('mainTotalAssets');
-        if (mainTotalAssets) {
-            mainTotalAssets.textContent = '19,990,102';
-        }
-        
-        // 메인 포트폴리오 차트 업데이트
-        updateMainPortfolioChart();
-        
-        // 프로필 이미지 업데이트 (기본값은 회색 사각형)
-        var mainProfileImage = document.getElementById('mainProfileImage');
-        var mainProfilePlaceholder = document.getElementById('mainProfilePlaceholder');
-        
-        if (currentUser.profileImage) {
-            if (mainProfileImage) {
-                mainProfileImage.src = currentUser.profileImage;
-                mainProfileImage.style.display = 'block';
-            }
-            if (mainProfilePlaceholder) {
-                mainProfilePlaceholder.style.display = 'none';
-            }
-        } else {
-            // 기본 상태 (회색 사각형)
-            if (mainProfileImage) {
-                mainProfileImage.style.display = 'none';
-            }
-            if (mainProfilePlaceholder) {
-                mainProfilePlaceholder.style.display = 'block';
-            }
-        }
-        
-    } catch (error) {
-        updateDebugInfo('메인 화면 데이터 업데이트 오류: ' + error.message);
-    }
-}
 
 // 메인 포트폴리오 차트 업데이트
 function updateMainPortfolioChart() {
