@@ -141,10 +141,7 @@
             overflow: auto;
             background-color: #f0f0f0;
             z-index: 1000;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            padding-top: 20px;
+            display: block;
             box-sizing: border-box;
         }
         
@@ -154,14 +151,15 @@
             width: 1125px;
             height: 2436px;
             background: #f0f0f0;
-            margin: 0 auto;
+            margin: 20px auto 0 auto;
             overflow: visible;
             user-select: none;
             -webkit-user-select: none;
             -webkit-touch-callout: none;
             -webkit-user-drag: none;
             box-sizing: border-box;
-            flex-shrink: 0;
+            left: 50%;
+            transform: translateX(-50%);
         }
         
         /* 공통 레이어 스타일 */
@@ -194,120 +192,71 @@
             transition: transform 0.1s ease;
         }
         
-        /* 반응형 디자인 */
+        /* 반응형 디자인 - 완전 재작성 */
         @media (max-width: 1200px) {
-            #mainScreen {
-                padding-top: 10px;
-            }
             .main-container {
-                transform: scale(0.85);
-                transform-origin: top center;
-                margin-top: 0;
+                transform: translateX(-50%) scale(0.85);
             }
         }
         
         @media (max-width: 1100px) {
-            #mainScreen {
-                padding-top: 5px;
-            }
             .main-container {
-                transform: scale(0.75);
-                transform-origin: top center;
-                margin-top: 0;
+                transform: translateX(-50%) scale(0.75);
             }
         }
         
         @media (max-width: 900px) {
-            #mainScreen {
-                padding-top: 0;
-                align-items: flex-start;
-            }
             .main-container {
-                transform: scale(0.65);
-                transform-origin: top center;
-                margin-top: 0;
+                transform: translateX(-50%) scale(0.65);
             }
         }
         
         @media (max-width: 768px) {
-            #mainScreen {
-                padding-top: 0;
-                overflow-x: auto;
-                overflow-y: auto;
-            }
             .main-container {
-                transform: scale(0.55);
-                transform-origin: top center;
-                margin-top: 0;
-                height: auto;
-                min-height: 2436px;
+                transform: translateX(-50%) scale(0.55);
             }
         }
         
         @media (max-width: 600px) {
-            #mainScreen {
-                padding-top: 0;
-            }
             .main-container {
-                transform: scale(0.45);
-                transform-origin: top center;
-                margin-top: 0;
+                transform: translateX(-50%) scale(0.45);
             }
         }
         
         @media (max-width: 480px) {
-            #mainScreen {
-                padding-top: 0;
-            }
             .main-container {
-                transform: scale(0.38);
-                transform-origin: top center;
-                margin-top: 0;
+                transform: translateX(-50%) scale(0.38);
             }
         }
         
         @media (max-width: 400px) {
-            #mainScreen {
-                padding-top: 0;
-            }
             .main-container {
-                transform: scale(0.32);
-                transform-origin: top center;
-                margin-top: 0;
+                transform: translateX(-50%) scale(0.32);
             }
         }
         
         @media (max-width: 360px) {
-            #mainScreen {
-                padding-top: 0;
-            }
             .main-container {
-                transform: scale(0.28);
-                transform-origin: top center;
-                margin-top: 0;
+                transform: translateX(-50%) scale(0.28);
             }
         }
         
         /* 세로 모드 (모바일) */
         @media (max-height: 800px) and (max-width: 768px) {
-            #mainScreen {
-                padding-top: 0;
-            }
             .main-container {
-                transform: scale(0.32);
-                transform-origin: top center;
+                transform: translateX(-50%) scale(0.32);
             }
         }
         
         @media (max-height: 700px) and (max-width: 480px) {
             .main-container {
-                transform: scale(0.28);
+                transform: translateX(-50%) scale(0.28);
             }
         }
         
         @media (max-height: 600px) and (max-width: 400px) {
             .main-container {
-                transform: scale(0.24);
+                transform: translateX(-50%) scale(0.24);
             }
         }
         
