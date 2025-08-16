@@ -138,82 +138,91 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            overflow: auto;
+            overflow-x: hidden;
+            overflow-y: auto;
             background-color: #f0f0f0;
             z-index: 1000;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
             box-sizing: border-box;
         }
         
-        /* 메인 화면 - 로그인 화면처럼 화면에 맞춤 */
+        /* 메인 화면 - a2.html 방식으로 화면에 맞춤 */
         .main-container {
-            width: 1125px;
-            height: 2436px;
+            max-width: 450px;
+            width: 100%;
+            margin: 0 auto;
             background: #f0f0f0;
-            max-width: 100%;
-            height: auto;
             position: relative;
             user-select: none;
             -webkit-user-select: none;
             -webkit-touch-callout: none;
             -webkit-user-drag: none;
             box-sizing: border-box;
+            padding: 20px;
         }
         
-        /* 공통 레이어 스타일 */
+        /* 공통 레이어 스타일 - a2.html 방식 */
         .layer {
-            position: absolute;
+            position: relative;
             background: transparent;
+            margin-bottom: 16px;
+            border-radius: 12px;
+            overflow: hidden;
         }
         
         .layer img {
             width: 100%;
-            height: 100%;
-            max-width: 100%;
             height: auto;
+            max-width: 100%;
             display: block;
             -webkit-user-drag: none;
             -moz-user-drag: none;
             -o-user-drag: none;
             user-drag: none;
             pointer-events: none;
+            border-radius: 8px;
         }
         
-        /* 클릭 가능한 레이어 */
+        /* 클릭 가능한 레이어 - a2.html 카드 방식 */
         .layer[onclick] {
             cursor: pointer;
+            background: white;
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            margin-bottom: 16px;
         }
         
         .layer[onclick]:hover {
-            transform: scale(1.02);
-            transition: transform 0.2s ease;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
         }
         
         .layer[onclick]:active {
-            transform: scale(0.98);
-            transition: transform 0.1s ease;
+            transform: translateY(0);
         }
         
-        /* 반응형 디자인 - 로그인 화면 방식 */
-        @media (max-width: 1125px) {
+        /* a2.html 방식 반응형 디자인 */
+        @media (max-width: 480px) {
             .main-container {
-                width: 100%;
-                height: auto;
-            }
-            
-            .layer {
-                position: relative;
-                width: auto !important;
-                height: auto !important;
-                left: auto !important;
-                top: auto !important;
-            }
-            
-            .layer img {
                 max-width: 100%;
-                height: auto;
+                padding: 16px;
+            }
+            
+            .layer[onclick] {
+                padding: 12px;
+                margin-bottom: 12px;
+            }
+        }
+        
+        @media (max-width: 360px) {
+            .main-container {
+                padding: 12px;
+            }
+            
+            .layer[onclick] {
+                padding: 10px;
+                margin-bottom: 10px;
             }
         }
         
@@ -1096,146 +1105,81 @@
     <div id="messageContainer" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1000;"></div>
 </div>
 
-    <!-- 메인 화면 - 메인페이지.html 완전 복제 -->
-    <div id="mainScreen" class="screen main-container">>
-        <!-- 배경 레이어 (layer_27) -->
-        <div class="layer" style="left: 0px; top: 0px; width: 1125px; height: 2436px; z-index: 1;">
-            <img src="메인images/image/배경.png" alt="배경" style="width: 100%; height: 100%; object-fit: cover;" loading="eager" />
+    <!-- 메인 화면 - a2.html 방식으로 단순화 -->
+    <div id="mainScreen" class="screen main-container">
+        <!-- 배경/헤더 영역 -->
+        <div class="layer">
+            <img src="메인images/image/배경.png" alt="배경" loading="eager" />
         </div>
         
-        <!-- 레이어 (layer_26) -->
-        <div class="layer" style="left: 0px; top: 0px; width: 1125px; height: 2436px; z-index: 2;">
-            <img src="메인images/image/레이어.png" alt="레이어" style="width: 100%; height: 100%; object-fit: cover;" loading="lazy" />
+        <!-- FINEU 로고 영역 -->
+        <div class="layer">
+            <img src="메인images/image/FINE 1.png" alt="FINE 1" loading="eager" />
         </div>
         
-        <!-- 상단바 그룹 -->
-        <!-- 똑부리 (layer_1) -->
-        <div class="layer" style="left: 79px; top: 222px; width: 99px; height: 95px; z-index: 10;">
-            <img src="메인images/image/똑부리.png" alt="똑부리" style="width: 100%; height: 100%; object-fit: contain;" />
+        <!-- 프로필 섹션 -->
+        <div class="layer" onclick="openProfileSettings()">
+            <img src="메인images/image/PROFILE.png" alt="PROFILE" loading="eager" />
         </div>
         
-        <!-- 프로필 복사 (layer_2) -->
-        <div class="layer" style="left: 71px; top: 209px; width: 113px; height: 112px; z-index: 9;">
-            <img src="메인images/image/프로필 복사.png" alt="프로필 복사" style="width: 100%; height: 100%; object-fit: contain;" />
+        <div class="layer" onclick="openProfileSettings()">
+            <img src="메인images/image/프로필.png" alt="프로필" loading="lazy" />
         </div>
         
-        <!-- 빛 반사 (layer_3) -->
-        <div class="layer" style="left: 356px; top: 214px; width: 359px; height: 12px; z-index: 8;">
-            <img src="메인images/image/빛 반사.png" alt="빛 반사" style="width: 100%; height: 100%; object-fit: contain;" />
+        <!-- 사용자 정보 -->
+        <div class="layer">
+            <img src="메인images/image/똑부리 님.png" alt="똑부리 님" loading="lazy" />
         </div>
         
-        <!-- FINE 1 (layer_4) -->
-        <div class="layer" style="left: 333px; top: 189px; width: 462px; height: 149px; z-index: 7;">
-            <img src="메인images/image/FINE 1.png" alt="FINE 1" style="width: 100%; height: 100%; object-fit: contain;" />
+        <div class="layer">
+            <img src="메인images/image/FINE U와 함께한 지 317일.png" alt="FINE U와 함께한 지 317일" loading="lazy" />
         </div>
         
-        <!-- FINE U 2 (layer_5) -->
-        <div class="layer" style="left: 329px; top: 185px; width: 470px; height: 157px; z-index: 6;">
-            <img src="메인images/image/FINE U 2.png" alt="FINE U 2" style="width: 100%; height: 100%; object-fit: contain;" />
+        <!-- ASSETS 섹션 -->
+        <div class="layer">
+            <img src="메인images/image/ASSETS.png" alt="ASSETS" loading="lazy" />
         </div>
         
-        <!-- FINE U 3 (layer_6) -->
-        <div class="layer" style="left: 325px; top: 181px; width: 478px; height: 165px; z-index: 5;">
-            <img src="메인images/image/FINE U 3.png" alt="FINE U 3" style="width: 100%; height: 100%; object-fit: contain;" />
+        <div class="layer">
+            <img src="메인images/image/자산.png" alt="자산" loading="lazy" />
         </div>
         
-        <!-- 알림 (layer_7) -->
-        <div class="layer" style="left: 960px; top: 208px; width: 96px; height: 115px; z-index: 10; cursor: pointer;" onclick="openNotifications()">
-            <img src="메인images/image/알림.png" alt="알림" style="width: 100%; height: 100%; object-fit: contain;" />
+        <!-- PORTFOLIO 섹션 -->
+        <div class="layer">
+            <img src="메인images/image/PORTFOLIO.png" alt="PORTFOLIO" loading="lazy" />
         </div>
         
-        <!-- 프로필 그룹 -->
-        <!-- PROFILE (layer_8) -->
-        <div class="layer" style="left: 73px; top: 457px; width: 219px; height: 46px; z-index: 10;">
-            <img src="메인images/image/PROFILE.png" alt="PROFILE" style="width: 100%; height: 100%; object-fit: contain;" />
+        <!-- 네비게이션 -->
+        <div class="layer" onclick="goToHome()">
+            <img src="메인images/image/집.png" alt="홈" loading="eager" />
         </div>
         
-        <!-- 사각형 (layer_16) -->
-        <div class="layer" style="left: 70px; top: 564px; width: 988px; height: 345px; z-index: 5;">
-            <img src="메인images/image/사각형.png" alt="사각형" style="width: 100%; height: 100%; object-fit: contain;" />
+        <div class="layer" onclick="goToDocuments()">
+            <img src="메인images/image/문서.png" alt="문서" loading="eager" />
         </div>
         
-        <!-- 프로필 (layer_10) -->
-        <div class="layer" style="left: 126px; top: 607px; width: 258px; height: 260px; z-index: 10; cursor: pointer;" onclick="openProfileSettings()">
-            <img src="메인images/image/프로필.png" alt="프로필" style="width: 100%; height: 100%; object-fit: contain;" />
+        <div class="layer" onclick="openChat()">
+            <img src="메인images/image/채팅.png" alt="채팅" loading="eager" />
         </div>
         
-        <!-- 레이어 1 (layer_9) -->
-        <div class="layer" style="left: 145px; top: 629px; width: 222px; height: 215px; z-index: 11;">
-            <img src="메인images/image/레이어 1.png" alt="레이어 1" style="width: 100%; height: 100%; object-fit: contain;" />
+        <div class="layer" onclick="showMoreMenu()">
+            <img src="메인images/image/더보기.png" alt="더보기" loading="eager" />
         </div>
         
-        <!-- 등급 (layer_12) -->
-        <div class="layer" style="left: 436px; top: 607px; width: 307px; height: 70px; z-index: 9;">
-            <img src="메인images/image/등급.png" alt="등급" style="width: 100%; height: 100%; object-fit: contain;" />
+        <div class="layer" onclick="showLevelInfo()">
+            <img src="메인images/image/등급.png" alt="등급" loading="eager" />
         </div>
         
-        <!-- BLACK (layer_11) -->
-        <div class="layer" style="left: 521px; top: 622px; width: 140px; height: 37px; z-index: 10;">
-            <img src="메인images/image/BLACK.png" alt="BLACK" style="width: 100%; height: 100%; object-fit: contain;" />
+        <div class="layer" onclick="showLevelInfo()">
+            <img src="메인images/image/원.png" alt="원" loading="eager" />
         </div>
         
-        <!-- 똑부리 님 (layer_13) -->
-        <div class="layer" style="left: 493px; top: 729px; width: 196px; height: 48px; z-index: 10;">
-            <img src="메인images/image/똑부리 님.png" alt="똑부리 님" style="width: 100%; height: 100%; object-fit: contain;" />
+        <div class="layer">
+            <img src="메인images/image/BLACK-1.png" alt="BLACK-1" loading="lazy" />
         </div>
-        
-        <!-- FINE U와 함께한 지 317일 (layer_14) -->
-        <div class="layer" style="left: 442px; top: 823px; width: 301px; height: 29px; z-index: 10;">
-            <img src="메인images/image/FINE U와 함께한 지 317일.png" alt="FINE U와 함께한 지 317일" style="width: 100%; height: 100%; object-fit: contain;" />
-        </div>
-        
-        <!-- 환경설정 (layer_15) -->
-        <div class="layer" style="left: 948px; top: 611px; width: 58px; height: 61px; z-index: 10; cursor: pointer;" onclick="openSettings()">
-            <img src="메인images/image/환경설정.png" alt="환경설정" style="width: 100%; height: 100%; object-fit: contain;" />
-        </div>
-        
-        <!-- ASSETS (layer_17) -->
-        <div class="layer" style="left: 71px; top: 975px; width: 203px; height: 46px; z-index: 10;">
-            <img src="메인images/image/ASSETS.png" alt="ASSETS" style="width: 100%; height: 100%; object-fit: contain;" />
-        </div>
-        
-        <!-- 별 (layer_18) -->
-        <div class="layer" style="left: 127px; top: 1125px; width: 95px; height: 91px; z-index: 10;">
-            <img src="메인images/image/자산.png" alt="자산" style="width: 100%; height: 100%; object-fit: contain;" />
-        </div>
-        
-        <!-- PORTFOLIO (layer_19) -->
-        <div class="layer" style="left: 75px; top: 1495px; width: 296px; height: 46px; z-index: 10;">
-            <img src="메인images/image/PORTFOLIO.png" alt="PORTFOLIO" style="width: 100%; height: 100%; object-fit: contain;" />
-        </div>
-        
-        <!-- 하단바 그룹 -->
-        <!-- 원 (layer_21) -->
-        <div class="layer" style="left: 472px; top: 2095px; width: 181px; height: 180px; z-index: 9; cursor: pointer;" onclick="showLevelInfo()">
-            <img src="메인images/image/원.png" alt="원" style="width: 100%; height: 100%; object-fit: contain;" />
-        </div>
-        
-        <!-- BLACK-1 (layer_20) -->
-        <div class="layer" style="left: 504px; top: 2169px; width: 119px; height: 32px; z-index: 10;">
-            <img src="메인images/image/BLACK-1.png" alt="BLACK-1" style="width: 100%; height: 100%; object-fit: contain;" />
-        </div>
-        
-        <!-- 집 (layer_22) -->
-        <div class="layer" style="left: 97px; top: 2227px; width: 95px; height: 96px; z-index: 10; cursor: pointer;" onclick="goToHome()">
-            <img src="메인images/image/집.png" alt="집" style="width: 100%; height: 100%; object-fit: contain;" loading="eager" />
-        </div>
-        
-        <!-- 문서 (layer_23) -->
-        <div class="layer" style="left: 312px; top: 2227px; width: 76px; height: 96px; z-index: 10; cursor: pointer;" onclick="goToDocuments()">
-            <img src="메인images/image/문서.png" alt="문서" style="width: 100%; height: 100%; object-fit: contain;" loading="eager" />
-        </div>
-        
-        <!-- 채팅 (layer_24) -->
-        <div class="layer" style="left: 725px; top: 2230px; width: 93px; height: 93px; z-index: 10; cursor: pointer;" onclick="openChat()">
-            <img src="메인images/image/채팅.png" alt="채팅" style="width: 100%; height: 100%; object-fit: contain;" loading="eager" />
-        </div>
-        
-        <!-- 더보기 (layer_25) -->
-        <div class="layer" style="left: 948px; top: 2272px; width: 60px; height: 12px; z-index: 10; cursor: pointer;" onclick="showMoreMenu()">
-            <img src="메인images/image/더보기.png" alt="더보기" style="width: 100%; height: 100%; object-fit: contain;" loading="eager" />
-        </div>
-    </div><!-- 회원가입 모달 -->
+    </div>
+
+    <!-- 회원가입 모달 -->
 <div id="registerModal" class="fixed inset-0 bg-black bg-opacity-50 modal hidden z-50">
     <div class="flex items-center justify-center min-h-screen">
         <div class="bg-white rounded-2xl w-full max-w-sm mx-4 p-6">
