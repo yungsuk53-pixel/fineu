@@ -29,7 +29,7 @@
 
         body {
             font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: #FFFFFF;
+            background-color: #F5F5F5;
             overflow-x: hidden;
             margin: 0;
             padding: 0;
@@ -37,40 +37,60 @@
             -ms-text-size-adjust: 100%;
         }
 
-        /* 메인 화면 - 모바일 최적화 */
+        /* 메인 화면 - 레이어 배경 모바일 최적화 */
         #mainScreen {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            overflow: auto;
-            background: url('images/배경.png') no-repeat center center;
+            overflow: hidden;
+            background: url('images/레이어.png') no-repeat center center;
             background-size: cover;
             z-index: 1000;
             box-sizing: border-box;
         }
         
-        /* 모바일 반응형 최적화 */
-        @media (max-width: 450px) {
+        /* 모바일 디바이스별 최적화 - 1125x2436 기준 */
+        @media (max-width: 768px) {
+            #mainScreen {
+                background-size: contain;
+                background-position: center top;
+            }
+            
             #mainScreen > div {
-                padding-left: 5% !important;
+                justify-content: center !important;
+                padding: 5px !important;
             }
             
             #mainScreen > div > div {
-                width: 100vw !important;
-                max-width: 100vw !important;
-                transform: scale(0.9) !important;
+                transform: scale(0.68) !important;
+                transform-origin: center top !important;
             }
         }
 
-        @media (max-width: 350px) {
-            #mainScreen > div {
-                padding-left: 2% !important;
+        @media (max-width: 480px) {
+            #mainScreen {
+                background-size: 100% auto;
+                background-position: center top;
             }
             
             #mainScreen > div > div {
-                transform: scale(0.8) !important;
+                transform: scale(0.43) !important;
+                width: 100vw !important;
+                max-width: 100vw !important;
+            }
+        }
+
+        @media (max-width: 375px) {
+            #mainScreen > div > div {
+                transform: scale(0.33) !important;
+            }
+        }
+
+        @media (max-width: 320px) {
+            #mainScreen > div > div {
+                transform: scale(0.28) !important;
             }
         }
 
@@ -237,86 +257,114 @@
     Firebase Realtime Database 초기화 대기 중...
 </div>
 
-<!-- 메인 화면 - 포토샵 디자인 기반 모바일 최적화 -->
+<!-- 메인 화면 - 레이어 배경 모바일 최적화 -->
 <div id="mainScreen">
-    <!-- 포토샵 디자인 캔버스 (1125x2436) -->
-    <div style="width: 100%; height: 100vh; overflow: auto; background-color: #FFFFFF; display: flex; justify-content: flex-start; align-items: flex-start; padding-left: 10%;">
-        <div style="position: relative; width: 375px; height: 812px; background: transparent; overflow: hidden; transform-origin: top left; transform: scale(1);">
-            
-            <!-- 레이어 (z-index: 970) -->
-            <img src="images/레이어.png" style="position: absolute; left: 50px; top: 0px; width: 375px; height: 812px; z-index: 970; object-fit: cover;" alt="레이어" loading="eager">
-            
-            <!-- 하단 네비게이션 -->
-            <!-- 더보기 -->
-            <img src="images/더보기.png" style="position: absolute; left: 350px; top: 750px; width: 20px; height: 4px; z-index: 971; cursor: pointer;" alt="더보기" onclick="showMoreMenu()" loading="eager">
-            
-            <!-- 채팅 -->
-            <img src="images/채팅.png" style="position: absolute; left: 290px; top: 730px; width: 31px; height: 31px; z-index: 972; cursor: pointer;" alt="채팅" onclick="openChat()" loading="eager">
-            
-            <!-- 문서 -->
-            <img src="images/문서.png" style="position: absolute; left: 165px; top: 730px; width: 25px; height: 32px; z-index: 973; cursor: pointer;" alt="문서" onclick="goToDocuments()" loading="eager">
-            
-            <!-- 집 -->
-            <img src="images/집.png" style="position: absolute; left: 95px; top: 730px; width: 32px; height: 32px; z-index: 974; cursor: pointer;" alt="집" onclick="goToHome()" loading="eager">
-            
-            <!-- 포트폴리오 섹션 -->
-            <img src="images/사각형.png" style="position: absolute; left: 78px; top: 530px; width: 330px; height: 160px; z-index: 976; object-fit: cover;" alt="포트폴리오 배경" loading="eager">
-            
-            <!-- 원 그래프 -->
-            <div style="position: absolute; left: 245px; top: 545px; width: 140px; height: 140px; z-index: 977;">
-                <canvas id="portfolioChart" width="140" height="140" style="width: 100%; height: 100%;"></canvas>
-            </div>
-            
-            <!-- PORTFOLIO 텍스트 -->
-            <div style="position: absolute; left: 85px; top: 500px; width: 120px; height: 18px; z-index: 978; font-size: 18px; font-family: 'Jalnan2', 'Malgun Gothic', sans-serif; color: #333333; text-align: left; line-height: 1.4; white-space: pre-wrap; display: flex; align-items: center;">PORTFOLIO</div>
-            
-            <!-- 자산 섹션 -->
-            <img src="images/사각형.png" style="position: absolute; left: 75px; top: 360px; width: 330px; height: 115px; z-index: 979; object-fit: cover;" alt="자산 배경" loading="eager">
-            
-            <!-- 현금 표시 (ASSETS 이미지 옆에) -->
-            <img src="images/ASSETS.png" style="position: absolute; left: 85px; top: 325px; width: 68px; height: 79px; z-index: 983;" alt="ASSETS" loading="eager">
-            <div style="position: absolute; left: 160px; top: 345px; width: 200px; height: 40px; z-index: 984; font-size: 28px; font-family: 'Jalnan2', 'Malgun Gothic', sans-serif; color: #333333; font-weight: bold; display: flex; align-items: center;">
-                <span id="cashAmount">₩10,000,000</span>
-            </div>
-            
-            <!-- 투자 자산 리스트 -->
-            <div id="investmentList" style="position: absolute; left: 85px; top: 390px; width: 310px; height: 80px; z-index: 985; overflow: hidden;">
-                <!-- 동적으로 생성되는 투자 자산 목록 -->
-            </div>
-            
-            <!-- 총 자산 금액 -->
-            <div style="position: absolute; left: 150px; top: 375px; width: 150px; height: 20px; z-index: 982; font-size: 16px; font-family: 'Jalnan2', 'Malgun Gothic', sans-serif; color: #333333; text-align: center; line-height: 1.4; white-space: pre-wrap; display: flex; align-items: center; justify-content: center;">
-                <span id="totalAssets">₩19,990,102</span>
-            </div>
-            
-            <!-- 프로필 섹션 -->
-            <img src="images/사각형.png" style="position: absolute; left: 73px; top: 190px; width: 330px; height: 115px; z-index: 984; object-fit: cover;" alt="프로필 배경" loading="eager">
-            
-            <!-- 환경설정 -->
-            <img src="images/환경설정.png" style="position: absolute; left: 360px; top: 200px; width: 19px; height: 20px; z-index: 985; cursor: pointer;" alt="환경설정" onclick="openProfileSettings()" loading="eager">
+    <!-- index.html과 완전히 동일한 구조 -->
+    <div style="width: 100%; height: 100vh; overflow: auto; background-color: #FFFFFF; display: flex; justify-content: center; align-items: flex-start;">
+        <!-- 1125x2436 테이블 구조 - index.html과 동일 -->
+        <table width="1125" height="2436" border="0" cellpadding="0" cellspacing="0" style="background-color: #FFFFFF; max-width: 100%; height: auto; position: relative;">
+            <!-- 테이블 내부에 모든 요소를 절대 위치로 배치 -->
+            <tr>
+                <td style="position: relative; width: 100%; height: 2436px; background: #f8f9fa;">
+                    
+                    <!-- 레이어 배경 이미지 (배경 바로 위에 씌우는 레이어) -->
+                    <img src="images/레이어.png" style="position: absolute; top: 3px; left: 3px; width: 1125px; height: 2436px; object-fit: cover; z-index: 970;" alt="레이어" loading="eager">
+                    
+                    <!-- 상단 아이콘들 -->
+                    <!-- 똑부리 프로필 아이콘 -->
+                    <img src="images/똑부리.png" style="position: absolute; left: 74px; top: 213px; width: 112px; height: 111px; z-index: 990; cursor: pointer;" alt="똑부리" onclick="openProfileSettings()" loading="eager">
+                    
+                    <!-- 빛 반사 효과 -->
+                    <img src="images/빛 반사.png" style="position: absolute; left: 332px; top: 190px; width: 467px; height: 153px; z-index: 989;" alt="빛 반사" loading="eager">
+                    
+                    <!-- 알림 -->
+                    <img src="images/알림.png" style="position: absolute; left: 963px; top: 211px; width: 96px; height: 115px; z-index: 988; cursor: pointer;" alt="알림" onclick="showNotifications()" loading="eager">
+                    
+                    <!-- 프로필 섹션 -->
+                    <!-- PROFILE 이미지 -->
+                    <img src="images/PROFILE.png" style="position: absolute; left: 76px; top: 460px; width: 670px; height: 395px; z-index: 987;" alt="PROFILE" loading="eager">
+                    
+                    <!-- 프로필 배경 -->
+                    <img src="images/사각형.png" style="position: absolute; left: 73px; top: 567px; width: 988px; height: 345px; z-index: 984;" alt="프로필 배경" loading="eager">
+                    
+                    <!-- 프로필 이미지 (레이어 1) -->
+                    <img src="images/레이어 1.png" style="position: absolute; left: 130px; top: 610px; width: 257px; height: 259px; z-index: 986; cursor: pointer;" alt="프로필 이미지" onclick="openProfileSettings()" loading="eager">
+                    
+                    <!-- 환경설정 -->
+                                        <!-- 환경설정 -->
+                    <img src="images/환경설정.png" style="position: absolute; left: 951px; top: 614px; width: 58px; height: 61px; z-index: 985; cursor: pointer;" alt="환경설정" onclick="showSettings()" loading="eager">
+                    
+                    <!-- 자산 섹션 -->
+                    
+                    <!-- 자산 섹션 -->
+                    <!-- ASSETS 이미지 -->
+                    <img src="images/ASSETS.png" style="position: absolute; left: 74px; top: 978px; width: 203px; height: 238px; z-index: 983;" alt="ASSETS" loading="eager">
+                    
+                    <!-- 자산 배경 (동적으로 높이 조정) -->
+                    <img id="assetBackground" src="images/사각형.png" style="position: absolute; left: 76px; top: 1087px; width: 988px; height: 345px; z-index: 979;" alt="자산 배경" loading="eager">
+                    
+                    <!-- 현금 보유량 (실제 데이터) -->
+                    <div style="position: absolute; left: 250px; top: 1144px; width: 375px; height: 52px; z-index: 982; font-size: 41px; font-family: 'Jalnan2', 'Malgun Gothic', sans-serif; color: #333333; text-align: left; line-height: 1.4; white-space: pre-wrap; display: flex; align-items: center; font-weight: 900;">
+                        <span id="cashAmount">₩10,000,000</span>
+                    </div>
+                    
+                    <!-- 투자 자산 리스트 (동적으로 생성) - 위치 조정 -->
+                    <div id="investmentList" style="position: absolute; left: 131px; top: 1280px; width: 874px; z-index: 981; font-size: 32px; font-family: 'Jalnan2', 'Malgun Gothic', sans-serif; color: #333333;">
+                        <!-- 동적으로 생성되는 투자 자산 목록 -->
+                    </div>
+                    
+                    <!-- 포트폴리오 섹션 -->
+                    <!-- 포트폴리오 제목 이미지 -->
+                    <img src="images/PORTFOLIO.png" style="position: absolute; left: 78px; top: 1498px; width: 296px; height: 46px; z-index: 988;" alt="포트폴리오" loading="eager">
+                    
+                    <!-- 포트폴리오 배경 -->
+                    <img src="images/사각형.png" style="position: absolute; left: 83px; top: 1607px; width: 987px; height: 491px; z-index: 976;" alt="포트폴리오 배경" loading="eager">
+                    
+                    <!-- 포트폴리오 차트 -->
+                    <div style="position: absolute; left: 374px; top: 1648px; width: 408px; height: 409px; z-index: 978;">
+                        <canvas id="portfolioChart" style="width: 100%; height: 100%;"></canvas>
+                    </div>
+                    
+                    <!-- BLACK 원형 요소 -->
+                    <img src="images/BLACK.png" style="position: absolute; left: 476px; top: 2098px; width: 180px; height: 180px; z-index: 975;" alt="BLACK" loading="eager">
+                    
+                    <!-- 하단 네비게이션 (메페.html과 동일한 위치) -->
+                    <!-- 집 -->
+                    <img src="images/집.png" style="position: absolute; left: 100px; top: 2230px; width: 95px; height: 96px; z-index: 974; cursor: pointer;" alt="홈" onclick="goHome()" loading="eager">
+                    
+                    <!-- 문서 -->
+                    <img src="images/문서.png" style="position: absolute; left: 315px; top: 2230px; width: 76px; height: 96px; z-index: 973; cursor: pointer;" alt="문서" onclick="showDocuments()" loading="eager">
+                    
+                    <!-- 채팅 -->
+                    <img src="images/채팅.png" style="position: absolute; left: 728px; top: 2233px; width: 93px; height: 93px; z-index: 972; cursor: pointer;" alt="채팅" onclick="openChat()" loading="eager">
+                    
+                    <!-- 더보기 -->
+                    <img src="images/더보기.png" style="position: absolute; left: 951px; top: 2275px; width: 60px; height: 12px; z-index: 971; cursor: pointer;" alt="더보기" onclick="showMoreMenu()" loading="eager">
+                    
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
             
             <!-- 프로필 이미지 -->
-            <img src="images/레이어 1.png" style="position: absolute; left: 85px; top: 205px; width: 86px; height: 86px; z-index: 986; cursor: pointer;" alt="프로필 이미지" onclick="openProfileSettings()" loading="eager">
+            <img src="images/레이어 1.png" style="position: absolute; left: 255px; top: 615px; width: 258px; height: 258px; z-index: 986; cursor: pointer;" alt="프로필 이미지" onclick="openProfileSettings()" loading="eager">
             
             <!-- PROFILE 이미지 -->
-            <img src="images/PROFILE.png" style="position: absolute; left: 76px; top: 155px; width: 224px; height: 132px; z-index: 987;" alt="PROFILE" loading="eager">
+            <img src="images/PROFILE.png" style="position: absolute; left: 228px; top: 465px; width: 672px; height: 396px; z-index: 987;" alt="PROFILE" loading="eager">
             
             <!-- 상단 -->
             <!-- 알림 -->
-            <img src="images/알림.png" style="position: absolute; left: 350px; top: 70px; width: 32px; height: 38px; z-index: 988; cursor: pointer;" alt="알림" onclick="showNotifications()" loading="eager">
+            <img src="images/알림.png" style="position: absolute; left: 1050px; top: 210px; width: 96px; height: 114px; z-index: 988; cursor: pointer;" alt="알림" onclick="showNotifications()" loading="eager">
             
             <!-- 빛 반사 -->
-            <img src="images/빛 반사.png" style="position: absolute; left: 160px; top: 65px; width: 156px; height: 51px; z-index: 989;" alt="빛 반사" loading="eager">
+            <img src="images/빛 반사.png" style="position: absolute; left: 480px; top: 195px; width: 468px; height: 153px; z-index: 989;" alt="빛 반사" loading="eager">
             
             <!-- 프로필 아이콘 -->
-            <img src="images/똑부리.png" style="position: absolute; left: 85px; top: 75px; width: 37px; height: 37px; z-index: 990; cursor: pointer;" alt="똑부리" onclick="openProfileSettings()" loading="eager">
+            <img src="images/똑부리.png" style="position: absolute; left: 255px; top: 225px; width: 111px; height: 111px; z-index: 990; cursor: pointer;" alt="똑부리" onclick="openProfileSettings()" loading="eager">
             
             <!-- 동적 컨텐츠 오버레이 -->
             <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1001; pointer-events: none;">
-                <!-- 사용자 이름 표시 영역 -->
-                <div id="dynamicUserName" style="position: absolute; left: 130px; top: 85px; font-size: 16px; font-weight: bold; color: #333; pointer-events: auto;">
-                    <span id="userName">똑부리</span>
-                </div>
             </div>
             
         </div>
@@ -571,38 +619,122 @@ function loadUserData() {
 // 디스플레이 업데이트
 function updateDisplay() {
     try {
-        // 사용자 이름 업데이트
-        var userNameElement = document.getElementById('userName');
-        if (userNameElement && currentUser) {
-            userNameElement.textContent = currentUser.name || currentUser.id || '똑부리';
-        }
-        
-        // 현금 금액 업데이트
+        // 현금 보유량 업데이트 (실제 데이터)
         var cashAmountElement = document.getElementById('cashAmount');
         if (cashAmountElement) {
             cashAmountElement.textContent = '₩' + cash.toLocaleString();
         }
         
-        // 총 자산 업데이트
-        var totalAssetsElement = document.getElementById('totalAssets');
-        if (totalAssetsElement) {
-            totalAssetsElement.textContent = '₩' + totalAssets.toLocaleString();
-        }
-        
         // 포트폴리오 차트 업데이트
         updatePortfolioChart();
         
-        // 투자 자산 리스트 업데이트
+        // 투자 자산 리스트 업데이트 (실제 데이터 사용)
         updateInvestmentList();
         
-        updateDebugInfo('디스플레이 업데이트 완료');
+        // 자산 배경 크기 동적 조정
+        updateAssetBackground();
+        
+        updateDebugInfo('디스플레이 업데이트 완료 - 현금: ₩' + cash.toLocaleString());
         
     } catch (error) {
+        console.error('디스플레이 업데이트 오류:', error);
         updateDebugInfo('디스플레이 업데이트 오류: ' + error.message);
     }
 }
 
-// 포트폴리오 차트 업데이트
+// 투자 자산 리스트 업데이트 (Firebase 실제 데이터 사용)
+function updateInvestmentList() {
+    try {
+        var investmentListElement = document.getElementById('investmentList');
+        if (!investmentListElement) return;
+        
+        var html = '';
+        var yPosition = 0;
+        var itemSpacing = 60; // 간격을 60px로 증가 (기존 45px)
+        
+        // Firebase에서 실제 투자 데이터 가져오기
+        if (currentUser && currentUser.investments && currentUser.investments.length > 0) {
+            currentUser.investments.forEach(function(investment, index) {
+                var changeColor = investment.change >= 0 ? '#28a745' : '#dc3545';
+                var changeSign = investment.change >= 0 ? '+' : '';
+                var profitValue = investment.change || investment.profit || 0;
+                
+                html += '<div style="position: absolute; top: ' + yPosition + 'px; left: 0; width: 100%; height: 50px; display: flex; align-items: center; justify-content: space-between; line-height: 1.4; padding: 8px 0;">';
+                html += '<span style="font-weight: 600;">' + investment.name;
+                if (investment.quantity) {
+                    html += ' (' + investment.quantity + '주)';
+                }
+                html += '</span>';
+                html += '<span style="color: ' + changeColor + '; font-weight: bold; font-size: 28px;">' + changeSign + profitValue + '%</span>';
+                html += '</div>';
+                
+                yPosition += itemSpacing;
+            });
+        } else if (currentUser && currentUser.stocks) {
+            // 다른 구조의 투자 데이터 확인
+            Object.keys(currentUser.stocks).forEach(function(stockName, index) {
+                var stock = currentUser.stocks[stockName];
+                var changeColor = stock.change >= 0 ? '#28a745' : '#dc3545';
+                var changeSign = stock.change >= 0 ? '+' : '';
+                
+                html += '<div style="position: absolute; top: ' + yPosition + 'px; left: 0; width: 100%; height: 50px; display: flex; align-items: center; justify-content: space-between; line-height: 1.4; padding: 8px 0;">';
+                html += '<span style="font-weight: 600;">' + stockName + ' (' + stock.quantity + '주)</span>';
+                html += '<span style="color: ' + changeColor + '; font-weight: bold; font-size: 28px;">' + changeSign + stock.change + '%</span>';
+                html += '</div>';
+                
+                yPosition += itemSpacing;
+            });
+        } else {
+            // Firebase에서 실제 데이터가 없는 경우 빈 상태로 유지
+            html += '<div style="position: absolute; top: 0px; left: 0; width: 100%; height: 50px; display: flex; align-items: center; justify-content: center; line-height: 1.4; padding: 8px 0; color: #999;">';
+            html += '<span style="font-style: italic;">투자 자산 정보를 불러오는 중...</span>';
+            html += '</div>';
+            yPosition = 60;
+        }
+        
+        investmentListElement.innerHTML = html;
+        investmentListElement.style.height = Math.max(60, yPosition) + 'px';
+        
+        updateDebugInfo('투자 자산 리스트 업데이트 완료 - 실제 데이터만 표시');
+        
+    } catch (error) {
+        console.error('투자 자산 리스트 업데이트 오류:', error);
+        updateDebugInfo('투자 자산 리스트 업데이트 오류: ' + error.message);
+    }
+}
+
+// 자산 배경 크기 동적 조정
+function updateAssetBackground() {
+    try {
+        var assetBackground = document.getElementById('assetBackground');
+        var investmentList = document.getElementById('investmentList');
+        
+        if (!assetBackground || !investmentList) return;
+        
+        // 투자 자산 개수에 따라 배경 높이 조정
+        var investmentCount = 2; // 기본값
+        if (currentUser && currentUser.investments && currentUser.investments.length > 0) {
+            investmentCount = Math.max(2, currentUser.investments.length);
+        } else if (currentUser && currentUser.stocks) {
+            investmentCount = Math.max(2, Object.keys(currentUser.stocks).length);
+        }
+        
+        // 기본 높이 + 투자 항목당 추가 높이 (간격 증가 반영)
+        var baseHeight = 250; // 기본 높이 증가
+        var itemHeight = 60; // 아이템당 높이 증가 (기존 45px → 60px)
+        var newHeight = baseHeight + (investmentCount * itemHeight);
+        
+        assetBackground.style.height = newHeight + 'px';
+        
+        updateDebugInfo('자산 배경 높이 조정: ' + newHeight + 'px (항목 수: ' + investmentCount + ')');
+        
+    } catch (error) {
+        console.error('자산 배경 조정 오류:', error);
+        updateDebugInfo('자산 배경 조정 오류: ' + error.message);
+    }
+}
+
+// 포트폴리오 차트 업데이트 (실제 데이터만 사용)
 function updatePortfolioChart() {
     try {
         var canvas = document.getElementById('portfolioChart');
@@ -614,13 +746,47 @@ function updatePortfolioChart() {
         
         var ctx = canvas.getContext('2d');
         
-        // 기본 포트폴리오 데이터
-        var data = [
-            { label: '현금', value: cash, color: '#6B7280' },
-            { label: '주식', value: 5000000, color: '#3B82F6' },
-            { label: '채권', value: 2000000, color: '#10B981' },
-            { label: '기타', value: 3000000, color: '#F59E0B' }
-        ];
+        // 실제 Firebase 데이터만 사용
+        var data = [];
+        
+        // 현금은 항상 표시
+        if (cash > 0) {
+            data.push({ label: '현금', value: cash, color: '#6B7280' });
+        }
+        
+        // 실제 투자 데이터가 있는 경우만 추가
+        if (currentUser && currentUser.investments && currentUser.investments.length > 0) {
+            currentUser.investments.forEach(function(investment) {
+                if (investment.value && investment.value > 0) {
+                    data.push({ 
+                        label: investment.name, 
+                        value: investment.value, 
+                        color: investment.color || '#3B82F6' 
+                    });
+                }
+            });
+        } else if (currentUser && currentUser.stocks) {
+            Object.keys(currentUser.stocks).forEach(function(stockName) {
+                var stock = currentUser.stocks[stockName];
+                if (stock.value && stock.value > 0) {
+                    data.push({ 
+                        label: stockName, 
+                        value: stock.value, 
+                        color: stock.color || '#3B82F6' 
+                    });
+                }
+            });
+        }
+        
+        // 데이터가 현금만 있거나 없는 경우 차트를 그리지 않음
+        if (data.length <= 1) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#999';
+            ctx.font = '16px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('포트폴리오 데이터 없음', canvas.width / 2, canvas.height / 2);
+            return;
+        }
         
         portfolioChart = new Chart(ctx, {
             type: 'doughnut',
@@ -649,37 +815,6 @@ function updatePortfolioChart() {
     }
 }
 
-// 투자 자산 리스트 업데이트
-function updateInvestmentList() {
-    try {
-        var listElement = document.getElementById('investmentList');
-        if (!listElement) return;
-        
-        // 샘플 투자 자산 데이터
-        var investments = [
-            { name: '삼성전자', quantity: 100, profit: 1.8, amount: 5000000 },
-            { name: '청년희망적금', rate: 3.0, amount: 2000000 }
-        ];
-        
-        var html = '';
-        investments.forEach(function(investment) {
-            html += '<div style="font-size: 11px; color: #333; display: flex; justify-content: space-between; align-items: center; padding: 2px 8px; background: rgba(255,255,255,0.3); border-radius: 6px; margin: 1px 0;">';
-            html += '<span>' + investment.name + '</span>';
-            if (investment.profit) {
-                html += '<span style="color: #DC2626;">+' + investment.profit + '%</span>';
-            } else if (investment.rate) {
-                html += '<span style="color: #10B981;">' + investment.rate + '%</span>';
-            }
-            html += '</div>';
-        });
-        
-        listElement.innerHTML = html;
-        
-    } catch (error) {
-        updateDebugInfo('투자 자산 리스트 업데이트 오류: ' + error.message);
-    }
-}
-
 // 네비게이션 함수들
 function goToHome() {
     updateDebugInfo('홈 버튼 클릭');
@@ -689,6 +824,16 @@ function goToHome() {
 function goToDocuments() {
     updateDebugInfo('문서 버튼 클릭');
     window.location.href = 'a1_backup.html?v=' + Date.now(); // 투자 페이지
+}
+
+function showDocuments() {
+    updateDebugInfo('문서 버튼 클릭');
+    window.location.href = 'a1_backup.html?v=' + Date.now(); // 투자 페이지
+}
+
+function showCharts() {
+    updateDebugInfo('차트 버튼 클릭');
+    alert('차트 기능은 준비 중입니다.');
 }
 
 function openChat() {
@@ -706,8 +851,13 @@ function showNotifications() {
     alert('알림 기능은 준비 중입니다.');
 }
 
+function showSettings() {
+    updateDebugInfo('환경설정 버튼 클릭');
+    alert('환경설정 기능은 준비 중입니다.');
+}
+
 function openProfileSettings() {
-    updateDebugInfo('프로필 설정 버튼 클릭');
+    updateDebugInfo('프로필 설정 클릭');
     var modal = document.getElementById('profileModal');
     if (modal) {
         modal.classList.remove('hidden');
@@ -717,6 +867,8 @@ function openProfileSettings() {
         if (nameInput && currentUser) {
             nameInput.value = currentUser.name || currentUser.id || '';
         }
+    } else {
+        alert('프로필 설정 기능은 준비 중입니다.');
     }
 }
 
@@ -790,6 +942,12 @@ window.addEventListener('beforeunload', function() {
 });
 
 console.log('FINE U 메인 페이지 로드 완료');
+
+// Firebase 초기화 실행
+document.addEventListener('DOMContentLoaded', function() {
+    initializeFirebase();
+});
+
 </script>
 
 </body>
