@@ -880,23 +880,19 @@
                         <div class="loading"></div>
                     </div>
                     <span id="loginBtnText" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-                                                  color: white; font-weight: bold; font-size: clamp(12px, 4vw, 18px); pointer-events: none; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); opacity: 0;">로그인</span>
+                                                  color: black; font-weight: bold; font-size: clamp(14px, 4vw, 20px); pointer-events: none; text-align: center;">LOGIN</span>
+                    <!-- 아이디/비밀번호 찾기 및 회원가입 링크 -->
+                    <div style="position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%); width: 100%; text-align: center; z-index: 10;">
+                        <div>
+                            <a href="#" onclick="findAccount()" style="color: #666; font-size: clamp(10px, 3vw, 14px); text-decoration: none; margin-right: 30px;">아이디/비밀번호 찾기</a>
+                            <a href="#" onclick="goToSignup()" style="color: #007bff; font-size: clamp(11px, 3.5vw, 16px); text-decoration: none; font-weight: bold;">회원가입</a>
+                        </div>
+                    </div>
                 </td>
             </tr>
             <tr>
                 <td style="width: 56.9%; height: auto; position: relative;">
                     <img src="images/FINEU1_09.png" style="width: 100%; height: auto; display: block;" alt="">
-                    <!-- 아이디/비밀번호 찾기 및 회원가입 링크 -->
-                    <div style="position: absolute; top: 20%; left: 50%; transform: translateX(-50%); width: 90%; text-align: center;">
-                        <div style="margin-bottom: 15px;">
-                            <a href="#" onclick="findAccount()" style="color: #666; font-size: clamp(10px, 3vw, 14px); text-decoration: none; margin-right: 20px;">아이디 찾기</a>
-                            <span style="color: #ccc; font-size: clamp(10px, 3vw, 14px);">|</span>
-                            <a href="#" onclick="findPassword()" style="color: #666; font-size: clamp(10px, 3vw, 14px); text-decoration: none; margin-left: 20px;">비밀번호 찾기</a>
-                        </div>
-                        <div>
-                            <a href="#" onclick="goToSignup()" style="color: #007bff; font-size: clamp(11px, 3.5vw, 16px); text-decoration: none; font-weight: bold;">회원가입</a>
-                        </div>
-                    </div>
                 </td>
             </tr>
         </table>
@@ -1281,14 +1277,9 @@ function quickLoginGunwoo() {
     performLogin();
 }
 
-// 아이디 찾기 함수
+// 아이디/비밀번호 찾기 함수 (통합)
 function findAccount() {
-    alert('아이디 찾기 기능입니다.\n준비 중입니다.');
-}
-
-// 비밀번호 찾기 함수
-function findPassword() {
-    alert('비밀번호 찾기 기능입니다.\n준비 중입니다.');
+    alert('아이디/비밀번호 찾기 기능입니다.\n준비 중입니다.');
 }
 
 // 회원가입 페이지 이동 함수
