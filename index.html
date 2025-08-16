@@ -122,6 +122,641 @@
         .level-black { background: linear-gradient(135deg, #374151, #111827); }
         .level-red { background: linear-gradient(135deg, #EF4444, #DC2626); }
         
+        /* 모바일 친화적 메인 화면 스타일 */
+        .main-screen-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+        
+        .main-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        
+        .background-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+        
+        .content-overlay {
+            position: relative;
+            z-index: 10;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        /* 헤더 프로필 영역 */
+        .header-profile-area {
+            position: absolute;
+            top: 200px;
+            right: 30px;
+            z-index: 15;
+        }
+        
+        .header-profile-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+        }
+        
+        .header-profile-icon:hover {
+            transform: scale(1.05);
+        }
+        
+        .header-profile-icon img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid white;
+        }
+        
+        .header-profile-icon i {
+            font-size: 24px;
+            color: white;
+        }
+        
+        /* 메인 프로필 섹션 */
+        .main-profile-section {
+            margin-top: 250px;
+            padding: 0 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .profile-photo-container {
+            position: relative;
+        }
+        
+        .profile-photo {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            overflow: hidden;
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border: 4px solid #2196f3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 25px rgba(33, 150, 243, 0.3);
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        
+        .profile-photo:hover {
+            transform: scale(1.05);
+        }
+        
+        .profile-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .profile-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #1976d2;
+            text-align: center;
+        }
+        
+        .profile-placeholder i {
+            font-size: 40px;
+            margin-bottom: 8px;
+        }
+        
+        .profile-placeholder span {
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        /* 등급 뱃지 */
+        .level-badge-container {
+            position: absolute;
+            top: 220px;
+            right: 50px;
+        }
+        
+        .level-badge {
+            background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+            border-radius: 20px;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.3);
+            transition: transform 0.3s ease;
+        }
+        
+        .level-badge:hover {
+            transform: scale(1.05);
+        }
+        
+        .level-badge span {
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .level-badge i {
+            color: white;
+            font-size: 14px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+        
+        /* 프로필 설정 버튼 */
+        .profile-settings-btn {
+            position: absolute;
+            top: 280px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #9c27b0 0%, #673ab7 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(156, 39, 176, 0.3);
+            transition: transform 0.3s ease;
+        }
+        
+        .profile-settings-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .profile-settings-btn i {
+            color: white;
+            font-size: 16px;
+        }
+        
+        /* 사용자 이름 카드 */
+        .user-name-container {
+            margin-top: 20px;
+        }
+        
+        .user-name-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%);
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 12px 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .user-name-card span {
+            font-weight: bold;
+            font-size: 18px;
+            color: #333;
+        }
+        
+        /* 가입일 카드 */
+        .join-date-container {
+            margin-top: 10px;
+        }
+        
+        .join-date-card {
+            background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
+            border: 2px solid #4caf50;
+            border-radius: 10px;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 3px 10px rgba(76, 175, 80, 0.2);
+        }
+        
+        .join-date-card i {
+            color: #388e3c;
+            font-size: 14px;
+        }
+        
+        .join-date-card span {
+            font-size: 14px;
+            color: #2e7d32;
+            font-weight: 600;
+        }
+        
+        /* ASSETS 섹션 */
+        .assets-section {
+            margin-top: 50px;
+            padding: 0 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .cash-container, .stock-container, .savings-container {
+            width: 100%;
+        }
+        
+        .cash-card {
+            background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
+            border: 3px solid #4caf50;
+            border-radius: 12px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.3);
+            transition: transform 0.3s ease;
+        }
+        
+        .cash-card:hover {
+            transform: translateY(-2px);
+        }
+        
+        .cash-card i {
+            color: #2e7d32;
+            font-size: 20px;
+        }
+        
+        .cash-card span {
+            font-weight: bold;
+            font-size: 18px;
+            color: #1b5e20;
+        }
+        
+        .stock-card {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border: 3px solid #2196f3;
+            border-radius: 12px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            box-shadow: 0 6px 20px rgba(33, 150, 243, 0.3);
+            transition: transform 0.3s ease;
+        }
+        
+        .stock-card:hover {
+            transform: translateY(-2px);
+        }
+        
+        .stock-card i {
+            color: #1565c0;
+            font-size: 18px;
+        }
+        
+        .stock-card span {
+            font-weight: bold;
+            font-size: 16px;
+            color: #0d47a1;
+        }
+        
+        .savings-card {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffcc02 100%);
+            border: 3px solid #ff9800;
+            border-radius: 12px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            box-shadow: 0 6px 20px rgba(255, 152, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+        
+        .savings-card:hover {
+            transform: translateY(-2px);
+        }
+        
+        .savings-card i {
+            color: #e65100;
+            font-size: 18px;
+        }
+        
+        .savings-card span {
+            font-weight: bold;
+            font-size: 16px;
+            color: #bf360c;
+        }
+        
+        /* PORTFOLIO 섹션 */
+        .portfolio-section {
+            margin-top: 50px;
+            padding: 0 20px 100px 20px;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .portfolio-chart-container {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border: 2px solid #e0e0e0;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            max-width: 350px;
+            width: 100%;
+        }
+        
+        .chart-title {
+            text-align: center;
+            font-weight: bold;
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .chart-wrapper {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .chart-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            text-align: center;
+            min-height: 200px;
+        }
+        
+        .chart-placeholder i {
+            font-size: 50px;
+            margin-bottom: 15px;
+            color: #ddd;
+        }
+        
+        .chart-placeholder span {
+            font-size: 16px;
+        }
+        
+        /* 하단 네비게이션 */
+        .bottom-navigation {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.2);
+            backdrop-filter: blur(10px);
+            z-index: 20;
+        }
+        
+        .nav-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 50px;
+        }
+        
+        .nav-btn:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+        
+        .nav-btn.active {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.1);
+        }
+        
+        .nav-btn i {
+            color: white;
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+        
+        .nav-level-badge {
+            background: rgba(255,255,255,0.2);
+            border-radius: 15px;
+            padding: 6px 12px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.3);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .nav-level-badge span {
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+        
+        .nav-level-badge i {
+            color: white;
+            font-size: 10px;
+            margin: 0;
+        }
+        
+        /* 레벨별 색상 */
+        .level-bronze {
+            background: linear-gradient(135deg, #cd7f32 0%, #8b4513 100%) !important;
+        }
+        
+        .level-silver {
+            background: linear-gradient(135deg, #c0c0c0 0%, #808080 100%) !important;
+        }
+        
+        .level-gold {
+            background: linear-gradient(135deg, #ffd700 0%, #daa520 100%) !important;
+        }
+        
+        .level-platinum {
+            background: linear-gradient(135deg, #e5e4e2 0%, #717171 100%) !important;
+        }
+        
+        .level-diamond {
+            background: linear-gradient(135deg, #b9f2ff 0%, #00bfff 100%) !important;
+        }
+        
+        /* 모바일 반응형 */
+        @media (max-width: 768px) {
+            .content-overlay {
+                padding: 10px;
+            }
+            
+            .main-profile-section {
+                margin-top: 180px;
+                gap: 15px;
+            }
+            
+            .profile-photo {
+                width: 120px;
+                height: 120px;
+            }
+            
+            .header-profile-area {
+                top: 150px;
+                right: 20px;
+            }
+            
+            .header-profile-icon {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .header-profile-icon img {
+                width: 32px;
+                height: 32px;
+            }
+            
+            .header-profile-icon i {
+                font-size: 20px;
+            }
+            
+            .level-badge-container {
+                top: 170px;
+                right: 30px;
+            }
+            
+            .level-badge {
+                padding: 8px 16px;
+            }
+            
+            .level-badge span {
+                font-size: 14px;
+            }
+            
+            .profile-settings-btn {
+                top: 210px;
+                right: 15px;
+                width: 35px;
+                height: 35px;
+            }
+            
+            .user-name-card {
+                padding: 10px 20px;
+            }
+            
+            .user-name-card span {
+                font-size: 16px;
+            }
+            
+            .assets-section {
+                margin-top: 30px;
+                padding: 0 10px;
+            }
+            
+            .cash-card, .stock-card, .savings-card {
+                padding: 14px 18px;
+            }
+            
+            .cash-card span {
+                font-size: 16px;
+            }
+            
+            .stock-card span, .savings-card span {
+                font-size: 14px;
+            }
+            
+            .portfolio-section {
+                margin-top: 30px;
+                padding: 0 10px 100px 10px;
+            }
+            
+            .portfolio-chart-container {
+                padding: 20px;
+                max-width: 320px;
+            }
+            
+            .chart-title {
+                font-size: 16px;
+            }
+            
+            .bottom-navigation {
+                padding: 12px 15px;
+            }
+            
+            .nav-btn {
+                padding: 8px;
+                min-width: 45px;
+            }
+            
+            .nav-btn i {
+                font-size: 18px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .main-profile-section {
+                margin-top: 140px;
+            }
+            
+            .profile-photo {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .profile-placeholder i {
+                font-size: 30px;
+            }
+            
+            .profile-placeholder span {
+                font-size: 10px;
+            }
+            
+            .header-profile-area {
+                top: 120px;
+                right: 15px;
+            }
+            
+            .level-badge-container {
+                top: 140px;
+                right: 20px;
+            }
+            
+            .profile-settings-btn {
+                top: 180px;
+                right: 10px;
+                width: 30px;
+                height: 30px;
+            }
+            
+            .profile-settings-btn i {
+                font-size: 14px;
+            }
+            
+            .assets-section {
+                gap: 12px;
+            }
+            
+            .portfolio-chart-container {
+                max-width: 280px;
+                padding: 15px;
+            }
+        }
+        
         .asset-category {
             border-left: 4px solid;
         }
@@ -929,639 +1564,139 @@
 
 <!-- 메인 화면 -->
 <div id="mainScreen" class="screen">
-    <!-- 메인페이지-견본.html의 정확한 픽셀 구조로 재구성 -->
-    <div style="width: 100%; height: 100vh; overflow: auto; background-color: #FFFFFF; margin: 0; padding: 0;">
-        <table width="1126" height="2437" border="0" cellpadding="0" cellspacing="0" style="margin: 0 auto;">
-            <!-- 상단 배경 (1125x187) -->
-            <tr>
-                <td colspan="44">
-                    <img src="images/메인페이지-견본_01.png" width="1125" height="187" border="0" alt="">
-                </td>
-                <td>
-                    <img src="images/스페이서.gif" width="1" height="187" alt="">
-                </td>
-            </tr>
+    <!-- 통합된 배경 이미지를 사용한 모바일 친화적 레이아웃 -->
+    <div class="main-screen-container">
+        <!-- 배경 이미지 -->
+        <div class="main-background">
+            <img src="images/메인페이지 배경.png" alt="메인페이지 배경" class="background-image">
+        </div>
+        
+        <!-- 동적 컨텐츠 오버레이 -->
+        <div class="content-overlay">
+            <!-- 상단 프로필 영역 -->
+            <div class="header-profile-area">
+                <div class="header-profile-icon">
+                    <img id="headerProfileImage" src="" alt="Profile" style="display: none;">
+                    <i id="headerProfileIcon" class="fas fa-user"></i>
+                </div>
+            </div>
             
-            <!-- 헤더 영역 시작 -->
-            <tr>
-                <td colspan="18" rowspan="2">
-                    <img src="images/메인페이지-견본_02.png" width="330" height="22" border="0" alt="">
-                </td>
-                <td colspan="15" rowspan="5">
-                    <img src="images/메인페이지-견본_03.png" width="467" height="153" border="0" alt="">
-                </td>
-                <td colspan="11">
-                    <img src="images/메인페이지-견본_04.png" width="328" height="21" border="0" alt="">
-                </td>
-                <td>
-                    <img src="images/스페이서.gif" width="1" height="21" alt="">
-                </td>
-            </tr>
-            
-            <tr>
-                <td colspan="3" rowspan="7">
-                    <img src="images/메인페이지-견본_05.png" width="163" height="356" border="0" alt="">
-                </td>
-                <td colspan="4" rowspan="3">
-                    <img src="images/메인페이지-견본_06.png" width="96" height="115" border="0" alt="">
-                </td>
-                <td colspan="4" rowspan="7">
-                    <img src="images/메인페이지-견본_07.png" width="69" height="356" border="0" alt="">
-                </td>
-                <td>
-                    <img src="images/스페이서.gif" width="1" height="1" alt="">
-                </td>
-            </tr>
-            
-            <!-- 프로필 상단 영역 -->
-            <tr>
-                <td rowspan="41">
-                    <img src="images/메인페이지-견본_08.png" width="70" height="2227" border="0" alt="">
-                </td>
-                <td colspan="10" style="position: relative; background: #f8f9fa;">
-                    <!-- 상단 프로필 아이콘 영역을 코드로 구현 -->
-                    <div style="width: 113px; height: 112px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; cursor: pointer;" onclick="showProfileModal()">
-                        <img id="headerProfileImage" src="" alt="Profile" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; display: none; border: 3px solid white;">
-                        <i id="headerProfileIcon" class="fas fa-user" style="font-size: 32px; color: white; display: block;"></i>
-                    </div>
-                </td>
-                <td colspan="7" rowspan="4">
-                    <img src="images/메인페이지-견본_10.png" width="147" height="248" border="0" alt="">
-                </td>
-                <td>
-                    <img src="images/스페이서.gif" width="1" height="112" alt="">
-                </td>
-            </tr>
-            
-            <tr>
-                <td colspan="10" rowspan="3">
-                    <img src="images/메인페이지-견본_11.png" width="113" height="136" border="0" alt="">
-                </td>
-                <td>
-                    <img src="images/스페이서.gif" width="1" height="2" alt="">
-                </td>
-            </tr>
-            
-            <tr>
-                <td colspan="4" rowspan="4">
-                    <img src="images/메인페이지-견본_12.png" width="96" height="241" border="0" alt="">
-                </td>
-                <td>
-                    <img src="images/스페이서.gif" width="1" height="17" alt="">
-                </td>
-            </tr>
-            
-            <tr>
-                <td colspan="15" rowspan="3">
-                    <img src="images/메인페이지-견본_13.png" width="467" height="224" border="0" alt="">
-                </td>
-                <td>
-                    <img src="images/스페이서.gif" width="1" height="117" alt="">
-                </td>
-            </tr>
-            
-            <!-- PROFILE 텍스트 섹션 -->
-            <tr>
-                <td colspan="2" rowspan="2">
-                    <img src="images/메인페이지-견본_14.png" width="3" height="107" border="0" alt="">
-                </td>
-                <td colspan="12">
-                    <img src="images/메인페이지-견본_15.png" width="219" height="46" border="0" alt="">
-                </td>
-                <td colspan="3" rowspan="2">
-                    <img src="images/메인페이지-견본_16.png" width="38" height="107" border="0" alt="">
-                </td>
-                <td>
-                    <img src="images/스페이서.gif" width="1" height="46" alt="">
-                </td>
-            </tr>
-            
-            <tr>
-                <td colspan="12">
-                    <img src="images/메인페이지-견본_17.png" width="219" height="61" border="0" alt="">
-                </td>
-                <td>
-                    <img src="images/스페이서.gif" width="1" height="61" alt="">
-                </td>
-            </tr>
-            
-            <!-- 프로필 메인 컨테이너 -->
-            <tr>
-                <td colspan="40" style="position: relative;">
-                    <img src="images/메인페이지-견본_18.png" width="988" height="43" border="0" alt="">
-                </td>
-                <td colspan="3" rowspan="13">
-                    <img src="images/메인페이지-견본_19.png" width="67" height="520" border="0" alt="">
-                </td>
-                <td>
-                    <img src="images/스페이서.gif" width="1" height="43" alt="">
-                </td>
-            </tr>
-            
-            <!-- 프로필 상세 영역 -->
-            <tr>
-                <td colspan="6" rowspan="9">
-                    <img src="images/메인페이지-견본_20.png" width="56" height="302" border="0" alt="">
-                </td>
-                <td colspan="13" rowspan="8" style="position: relative; background: #f8f9fa; padding: 15px;">
-                    <!-- 프로필 사진 영역을 완전히 코드로 구현 -->
-                    <div style="width: 228px; height: 230px; border-radius: 50%; overflow: hidden; background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); border: 4px solid #2196f3; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 25px rgba(33, 150, 243, 0.3); cursor: pointer;" onclick="showProfileModal()">
-                        <img id="mainProfileImage" src="" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; display: none;">
-                        <div id="mainProfilePlaceholder" style="display: flex; flex-direction: column; align-items: center; justify-content: center; color: #1976d2;">
-                            <i id="mainProfileIcon" class="fas fa-user" style="font-size: 80px; margin-bottom: 10px;"></i>
-                            <span style="font-size: 14px; font-weight: 600;">프로필 사진</span>
+            <!-- 메인 프로필 섹션 -->
+            <div class="main-profile-section">
+                <!-- 프로필 사진 -->
+                <div class="profile-photo-container">
+                    <div class="profile-photo">
+                        <img id="mainProfileImage" src="" alt="Profile" style="display: none;">
+                        <div id="mainProfilePlaceholder" class="profile-placeholder">
+                            <i id="mainProfileIcon" class="fas fa-user"></i>
+                            <span>프로필</span>
                         </div>
                     </div>
-                </td>
-                <td colspan="2" rowspan="9">
-                    <img src="images/메인페이지-견본_22.png" width="52" height="302" border="0" alt="">
-                </td>
-                <td colspan="9" rowspan="3" style="position: relative; background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%); border-radius: 8px; padding: 10px;">
-                    <!-- 등급 뱃지를 완전히 코드로 구현 -->
-                    <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column;">
-                        <div style="background: rgba(255,255,255,0.2); border-radius: 20px; padding: 8px 16px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3);">
-                            <span id="mainUserLevel" style="color: white; font-weight: bold; font-size: 18px; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">YELLOW</span>
-                        </div>
-                        <div style="margin-top: 5px;">
-                            <i class="fas fa-star" style="color: white; font-size: 12px; text-shadow: 0 1px 2px rgba(0,0,0,0.3);"></i>
+                </div>
+                
+                <!-- 등급 뱃지 -->
+                <div class="level-badge-container">
+                    <div class="level-badge" id="levelBadgeMain">
+                        <span id="mainUserLevel">YELLOW</span>
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+                
+                <!-- 프로필 설정 버튼 -->
+                <div class="profile-settings-btn" onclick="showProfileModal()">
+                    <i class="fas fa-cog"></i>
+                </div>
+                
+                <!-- 사용자 이름 -->
+                <div class="user-name-container">
+                    <div class="user-name-card">
+                        <span id="mainUserName">사용자</span>
+                    </div>
+                </div>
+                
+                <!-- 가입일 -->
+                <div class="join-date-container">
+                    <div class="join-date-card">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span id="mainJoinDays">FINE U와 함께한지 1일</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- ASSETS 섹션 -->
+            <div class="assets-section">
+                <!-- 현금 보유량 -->
+                <div class="cash-container">
+                    <div class="cash-card">
+                        <i class="fas fa-won-sign"></i>
+                        <span id="mainCashAmount">10,000,000원</span>
+                    </div>
+                </div>
+                
+                <!-- 주식 정보 -->
+                <div class="stock-container">
+                    <div class="stock-card">
+                        <i class="fas fa-chart-line"></i>
+                        <span>주식: </span>
+                        <span id="mainStockValue">0원</span>
+                    </div>
+                </div>
+                
+                <!-- 적금 정보 -->
+                <div class="savings-container">
+                    <div class="savings-card">
+                        <i class="fas fa-piggy-bank"></i>
+                        <span>적금: </span>
+                        <span id="mainSavingsValue">0원</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- PORTFOLIO 섹션 -->
+            <div class="portfolio-section">
+                <div class="portfolio-chart-container">
+                    <div class="chart-title">포트폴리오</div>
+                    <div class="chart-wrapper">
+                        <canvas id="mainPortfolioChart" width="300" height="300"></canvas>
+                        <div id="portfolioPlaceholder" class="chart-placeholder" style="display: none;">
+                            <i class="fas fa-chart-pie"></i>
+                            <span>투자 내역이 없습니다</span>
                         </div>
                     </div>
-                </td>
-                <td colspan="10">
-                    <img src="images/메인페이지-견본_24.png" width="315" height="4" border="0" alt="">
-                </td>
-                <td>
-                    <img src="images/스페이서.gif" width="1" height="4" alt="">
-                </td>
-            </tr>
+                </div>
+            </div>
             
-            <!-- 프로필 설정 버튼 영역 -->
-            <tr>
-                <td colspan="4" rowspan="8">
-                    <img src="images/메인페이지-견본_25.png" width="205" height="298" border="0" alt="">
-                </td>
-                <td colspan="3" style="position: relative; cursor: pointer;" onclick="showProfileModal()">
-                    <img src="images/메인페이지-견본_26.png" width="58" height="61" border="0" alt="">
-                </td>
-                <td colspan="3" rowspan="8">
-                    <img src="images/메인페이지-견본_27.png" width="52" height="298" border="0" alt="">
-                </td>
-                <td>
-                    <img src="images/스페이서.gif" width="1" height="61" alt="">
-                </td>
-            </tr>
-            
-            <tr>
-                <td colspan="3" rowspan="7">
-                    <img src="images/메인페이지-견본_28.png" width="58" height="237" border="0" alt="">
-                </td>
-                <td>
-                    <img src="images/스페이서.gif" width="1" height="5" alt="">
-                </td>
-            </tr>
-            
-            <tr>
-                <td colspan="9">
-                    <img src="images/메인페이지-견본_29.png" width="307" height="52" border="0" alt="">
-                </td>
-                <td>
-                    <img src="images/스페이서.gif" width="1" height="52" alt="">
-                </td>
-            </tr>
-            
-            <!-- 이름 표시 영역 -->
-            <tr>
-                <td colspan="3" rowspan="2">
-                    <img src="images/메인페이지-견본_30.png" width="58" height="94" border="0" alt="">
-                </td>
-                <td colspan="4" style="position: relative; background: #f8f9fa; border-radius: 8px; padding: 5px;">
-                    <!-- 이름 표시 영역을 코드로 구현 -->
-                    <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%); border: 1px solid #e0e0e0; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                        <span id="mainUserName" style="font-weight: bold; font-size: 16px; color: #333; text-align: center;">사용자</span>
+            <!-- 하단 네비게이션 -->
+            <div class="bottom-navigation">
+                <!-- 홈 버튼 -->
+                <div class="nav-btn home-btn active" onclick="showMainScreen()">
+                    <i class="fas fa-home"></i>
+                </div>
+                
+                <!-- 뉴스 버튼 -->
+                <div class="nav-btn news-btn" onclick="navigateToPage('a2.html')">
+                    <i class="fas fa-newspaper"></i>
+                </div>
+                
+                <!-- 더보기 버튼 -->
+                <div class="nav-btn more-btn" onclick="navigateToPage('a3.html')">
+                    <i class="fas fa-th"></i>
+                </div>
+                
+                <!-- 게임 버튼 -->
+                <div class="nav-btn game-btn" onclick="navigateToPage('a4.html')">
+                    <i class="fas fa-gamepad"></i>
+                </div>
+                
+                <!-- 등급 버튼 -->
+                <div class="nav-btn level-btn" id="levelBadgeNav" onclick="navigateToPage('a5.html')">
+                    <div class="nav-level-badge">
+                        <span id="navUserLevel">YELLOW</span>
+                        <i class="fas fa-award"></i>
                     </div>
-                </td>
-                <td colspan="2" rowspan="2">
-                    <img src="images/메인페이지-견본_32.png" width="54" height="94" border="0" alt="">
-                </td>
-                <td>
-                    <img src="images/스페이서.gif" width="1" height="48" alt="">
-                </td>
-            </tr>
-            
-            <tr>
-                <td colspan="4">
-                    <img src="images/메인페이지-견본_33.png" width="195" height="46" border="0" alt="">
-                </td>
-                <td>
-                    <img src="images/스페이서.gif" width="1" height="46" alt="">
-                </td>
-            </tr>
-            
-            <!-- 가입일 표시 영역 -->
-            <tr>
-                <td rowspan="3">
-                    <img src="images/메인페이지-견본_34.png" width="6" height="86" border="0" alt="">
-                </td>
-                <td colspan="8" style="position: relative; background: #f8f9fa; border-radius: 6px; padding: 5px;">
-                    <!-- 가입일을 코드로 구현 -->
-                    <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%); border: 1px solid #4caf50; border-radius: 4px;">
-                        <i class="fas fa-calendar-alt" style="color: #388e3c; margin-right: 8px; font-size: 12px;"></i>
-                        <span id="mainJoinDays" style="font-size: 12px; color: #2e7d32; font-weight: 600;">FINE U와 함께한지 1일</span>
-                    </div>
-                </td>
-                <td>
-                    <img src="images/스페이서.gif" width="1" height="29" alt="">
-                </td>
-            </tr>
-            
-            <tr>
-                <td colspan="8" rowspan="2">
-                    <img src="images/메인페이지-견본_36.png" width="301" height="57" border="0" alt="">
-                </td>
-                <td>
-                    <img src="images/스페이서.gif" width="1" height="15" alt="">
-                </td>
-            </tr>
-            
-            <tr>
-                <td colspan="13">
-                    <img src="images/메인페이지-견본_37.png" width="258" height="42" border="0" alt="">
-                </td>
-                <td>
-                    <img src="images/스페이서.gif" width="1" height="42" alt="">
-                </td>
-            </tr>
-            
-            <!-- ASSETS 섹션 시작 -->
-            <tr>
-                <td colspan="40">
-                    <img src="images/메인페이지-견본_38.png" width="988" height="66" border="0" alt="">
-                </td>
-                <td>
-                    <img src="images/스페이서.gif" width="1" height="66" alt="">
-                </td>
-            </tr>
-            
-            <tr>
-                <td rowspan="24">
-                    <img src="images/메인페이지-견본_39.png" width="1" height="1461" border="0" alt="">
-                </td>
-                <td colspan="12">
-                    <img src="images/메인페이지-견본_40.png" width="203" height="46" border="0" alt="">
-                </td>
-                <td colspan="27" rowspan="2">
-                    <img src="images/메인페이지-견본_41.png" width="784" height="109" border="0" alt="">
-                </td>
-                <td>
-                    <img src="images/스페이서.gif" width="1" height="46" alt="">
-                </td>
-            </tr>
-            
-            <tr>
-                <td colspan="12">
-                    <img src="images/메인페이지-견본_42.png" width="203" height="63" border="0" alt="">
-                </td>
-                <td>
-                    <img src="images/스페이서.gif" width="1" height="63" alt="">
-                </td>
-            </tr>
-            
-            <!-- ASSETS 상세 영역 -->
-            <tr>
-                <td rowspan="22">
-                    <img src="images/메인페이지-견본_43.png" width="2" height="1352" border="0" alt="">
-                </td>
-                <td colspan="39">
-                    <img src="images/메인페이지-견본_44.png" width="988" height="38" border="0" alt="">
-                </td>
-                <td colspan="2" rowspan="12">
-                    <img src="images/메인페이지-견본_45.png" width="64" height="520" border="0" alt="">
-                </td>
-                <td>
-                    <img src="images/스페이서.gif" width="1" height="38" alt="">
-                </td>
-            </tr>
-            
-            <tr>
-                <td colspan="5" rowspan="8">
-                    <img src="images/메인페이지-견본_46.png" width="54" height="307" border="0" alt="">
-                </td>
-                <td colspan="5" rowspan="3">
-                    <img src="images/메인페이지-견본_47.png" width="95" height="91" border="0" alt="">
-                </td>
-                <td colspan="29">
-                    <img src="images/메인페이지-견본_48.png" width="839" height="19" border="0" alt="">
-                </td>
-                <td>
-                    <img src="images/스페이서.gif" width="1" height="19" alt="">
-                </td>
-            </tr>
-            
-            <!-- 현금보유량 영역 -->
-            <tr>
-                <td colspan="3" rowspan="3">
-                    <img src="images/메인페이지-견본_49.png" width="71" height="116" border="0" alt="">
-                </td>
-                <td colspan="12" style="position: relative; background: #f8f9fa; border-radius: 8px; padding: 8px;">
-                    <!-- 현금보유량을 코드로 구현 -->
-                    <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%); border: 2px solid #4caf50; border-radius: 6px; box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);">
-                        <div style="display: flex; align-items: center;">
-                            <i class="fas fa-won-sign" style="color: #2e7d32; font-size: 18px; margin-right: 8px;"></i>
-                            <span id="mainCashAmount" style="font-weight: bold; font-size: 16px; color: #1b5e20;">10,000,000원</span>
-                        </div>
-                    </div>
-                </td>
-                <td colspan="14" rowspan="3">
-                    <img src="images/메인페이지-견본_51.png" width="393" height="116" border="0" alt="">
-                </td>
-                <td>
-                    <img src="images/스페이서.gif" width="1" height="52" alt="">
-                </td>
-            </tr>
-            
-            <tr>
-                <td colspan="12" rowspan="2">
-                    <img src="images/메인페이지-견본_52.png" width="375" height="64" border="0" alt="">
-                </td>
-                <td>
-                    <img src="images/스페이서.gif" width="1" height="20" alt="">
-                </td>
-            </tr>
-            
-            <tr>
-                <td colspan="5">
-                    <img src="images/메인페이지-견본_53.png" width="95" height="44" border="0" alt="">
-                </td>
-                <td>
-                    <img src="images/스페이서.gif" width="1" height="44" alt="">
-                </td>
-            </tr>
-            
-            <!-- 주식 영역 -->
-            <tr>
-                <td rowspan="4">
-                    <img src="images/메인페이지-견본_54.png" width="1" height="172" border="0" alt="">
-                </td>
-                <td colspan="28" style="position: relative; background: #f8f9fa; border-radius: 8px; padding: 8px;">
-                    <!-- 주식 정보를 코드로 구현 -->
-                    <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: flex-start; background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); border: 2px solid #2196f3; border-radius: 6px; box-shadow: 0 4px 12px rgba(33, 150, 243, 0.2); padding-left: 15px;">
-                        <div style="display: flex; align-items: center;">
-                            <i class="fas fa-chart-line" style="color: #1565c0; font-size: 16px; margin-right: 8px;"></i>
-                            <span style="font-weight: bold; font-size: 14px; color: #0d47a1;">주식: </span>
-                            <span id="mainStockValue" style="font-weight: bold; font-size: 14px; color: #1565c0; margin-left: 4px;">0원</span>
-                        </div>
-                    </div>
-                </td>
-                <td colspan="5" rowspan="4">
-                    <img src="images/메인페이지-견본_56.png" width="59" height="172" border="0" alt="">
-                </td>
-                <td>
-                    <img src="images/스페이서.gif" width="1" height="48" alt="">
-                </td>
-            </tr>
-            
-            <tr>
-                <td colspan="28">
-                    <img src="images/메인페이지-견본_57.png" width="874" height="31" border="0" alt="">
-                </td>
-                <td>
-                    <img src="images/스페이서.gif" width="1" height="31" alt="">
-                </td>
-            </tr>
-            
-            <!-- 적금 영역 -->
-            <tr>
-                <td rowspan="2">
-                    <img src="images/메인페이지-견본_58.png" width="1" height="93" border="0" alt="">
-                </td>
-                <td colspan="16" style="position: relative; background: #f8f9fa; border-radius: 8px; padding: 8px;">
-                    <!-- 적금 정보를 코드로 구현 -->
-                    <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: flex-start; background: linear-gradient(135deg, #fff3e0 0%, #ffcc02 100%); border: 2px solid #ff9800; border-radius: 6px; box-shadow: 0 4px 12px rgba(255, 152, 0, 0.2); padding-left: 15px;">
-                        <div style="display: flex; align-items: center;">
-                            <i class="fas fa-piggy-bank" style="color: #e65100; font-size: 16px; margin-right: 8px;"></i>
-                            <span style="font-weight: bold; font-size: 14px; color: #bf360c;">적금: </span>
-                            <span id="mainSavingsValue" style="font-weight: bold; font-size: 14px; color: #e65100; margin-left: 4px;">0원</span>
-                        </div>
-                    </div>
-                </td>
-                <td colspan="11" rowspan="2">
-                    <img src="images/메인페이지-견본_60.png" width="429" height="93" border="0" alt="">
-                </td>
-                <td>
-                    <img src="images/스페이서.gif" width="1" height="48" alt="">
-                </td>
-            </tr>
-            
-            <tr>
-                <td colspan="16">
-                    <img src="images/메인페이지-견본_61.png" width="444" height="45" border="0" alt="">
-                </td>
-                <td>
-                    <img src="images/스페이서.gif" width="1" height="45" alt="">
-                </td>
-            </tr>
-            
-            <!-- PORTFOLIO 섹션 시작 -->
-            <tr>
-                <td colspan="39">
-                    <img src="images/메인페이지-견본_62.png" width="988" height="66" border="0" alt="">
-                </td>
-                <td>
-                    <img src="images/스페이서.gif" width="1" height="66" alt="">
-                </td>
-            </tr>
-            
-            <tr>
-                <td rowspan="12">
-                    <img src="images/메인페이지-견본_63.png" width="2" height="941" border="0" alt="">
-                </td>
-                <td colspan="15">
-                    <img src="images/메인페이지-견본_64.png" width="296" height="46" border="0" alt="">
-                </td>
-                <td colspan="23" rowspan="2">
-                    <img src="images/메인페이지-견본_65.png" width="690" height="109" border="0" alt="">
-                </td>
-                <td>
-                    <img src="images/스페이서.gif" width="1" height="46" alt="">
-                </td>
-            </tr>
-            
-            <tr>
-                <td colspan="15">
-                    <img src="images/메인페이지-견본_66.png" width="296" height="63" border="0" alt="">
-                </td>
-                <td>
-                    <img src="images/스페이서.gif" width="1" height="63" alt="">
-                </td>
-            </tr>
-            
-            <!-- 포트폴리오 차트 영역 -->
-            <tr>
-                <td rowspan="10">
-                    <img src="images/메인페이지-견본_67.png" width="5" height="832" border="0" alt="">
-                </td>
-                <td colspan="38">
-                    <img src="images/메인페이지-견본_68.png" width="987" height="41" border="0" alt="">
-                </td>
-                <td rowspan="10">
-                    <img src="images/메인페이지-견본_69.png" width="58" height="832" border="0" alt="">
-                </td>
-                <td>
-                    <img src="images/스페이서.gif" width="1" height="41" alt="">
-                </td>
-            </tr>
-            
-            <tr>
-                <td colspan="14" rowspan="2">
-                    <img src="images/메인페이지-견본_70.png" width="291" height="450" border="0" alt="">
-                </td>
-                <td colspan="13" style="position: relative; background: #f8f9fa; border-radius: 12px; padding: 20px;">
-                    <!-- 포트폴리오 차트를 코드로 구현 -->
-                    <div style="width: 368px; height: 369px; background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%); border: 2px solid #e0e0e0; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; flex-direction: column;">
-                        <!-- 차트 제목 -->
-                        <div style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%); font-weight: bold; font-size: 16px; color: #333; z-index: 10;">
-                            포트폴리오
-                        </div>
-                        <!-- 실제 차트 캔버스 -->
-                        <canvas id="mainPortfolioChart" width="320" height="320" style="width: 320px; height: 320px; margin-top: 20px;"></canvas>
-                        <!-- 차트가 없을 때 표시되는 기본 내용 -->
-                        <div id="portfolioPlaceholder" style="display: none; flex-direction: column; align-items: center; justify-content: center; color: #666;">
-                            <i class="fas fa-chart-pie" style="font-size: 60px; margin-bottom: 15px; color: #ddd;"></i>
-                            <span style="font-size: 14px; text-align: center;">투자 내역이 없습니다</span>
-                        </div>
-                    </div>
-                </td>
-                <td colspan="11" rowspan="2">
-                    <img src="images/메인페이지-견본_72.png" width="288" height="450" border="0" alt="">
-                </td>
-                <td>
-                    <img src="images/스페이서.gif" width="1" height="409" alt="">
-                </td>
-            </tr>
-            
-            <tr>
-                <td colspan="13">
-                    <img src="images/메인페이지-견본_73.png" width="408" height="41" border="0" alt="">
-                </td>
-                <td>
-                    <img src="images/스페이서.gif" width="1" height="41" alt="">
-                </td>
-            </tr>
-            
-            <!-- 하단 네비게이션 영역 -->
-            <tr>
-                <td colspan="19">
-                    <img src="images/메인페이지-견본_74.png" width="392" height="132" border="0" alt="">
-                </td>
-                <td colspan="3" rowspan="4" style="position: relative; background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); border-radius: 12px; margin: 5px; cursor: pointer;" onclick="navigateToPage('a5.html')">
-                    <!-- 등급 버튼을 코드로 구현 -->
-                    <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column; color: white; padding: 10px;">
-                        <div style="background: rgba(255,255,255,0.2); border-radius: 20px; padding: 8px 16px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3); margin-bottom: 8px;">
-                            <span id="navUserLevel" style="font-weight: bold; font-size: 16px; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">YELLOW</span>
-                        </div>
-                        <div style="display: flex; align-items: center;">
-                            <i class="fas fa-award" style="font-size: 14px; margin-right: 5px;"></i>
-                            <span style="font-size: 12px; opacity: 0.9;">등급 확인</span>
-                        </div>
-                    </div>
-                </td>
-                <td colspan="16" rowspan="2">
-                    <img src="images/메인페이지-견본_76.png" width="414" height="135" border="0" alt="">
-                </td>
-                <td>
-                    <img src="images/스페이서.gif" width="1" height="132" alt="">
-                </td>
-            </tr>
-            
-            <!-- 네비게이션 버튼들 -->
-            <tr>
-                <td rowspan="6">
-                    <img src="images/메인페이지-견본_77.png" width="17" height="209" border="0" alt="">
-                </td>
-                <td colspan="6" rowspan="5" style="cursor: pointer;" onclick="showMainScreen()">
-                    <img src="images/메인페이지-견본_78.png" width="95" height="96" border="0" alt="">
-                    <!-- 홈 버튼 -->
-                </td>
-                <td colspan="5" rowspan="6">
-                    <img src="images/메인페이지-견본_79.png" width="120" height="209" border="0" alt="">
-                </td>
-                <td colspan="4" rowspan="5" style="cursor: pointer;" onclick="navigateToPage('a2.html')">
-                    <img src="images/메인페이지-견본_80.png" width="76" height="96" border="0" alt="">
-                    <!-- 뉴스 버튼 -->
-                </td>
-                <td colspan="3" rowspan="6">
-                    <img src="images/메인페이지-견본_81.png" width="84" height="209" border="0" alt="">
-                </td>
-                <td>
-                    <img src="images/스페이서.gif" width="1" height="3" alt="">
-                </td>
-            </tr>
-            
-            <tr>
-                <td colspan="3" rowspan="5">
-                    <img src="images/메인페이지-견본_82.png" width="72" height="206" border="0" alt="">
-                </td>
-                <td colspan="4" rowspan="4" style="cursor: pointer;" onclick="navigateToPage('a3.html')">
-                    <img src="images/메인페이지-견본_83.png" width="93" height="93" border="0" alt="">
-                    <!-- 더보기 버튼 -->
-                </td>
-                <td colspan="9">
-                    <img src="images/메인페이지-견본_84.png" width="249" height="42" border="0" alt="">
-                </td>
-                <td>
-                    <img src="images/스페이서.gif" width="1" height="42" alt="">
-                </td>
-            </tr>
-            
-            <tr>
-                <td rowspan="4">
-                    <img src="images/메인페이지-견본_85.png" width="130" height="164" border="0" alt="">
-                </td>
-                <td colspan="4" rowspan="2" style="cursor: pointer;" onclick="navigateToPage('a4.html')">
-                    <img src="images/메인페이지-견본_86.png" width="60" height="12" border="0" alt="">
-                    <!-- 게임 버튼 -->
-                </td>
-                <td colspan="4" rowspan="4">
-                    <img src="images/메인페이지-견본_87.png" width="59" height="164" border="0" alt="">
-                </td>
-                <td>
-                    <img src="images/스페이서.gif" width="1" height="3" alt="">
-                </td>
-            </tr>
-            
-            <tr>
-                <td colspan="3" rowspan="3">
-                    <img src="images/메인페이지-견본_88.png" width="181" height="161" border="0" alt="">
-                </td>
-                <td>
-                    <img src="images/스페이서.gif" width="1" height="9" alt="">
-                </td>
-            </tr>
-            
-            <tr>
-                <td colspan="4" rowspan="2">
-                    <img src="images/메인페이지-견본_89.png" width="60" height="152" border="0" alt="">
-                </td>
-                <td>
-                    <img src="images/스페이서.gif" width="1" height="39" alt="">
-                </td>
-            </tr>
-            
-            <tr>
-                <td colspan="6">
-                    <img src="images/메인페이지-견본_90.png" width="95" height="113" border="0" alt="">
-                </td>
-                <td colspan="4">
-                    <img src="images/메인페이지-견본_91.png" width="76" height="113" border="0" alt="">
-                </td>
-                <td colspan="4">
-                    <img src="images/메인페이지-견본_92.png" width="93" height="113" border="0" alt="">
-                </td>
-                <td>
-                    <img src="images/스페이서.gif" width="1" height="113" alt="">
-                </td>
-            </tr>
-        </table>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -2488,23 +2623,24 @@ function updateMainScreenData() {
         // 메인 사용자 레벨 업데이트
         var mainUserLevel = document.getElementById('mainUserLevel');
         var navUserLevel = document.getElementById('navUserLevel');
+        var levelBadgeMain = document.getElementById('levelBadgeMain');
+        var levelBadgeNav = document.getElementById('levelBadgeNav');
+        
         var level = levelSystem[userLevel];
         if (level) {
             if (mainUserLevel) {
                 mainUserLevel.textContent = level.name;
-                // 등급 뱃지 배경색 업데이트
-                var mainLevelBadge = mainUserLevel.closest('td');
-                if (mainLevelBadge) {
-                    mainLevelBadge.style.background = level.gradient;
-                }
             }
             if (navUserLevel) {
                 navUserLevel.textContent = level.name;
-                // 네비게이션 등급 버튼 배경색 업데이트
-                var navLevelBadge = navUserLevel.closest('td');
-                if (navLevelBadge) {
-                    navLevelBadge.style.background = level.gradient;
-                }
+            }
+            
+            // 등급 뱃지 배경색 업데이트
+            if (levelBadgeMain) {
+                levelBadgeMain.className = 'level-badge ' + level.class;
+            }
+            if (levelBadgeNav) {
+                levelBadgeNav.className = 'nav-btn level-btn ' + level.class;
             }
         }
         
@@ -2547,7 +2683,6 @@ function updateMainScreenData() {
         
         // 프로필 이미지 업데이트
         var mainProfileImage = document.getElementById('mainProfileImage');
-        var mainProfileIcon = document.getElementById('mainProfileIcon');
         var mainProfilePlaceholder = document.getElementById('mainProfilePlaceholder');
         var headerProfileImage = document.getElementById('headerProfileImage');
         var headerProfileIcon = document.getElementById('headerProfileIcon');
