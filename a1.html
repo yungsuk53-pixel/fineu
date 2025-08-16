@@ -35,6 +35,11 @@
             padding: 0;
             -webkit-text-size-adjust: 100%;
             -ms-text-size-adjust: 100%;
+            width: 100vw;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
         }
 
         /* 메인 화면 - 레이어 배경 모바일 최적화 */
@@ -49,16 +54,36 @@
             z-index: 1000;
             box-sizing: border-box;
         }
+
+        /* 스크롤바 커스터마이징 */
+        .responsive-container::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .responsive-container::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .responsive-container::-webkit-scrollbar-thumb {
+            background: rgba(0,0,0,0.2);
+            border-radius: 2px;
+        }
+
+        .responsive-container::-webkit-scrollbar-thumb:hover {
+            background: rgba(0,0,0,0.4);
+        }
         
         /* 반응형 테이블 컨테이너 */
         .responsive-container {
-            width: 100%;
+            width: 100vw;
             height: 100vh;
-            overflow: auto;
+            overflow-x: hidden;
+            overflow-y: auto;
             background-color: #FFFFFF;
             display: flex;
             justify-content: center;
             align-items: flex-start;
+            position: relative;
         }
 
         /* 기본 테이블 설정 */
@@ -70,6 +95,7 @@
             border: 0;
             border-collapse: collapse;
             border-spacing: 0;
+            min-width: 1125px;
         }
 
         /* 데스크톱 화면 (기본) */
@@ -78,80 +104,90 @@
                 width: 1125px;
                 height: 2436px;
             }
+            
+            .responsive-container {
+                height: 100vh;
+                overflow-y: hidden;
+            }
         }
 
         /* 태블릿 화면 */
         @media (max-width: 1125px) and (min-width: 769px) {
+            .responsive-container {
+                height: calc(100vh);
+                padding: 0;
+            }
+            
             .main-table {
-                width: 100%;
-                max-width: 768px;
-                height: auto;
-                transform: scale(0.68);
+                width: 1125px;
+                height: 2436px;
+                transform: scale(0.65);
                 transform-origin: top center;
+                min-width: 1125px;
             }
         }
 
         /* 모바일 화면 - 큰 화면 */
         @media (max-width: 768px) and (min-width: 481px) {
             .responsive-container {
-                padding: 10px;
+                height: calc(100vh);
+                padding: 0;
             }
             
             .main-table {
-                width: 100%;
-                max-width: 400px;
-                height: auto;
-                transform: scale(0.35);
+                width: 1125px;
+                height: 2436px;
+                transform: scale(0.42);
                 transform-origin: top center;
-                margin: 0 auto;
+                min-width: 1125px;
             }
         }
 
         /* 모바일 화면 - 중간 화면 */
         @media (max-width: 480px) and (min-width: 376px) {
             .responsive-container {
-                padding: 5px;
+                height: calc(100vh);
+                padding: 0;
             }
             
             .main-table {
-                width: 100%;
-                max-width: 350px;
-                height: auto;
-                transform: scale(0.32);
+                width: 1125px;
+                height: 2436px;
+                transform: scale(0.35);
                 transform-origin: top center;
-                margin: 0 auto;
+                min-width: 1125px;
             }
         }
 
         /* 모바일 화면 - 작은 화면 */
         @media (max-width: 375px) and (min-width: 321px) {
             .responsive-container {
-                padding: 3px;
+                height: calc(100vh);
+                padding: 0;
             }
             
             .main-table {
-                width: 100%;
-                max-width: 320px;
-                height: auto;
-                transform: scale(0.28);
+                width: 1125px;
+                height: 2436px;
+                transform: scale(0.33);
                 transform-origin: top center;
-                margin: 0 auto;
+                min-width: 1125px;
             }
         }
 
         /* 모바일 화면 - 매우 작은 화면 */
         @media (max-width: 320px) {
             .responsive-container {
-                padding: 2px;
+                height: calc(100vh);
+                padding: 0;
             }
             
             .main-table {
-                width: 100%;
-                max-width: 300px;
-                height: auto;
-                transform: scale(0.25);
+                width: 1125px;
+                height: 2436px;
+                transform: scale(0.28);
                 transform-origin: top center;
-                margin: 0 auto;
+                min-width: 1125px;
             }
         }
 
@@ -979,6 +1015,94 @@ function uploadProfileImage() {
     alert('프로필 이미지 업로드 기능은 준비 중입니다.');
 }
 
+// 스크롤 제한 함수
+function limitScroll() {
+    var container = document.querySelector('.responsive-container');
+    var table = document.querySelector('.main-table');
+    
+    if (container && table) {
+        container.addEventListener('scroll', function(e) {
+            var containerHeight = container.clientHeight;
+            var tableHeight = table.offsetHeight;
+            var currentScale = 1;
+            
+            // 현재 화면 크기에 따른 스케일 계산
+            var width = window.innerWidth;
+            if (width <= 320) {
+                currentScale = 0.28;
+            } else if (width <= 375) {
+                currentScale = 0.33;
+            } else if (width <= 480) {
+                currentScale = 0.35;
+            } else if (width <= 768) {
+                currentScale = 0.42;
+            } else if (width <= 1125) {
+                currentScale = 0.65;
+            }
+            
+            var scaledTableHeight = tableHeight * currentScale;
+            var maxScrollTop = Math.max(0, scaledTableHeight - containerHeight);
+            
+            // 스크롤 위치 제한
+            if (container.scrollTop > maxScrollTop) {
+                container.scrollTop = maxScrollTop;
+            }
+            
+            // 음수 스크롤 방지
+            if (container.scrollTop < 0) {
+                container.scrollTop = 0;
+            }
+        });
+        
+        // 터치 이벤트로 인한 과도한 스크롤 방지
+        var isScrolling = false;
+        container.addEventListener('touchstart', function() {
+            isScrolling = true;
+        });
+        
+        container.addEventListener('touchend', function() {
+            setTimeout(function() {
+                isScrolling = false;
+            }, 100);
+        });
+        
+        // 휠 이벤트 제한
+        container.addEventListener('wheel', function(e) {
+            var container = e.currentTarget;
+            var containerHeight = container.clientHeight;
+            var scrollHeight = container.scrollHeight;
+            var scrollTop = container.scrollTop;
+            
+            // 최하단에서 더 이상 아래로 스크롤 방지
+            if (scrollTop + containerHeight >= scrollHeight && e.deltaY > 0) {
+                e.preventDefault();
+            }
+            
+            // 최상단에서 더 이상 위로 스크롤 방지
+            if (scrollTop <= 0 && e.deltaY < 0) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+    }
+}
+
+// 화면 크기 변경 시 스크롤 위치 재조정
+function handleResize() {
+    var container = document.querySelector('.responsive-container');
+    if (container) {
+        // 스크롤 위치를 안전한 범위로 재조정
+        setTimeout(function() {
+            var containerHeight = container.clientHeight;
+            var scrollHeight = container.scrollHeight;
+            var maxScrollTop = Math.max(0, scrollHeight - containerHeight);
+            
+            if (container.scrollTop > maxScrollTop) {
+                container.scrollTop = maxScrollTop;
+            }
+        }, 100);
+    }
+}
+
 // 페이지 로드 시 초기화
 document.addEventListener('DOMContentLoaded', function() {
     try {
@@ -991,6 +1115,17 @@ document.addEventListener('DOMContentLoaded', function() {
         if (loadUserData()) {
             updateDebugInfo('메인 페이지 로드 완료');
         }
+        
+        // 스크롤 제한 기능 초기화
+        setTimeout(function() {
+            limitScroll();
+        }, 500);
+        
+        // 화면 크기 변경 이벤트
+        window.addEventListener('resize', handleResize);
+        window.addEventListener('orientationchange', function() {
+            setTimeout(handleResize, 100);
+        });
         
     } catch (error) {
         console.error('초기화 오류:', error);
