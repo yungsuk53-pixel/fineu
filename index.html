@@ -885,7 +885,7 @@
                     <div style="position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%); width: 100%; text-align: center; z-index: 10;">
                         <div>
                             <a href="#" onclick="findAccount()" style="color: #666; font-size: clamp(10px, 3vw, 14px); text-decoration: none; margin-right: 30px;">아이디/비밀번호 찾기</a>
-                            <a href="#" onclick="goToSignup()" style="color: #007bff; font-size: clamp(11px, 3.5vw, 16px); text-decoration: none; font-weight: bold;">회원가입</a>
+                            <a href="#" onclick="goToSignup()" style="color: #666; font-size: clamp(10px, 3vw, 14px); text-decoration: none;">회원가입</a>
                         </div>
                     </div>
                 </td>
@@ -1848,7 +1848,7 @@ async function performLogin() {
         showMessage('로그인 중 오류가 발생했습니다: ' + error.message, 'error');
     } finally {
         // 로딩 상태 해제
-        document.getElementById('loginBtnText').textContent = '로그인';
+        document.getElementById('loginBtnText').textContent = 'LOGIN';
         document.getElementById('loginLoader').classList.add('hidden');
     }
 }
