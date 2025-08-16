@@ -160,20 +160,19 @@
             padding: 20px;
         }
         
-        /* 공통 레이어 스타일 - 메인페이지 최종.html 픽셀 정확 좌표 */
+        /* 공통 레이어 스타일 - 모바일 전체화면 최적화 */
         .container { 
             position: relative; 
-            width: 1125px; 
-            height: 2436px; 
+            width: 100vw; 
+            height: 100vh; 
             background: #f0f0f0; 
-            margin: 20px auto; 
-            overflow: visible;
+            margin: 0; 
+            overflow: hidden;
         }
         
         .layer { 
             position: absolute; 
-            border: 1px solid #ccc; 
-            background: rgba(255,255,255,0.8);
+            background: transparent;
             transition: all 0.3s ease;
         }
         
@@ -198,80 +197,112 @@
         .layer[onclick]:hover {
             transform: scale(1.05);
             box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-            z-index: 10;
         }
         
         .layer[onclick]:active {
             transform: scale(0.98);
         }
         
-        /* 레이어별 정확한 픽셀 좌표 */
-        .layer_1 { left: 79px; top: 222px; width: 99px; height: 95px; }
-        .layer_2 { left: 71px; top: 209px; width: 113px; height: 112px; }
-        .layer_3 { left: 356px; top: 214px; width: 359px; height: 12px; }
-        .layer_4 { left: 332px; top: 189px; width: 463px; height: 149px; }
-        .layer_5 { left: 328px; top: 185px; width: 471px; height: 157px; }
-        .layer_6 { left: 324px; top: 181px; width: 479px; height: 165px; }
-        .layer_7 { left: 960px; top: 208px; width: 96px; height: 115px; }
-        .layer_8 { left: 72px; top: 456px; width: 220px; height: 46px; }
-        .layer_9 { left: 145px; top: 629px; width: 222px; height: 215px; }
-        .layer_10 { left: 126px; top: 606px; width: 258px; height: 260px; }
-        .layer_11 { left: 520px; top: 621px; width: 141px; height: 37px; }
-        .layer_12 { left: 435px; top: 606px; width: 308px; height: 70px; }
-        .layer_13 { left: 492px; top: 728px; width: 196px; height: 48px; }
-        .layer_14 { left: 442px; top: 823px; width: 300px; height: 29px; }
-        .layer_15 { left: 948px; top: 611px; width: 58px; height: 61px; }
-        .layer_16 { left: 70px; top: 564px; width: 988px; height: 345px; }
-        .layer_17 { left: 70px; top: 975px; width: 204px; height: 46px; }
-        .layer_18 { left: 127px; top: 1122px; width: 95px; height: 91px; }
-        .layer_19 { left: 292px; top: 1140px; width: 376px; height: 52px; }
-        .layer_20 { left: 128px; top: 1256px; width: 873px; height: 48px; }
-        .layer_21 { left: 129px; top: 1335px; width: 444px; height: 48px; }
-        .layer_22 { left: 72px; top: 1084px; width: 988px; height: 345px; }
-        .layer_23 { left: 75px; top: 1494px; width: 295px; height: 46px; }
-        .layer_24 { left: 79px; top: 1603px; width: 988px; height: 492px; }
-        .layer_25 { left: 504px; top: 2169px; width: 119px; height: 32px; }
-        .layer_26 { left: 472px; top: 2094px; width: 181px; height: 181px; }
-        .layer_27 { left: 97px; top: 2227px; width: 95px; height: 96px; }
-        .layer_28 { left: 312px; top: 2227px; width: 76px; height: 96px; }
-        .layer_29 { left: 725px; top: 2230px; width: 93px; height: 93px; }
-        .layer_30 { left: 948px; top: 2272px; width: 60px; height: 12px; }
-        .layer_31 { left: 0px; top: 0px; width: 1125px; height: 2436px; }
-        .layer_32 { left: 0px; top: 0px; width: 1125px; height: 2436px; }
+        /* 레이어별 모바일 비율 좌표 (1125x2436 -> 100vw x 100vh) */
+        .layer_1 { left: 7.02%; top: 9.11%; width: 8.8%; height: 3.9%; z-index: 32; }
+        .layer_2 { left: 6.31%; top: 8.58%; width: 10.04%; height: 4.6%; z-index: 31; }
+        .layer_3 { left: 31.64%; top: 8.78%; width: 31.91%; height: 0.49%; z-index: 30; }
+        .layer_4 { left: 29.51%; top: 7.76%; width: 41.16%; height: 6.12%; z-index: 29; }
+        .layer_5 { left: 29.16%; top: 7.59%; width: 41.87%; height: 6.44%; z-index: 28; }
+        .layer_6 { left: 28.8%; top: 7.43%; width: 42.58%; height: 6.77%; z-index: 27; }
+        .layer_7 { left: 85.33%; top: 8.54%; width: 8.53%; height: 4.72%; z-index: 26; }
+        .layer_8 { left: 6.4%; top: 18.72%; width: 19.56%; height: 1.89%; z-index: 25; }
+        .layer_9 { left: 12.89%; top: 25.82%; width: 19.73%; height: 8.83%; z-index: 24; }
+        .layer_10 { left: 11.2%; top: 24.88%; width: 22.93%; height: 10.67%; z-index: 23; }
+        .layer_11 { left: 46.22%; top: 25.49%; width: 12.53%; height: 1.52%; z-index: 22; }
+        .layer_12 { left: 38.67%; top: 24.88%; width: 27.38%; height: 2.87%; z-index: 21; }
+        .layer_13 { left: 43.73%; top: 29.89%; width: 17.42%; height: 1.97%; z-index: 20; }
+        .layer_14 { left: 39.29%; top: 33.79%; width: 26.67%; height: 1.19%; z-index: 19; }
+        .layer_15 { left: 84.27%; top: 25.08%; width: 5.16%; height: 2.5%; z-index: 18; }
+        .layer_16 { left: 6.22%; top: 23.15%; width: 87.82%; height: 14.16%; z-index: 17; }
+        .layer_17 { left: 6.22%; top: 40.02%; width: 18.13%; height: 1.89%; z-index: 16; }
+        .layer_18 { left: 11.29%; top: 46.06%; width: 8.44%; height: 3.74%; z-index: 15; }
+        .layer_19 { left: 25.96%; top: 46.8%; width: 33.42%; height: 2.13%; z-index: 14; }
+        .layer_20 { left: 11.38%; top: 51.56%; width: 77.6%; height: 1.97%; z-index: 13; }
+        .layer_21 { left: 11.47%; top: 54.8%; width: 39.47%; height: 1.97%; z-index: 12; }
+        .layer_22 { left: 6.4%; top: 44.49%; width: 87.82%; height: 14.16%; z-index: 11; }
+        .layer_23 { left: 6.67%; top: 61.33%; width: 26.22%; height: 1.89%; z-index: 10; }
+        .layer_24 { left: 7.02%; top: 65.8%; width: 87.82%; height: 20.2%; z-index: 9; }
+        .layer_25 { left: 44.8%; top: 89.02%; width: 10.58%; height: 1.31%; z-index: 8; }
+        .layer_26 { left: 41.96%; top: 85.91%; width: 16.09%; height: 7.43%; z-index: 7; }
+        .layer_27 { left: 8.62%; top: 91.42%; width: 8.44%; height: 3.94%; z-index: 6; }
+        .layer_28 { left: 27.73%; top: 91.42%; width: 6.76%; height: 3.94%; z-index: 5; }
+        .layer_29 { left: 64.44%; top: 91.54%; width: 8.27%; height: 3.82%; z-index: 4; }
+        .layer_30 { left: 84.27%; top: 93.3%; width: 5.33%; height: 0.49%; z-index: 3; }
+        .layer_31 { left: 0%; top: 0%; width: 100%; height: 100%; z-index: 2; }
+        .layer_32 { left: 0%; top: 0%; width: 100%; height: 100%; z-index: 1; }
         
-        /* 스크롤 및 반응형 */
+        /* 동적 컨텐츠 스타일 */
+        .dynamic-text {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-weight: bold;
+            color: #333;
+            text-align: center;
+        }
+        
+        .asset-amount {
+            font-size: 2.5vw;
+            color: #2c5aa0;
+        }
+        
+        .stock-info {
+            font-size: 1.8vw;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 1vw;
+        }
+        
+        .profit-color {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        
+        .loss-color {
+            color: #3498db;
+            font-weight: bold;
+        }
+        
+        .savings-info {
+            font-size: 1.8vw;
+            color: #27ae60;
+        }
+        
+        /* 원그래프 스타일 */
+        .portfolio-chart {
+            width: 80%;
+            height: 60%;
+            margin: 20% auto;
+        }
+        
+        /* 별 아이콘 스타일 */
+        .star-icon {
+            font-size: 4vw;
+            color: #ffd700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* 스크롤 제거 */
         #mainScreen {
-            overflow: auto;
-            max-height: 100vh;
+            overflow: hidden;
             padding: 0;
+            margin: 0;
         }
         
-        @media (max-width: 1200px) {
-            .container {
-                transform: scale(0.8);
-                transform-origin: top left;
-            }
-        }
-        
-        @media (max-width: 1000px) {
-            .container {
-                transform: scale(0.7);
-                transform-origin: top left;
-            }
-        }
-        
-        @media (max-width: 800px) {
-            .container {
-                transform: scale(0.6);
-                transform-origin: top left;
-            }
-        }
-        
-        @media (max-width: 600px) {
-            .container {
-                transform: scale(0.5);
-                transform-origin: top left;
-            }
+        body, html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
         }
         
         /* 스크롤바 스타일링 */
@@ -1153,11 +1184,11 @@
     <div id="messageContainer" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1000;"></div>
 </div>
 
-    <!-- 메인 화면 - 메인페이지 최종.html 정확한 픽셀 좌표 -->
+    <!-- 메인 화면 - 모바일 전체화면 최적화 및 동적 기능 -->
     <div id="mainScreen" class="screen main-container">
         <div class='container'>
             
-            <!-- 배경 레이어 (layer_32, layer_31) -->
+            <!-- 배경 레이어 (z-index: 1, 2) -->
             <div class='layer_32 layer' data-name='배경' title='배경'>
                 <img src="메인images/image/배경.png" alt="배경" loading="eager" />
             </div>
@@ -1166,111 +1197,24 @@
                 <img src="메인images/image/레이어.png" alt="레이어" loading="eager" />
             </div>
 
-            <!-- 프로필 복사 그룹 -->
-            <div class='layer_1 layer' data-name='똑부리' title='똑부리' onclick="openProfileSettings()">
-                <img src="메인images/image/똑부리.png" alt="똑부리" loading="eager" />
+            <!-- 하단 네비게이션 (z-index: 3-6) -->
+            <div class='layer_30 layer' data-name='더보기' title='더보기' onclick="showMoreMenu()">
+                <img src="메인images/image/더보기.png" alt="더보기" loading="eager" />
             </div>
             
-            <div class='layer_2 layer' data-name='프로필 복사' title='프로필 복사' onclick="openProfileSettings()">
-                <img src="메인images/image/프로필 복사.png" alt="프로필 복사" loading="eager" />
+            <div class='layer_29 layer' data-name='채팅' title='채팅' onclick="openChat()">
+                <img src="메인images/image/채팅.png" alt="채팅" loading="eager" />
+            </div>
+            
+            <div class='layer_28 layer' data-name='문서' title='문서' onclick="goToDocuments()">
+                <img src="메인images/image/문서.png" alt="문서" loading="eager" />
+            </div>
+            
+            <div class='layer_27 layer' data-name='집' title='집' onclick="goToHome()">
+                <img src="메인images/image/집.png" alt="집" loading="eager" />
             </div>
 
-            <!-- 제목 그룹 -->
-            <div class='layer_3 layer' data-name='빛 반사' title='빛 반사'>
-                <img src="메인images/image/빛 반사.png" alt="빛 반사" loading="eager" />
-            </div>
-            
-            <div class='layer_4 layer' data-name='FINE 1' title='FINE 1'>
-                <img src="메인images/image/FINE 1.png" alt="FINE 1" loading="eager" />
-            </div>
-            
-            <div class='layer_5 layer' data-name='FINE U 2' title='FINE U 2'>
-                <img src="메인images/image/FINE U 2.png" alt="FINE U 2" loading="eager" />
-            </div>
-            
-            <div class='layer_6 layer' data-name='FINE U 3' title='FINE U 3'>
-                <img src="메인images/image/FINE U 3.png" alt="FINE U 3" loading="eager" />
-            </div>
-
-            <!-- 알림 -->
-            <div class='layer_7 layer' data-name='알림' title='알림'>
-                <img src="메인images/image/알림.png" alt="알림" loading="eager" />
-            </div>
-
-            <!-- 프로필 섹션 -->
-            <div class='layer_8 layer' data-name='PROFILE' title='PROFILE'>
-                <img src="메인images/image/PROFILE.png" alt="PROFILE" loading="eager" />
-            </div>
-            
-            <div class='layer_16 layer' data-name='사각형' title='사각형'>
-                <img src="메인images/image/사각형.png" alt="사각형" loading="eager" />
-            </div>
-            
-            <div class='layer_9 layer' data-name='레이어 1' title='레이어 1'>
-                <img src="메인images/image/레이어 1.png" alt="레이어 1" loading="eager" />
-            </div>
-            
-            <div class='layer_10 layer' data-name='프로필' title='프로필' onclick="openProfileSettings()">
-                <img src="메인images/image/프로필.png" alt="프로필" loading="eager" />
-            </div>
-
-            <!-- 등급 그룹 -->
-            <div class='layer_11 layer' data-name='BLACK' title='BLACK'>
-                <img src="메인images/image/BLACK.png" alt="BLACK" loading="eager" />
-            </div>
-            
-            <div class='layer_12 layer' data-name='등급' title='등급' onclick="showLevelInfo()">
-                <img src="메인images/image/등급.png" alt="등급" loading="eager" />
-            </div>
-            
-            <div class='layer_13 layer' data-name='똑부리 님' title='똑부리 님'>
-                <img src="메인images/image/똑부리 님.png" alt="똑부리 님" loading="eager" />
-            </div>
-            
-            <div class='layer_14 layer' data-name='FINE U와 함께한 지 317일' title='FINE U와 함께한 지 317일'>
-                <img src="메인images/image/FINE U와 함께한 지 317일.png" alt="FINE U와 함께한 지 317일" loading="eager" />
-            </div>
-            
-            <div class='layer_15 layer' data-name='환경설정' title='환경설정'>
-                <img src="메인images/image/환경설정.png" alt="환경설정" loading="eager" />
-            </div>
-
-            <!-- 자산 그룹 -->
-            <div class='layer_17 layer' data-name='ASSETS' title='ASSETS'>
-                <img src="메인images/image/ASSETS.png" alt="ASSETS" loading="eager" />
-            </div>
-            
-            <div class='layer_22 layer' data-name='사각형' title='사각형'>
-                <img src="메인images/image/사각형.png" alt="사각형" loading="eager" />
-            </div>
-            
-            <div class='layer_18 layer' data-name='별' title='별'>
-                별
-            </div>
-            
-            <div class='layer_19 layer' data-name='1 9, 9 9 0, 1 0 2' title='1 9, 9 9 0, 1 0 2'>
-                1 9, 9 9 0, 1 0 2
-            </div>
-            
-            <div class='layer_20 layer' data-name='삼성전자  (100주)                                    + 1.8%' title='삼성전자  (100주)                                    + 1.8%'>
-                삼성전자  (100주)                                    + 1.8%
-            </div>
-            
-            <div class='layer_21 layer' data-name='청년희망적금  (3.0%)' title='청년희망적금  (3.0%)'>
-                청년희망적금  (3.0%)
-            </div>
-
-            <!-- 포트폴리오 그룹 -->
-            <div class='layer_23 layer' data-name='PORTFOLIO' title='PORTFOLIO'>
-                <img src="메인images/image/PORTFOLIO.png" alt="PORTFOLIO" loading="eager" />
-            </div>
-            
-            <div class='layer_24 layer' data-name='사각형' title='사각형'>
-                <img src="메인images/image/사각형.png" alt="사각형" loading="eager" />
-            </div>
-
-            <!-- 하단바 그룹 -->
-            <!-- 등급 원형 -->
+            <!-- 하단 등급 원형 (z-index: 7-8) -->
             <div class='layer_26 layer' data-name='원' title='원' onclick="showLevelInfo()">
                 <img src="메인images/image/원.png" alt="원" loading="eager" />
             </div>
@@ -1279,21 +1223,111 @@
                 <img src="메인images/image/BLACK-1.png" alt="BLACK" loading="eager" />
             </div>
 
-            <!-- 아이콘 그룹 -->
-            <div class='layer_27 layer' data-name='집' title='집' onclick="goToHome()">
-                <img src="메인images/image/집.png" alt="집" loading="eager" />
+            <!-- 포트폴리오 섹션 (z-index: 9-10) -->
+            <div class='layer_24 layer' data-name='사각형' title='사각형'>
+                <img src="메인images/image/사각형.png" alt="사각형" loading="eager" />
+                <!-- 포트폴리오 원그래프 -->
+                <div class="portfolio-chart">
+                    <canvas id="portfolioChart" width="200" height="200"></canvas>
+                </div>
             </div>
             
-            <div class='layer_28 layer' data-name='문서' title='문서' onclick="goToDocuments()">
-                <img src="메인images/image/문서.png" alt="문서" loading="eager" />
+            <div class='layer_23 layer' data-name='PORTFOLIO' title='PORTFOLIO'>
+                <img src="메인images/image/PORTFOLIO.png" alt="PORTFOLIO" loading="eager" />
+            </div>
+
+            <!-- 자산 섹션 (z-index: 11-16) -->
+            <div class='layer_22 layer' data-name='사각형' title='사각형'>
+                <img src="메인images/image/사각형.png" alt="사각형" loading="eager" />
             </div>
             
-            <div class='layer_29 layer' data-name='채팅' title='채팅' onclick="openChat()">
-                <img src="메인images/image/채팅.png" alt="채팅" loading="eager" />
+            <div class='layer_21 layer dynamic-text savings-info' data-name='청년희망적금' title='청년희망적금'>
+                <span id="savingsInfo">청년희망적금 (3.0%)</span>
             </div>
             
-            <div class='layer_30 layer' data-name='더보기' title='더보기' onclick="showMoreMenu()">
-                <img src="메인images/image/더보기.png" alt="더보기" loading="eager" />
+            <div class='layer_20 layer dynamic-text stock-info' data-name='삼성전자' title='삼성전자'>
+                <span id="stockInfo">삼성전자 (100주)</span>
+                <span id="stockChange" class="profit-color">+1.8%</span>
+            </div>
+            
+            <div class='layer_19 layer dynamic-text asset-amount' data-name='총자산' title='총자산'>
+                <span id="totalAssets">19,990,102</span>
+            </div>
+            
+            <div class='layer_18 layer star-icon' data-name='별' title='별'>
+                <img src="메인images/image/자산.png" alt="자산" loading="eager" />
+            </div>
+            
+            <div class='layer_17 layer' data-name='ASSETS' title='ASSETS'>
+                <img src="메인images/image/ASSETS.png" alt="ASSETS" loading="eager" />
+            </div>
+
+            <!-- 프로필 섹션 (z-index: 17-25) -->
+            <div class='layer_16 layer' data-name='사각형' title='사각형'>
+                <img src="메인images/image/사각형.png" alt="사각형" loading="eager" />
+            </div>
+            
+            <div class='layer_15 layer' data-name='환경설정' title='환경설정' onclick="openProfileSettings()">
+                <img src="메인images/image/환경설정.png" alt="환경설정" loading="eager" />
+            </div>
+            
+            <div class='layer_14 layer' data-name='FINE U와 함께한 지 317일' title='가입일수'>
+                <img src="메인images/image/FINE U와 함께한 지 317일.png" alt="가입일수" loading="eager" />
+            </div>
+            
+            <div class='layer_13 layer' data-name='똑부리 님' title='사용자명'>
+                <img src="메인images/image/똑부리 님.png" alt="사용자명" loading="eager" />
+            </div>
+            
+            <div class='layer_12 layer' data-name='등급' title='등급' onclick="showLevelInfo()">
+                <img src="메인images/image/등급.png" alt="등급" loading="eager" />
+            </div>
+            
+            <div class='layer_11 layer' data-name='BLACK' title='BLACK'>
+                <img src="메인images/image/BLACK.png" alt="BLACK" loading="eager" />
+            </div>
+            
+            <div class='layer_10 layer' data-name='프로필' title='프로필' onclick="openProfileSettings()">
+                <img src="메인images/image/프로필.png" alt="프로필" loading="eager" />
+            </div>
+            
+            <div class='layer_9 layer' data-name='레이어 1' title='레이어 1'>
+                <img src="메인images/image/레이어 1.png" alt="레이어 1" loading="eager" />
+            </div>
+            
+            <div class='layer_8 layer' data-name='PROFILE' title='PROFILE'>
+                <img src="메인images/image/PROFILE.png" alt="PROFILE" loading="eager" />
+            </div>
+
+            <!-- 상단 알림 (z-index: 26) -->
+            <div class='layer_7 layer' data-name='알림' title='알림' onclick="showNotifications()">
+                <img src="메인images/image/알림.png" alt="알림" loading="eager" />
+            </div>
+
+            <!-- 상단 제목 그룹 (z-index: 27-30) -->
+            <div class='layer_6 layer' data-name='FINE U 3' title='FINE U 3'>
+                <img src="메인images/image/FINE U 3.png" alt="FINE U 3" loading="eager" />
+            </div>
+            
+            <div class='layer_5 layer' data-name='FINE U 2' title='FINE U 2'>
+                <img src="메인images/image/FINE U 2.png" alt="FINE U 2" loading="eager" />
+            </div>
+            
+            <div class='layer_4 layer' data-name='FINE 1' title='FINE 1'>
+                <img src="메인images/image/FINE 1.png" alt="FINE 1" loading="eager" />
+            </div>
+            
+            <div class='layer_3 layer' data-name='빛 반사' title='빛 반사'>
+                <img src="메인images/image/빛 반사.png" alt="빛 반사" loading="eager" />
+            </div>
+
+            <!-- 상단 프로필 (z-index: 31-32) -->
+            <div class='layer_2 layer' data-name='프로필 복사' title='프로필 복사' onclick="openProfileSettings()">
+                <img src="메인images/image/프로필 복사.png" alt="프로필 복사" loading="eager" />
+            </div>
+            
+            <div class='layer_1 layer' data-name='똑부리' title='똑부리' onclick="openProfileSettings()">
+                <img src="메인images/image/똑부리.png" alt="똑부리" loading="eager" />
             </div>
 
         </div>
@@ -2213,22 +2247,158 @@ function updateDisplay() {
 // 새로운 메인 화면 데이터 업데이트
 function updateMainScreenData() {
     try {
-        // 메인 사용자 이름 업데이트
-        var mainUserName = document.getElementById('mainUserName');
-        if (mainUserName) {
-            mainUserName.textContent = currentUser.name || currentUser.id || '정여진';
+        // 총 자산 업데이트
+        updateTotalAssets();
+        
+        // 주식 정보 업데이트
+        updateStockInfo();
+        
+        // 적금 정보 업데이트
+        updateSavingsInfo();
+        
+        // 포트폴리오 차트 업데이트
+        updatePortfolioChart();
+        
+        // 실시간 데이터 업데이트 (5초마다)
+        setInterval(function() {
+            updateTotalAssets();
+            updateStockInfo();
+        }, 5000);
+        
+        updateDebugInfo('메인 화면 데이터 업데이트 완료');
+        
+    } catch (error) {
+        updateDebugInfo('메인 화면 데이터 업데이트 오류: ' + error.message);
+    }
+}
+
+// 총 자산 업데이트
+function updateTotalAssets() {
+    var totalAssetsElement = document.getElementById('totalAssets');
+    if (totalAssetsElement) {
+        // 실제 사용자 자산 계산 또는 기본값
+        var stockValue = 15990102; // 삼성전자 주식 가치
+        var savingsValue = 4000000; // 적금
+        var totalValue = stockValue + savingsValue;
+        
+        // 애니메이션 효과로 숫자 업데이트
+        animateNumber(totalAssetsElement, totalValue);
+    }
+}
+
+// 주식 정보 업데이트
+function updateStockInfo() {
+    var stockInfoElement = document.getElementById('stockInfo');
+    var stockChangeElement = document.getElementById('stockChange');
+    
+    if (stockInfoElement && stockChangeElement) {
+        // 실시간 주식 정보 시뮬레이션
+        var changePercent = (Math.random() * 4 - 2).toFixed(1); // -2% ~ +2% 랜덤
+        var isPositive = parseFloat(changePercent) >= 0;
+        
+        stockInfoElement.textContent = '삼성전자 (100주)';
+        stockChangeElement.textContent = (isPositive ? '+' : '') + changePercent + '%';
+        stockChangeElement.className = isPositive ? 'profit-color' : 'loss-color';
+    }
+}
+
+// 적금 정보 업데이트
+function updateSavingsInfo() {
+    var savingsElement = document.getElementById('savingsInfo');
+    if (savingsElement) {
+        savingsElement.textContent = '청년희망적금 (3.0%)';
+    }
+}
+
+// 포트폴리오 차트 업데이트
+function updatePortfolioChart() {
+    var canvas = document.getElementById('portfolioChart');
+    if (canvas) {
+        var ctx = canvas.getContext('2d');
+        
+        // 캔버스 크기 설정
+        canvas.width = 200;
+        canvas.height = 200;
+        
+        // 원그래프 데이터
+        var data = [
+            { label: '삼성전자', value: 15990102, color: '#3498db' },
+            { label: '적금', value: 4000000, color: '#2ecc71' }
+        ];
+        
+        var total = data.reduce((sum, item) => sum + item.value, 0);
+        var centerX = canvas.width / 2;
+        var centerY = canvas.height / 2;
+        var radius = 80;
+        
+        // 배경 지우기
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // 원그래프 그리기
+        var currentAngle = -Math.PI / 2; // 12시 방향부터 시작
+        
+        data.forEach(function(item) {
+            var sliceAngle = (item.value / total) * 2 * Math.PI;
+            
+            // 파이 조각 그리기
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            ctx.arc(centerX, centerY, radius, currentAngle, currentAngle + sliceAngle);
+            ctx.closePath();
+            ctx.fillStyle = item.color;
+            ctx.fill();
+            
+            // 텍스트 표시
+            var textAngle = currentAngle + sliceAngle / 2;
+            var textX = centerX + Math.cos(textAngle) * (radius * 0.7);
+            var textY = centerY + Math.sin(textAngle) * (radius * 0.7);
+            
+            ctx.fillStyle = '#fff';
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(Math.round((item.value / total) * 100) + '%', textX, textY);
+            
+            currentAngle += sliceAngle;
+        });
+        
+        // 중앙에 총액 표시
+        ctx.fillStyle = '#333';
+        ctx.font = 'bold 14px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('총 자산', centerX, centerY - 10);
+        ctx.font = '12px Arial';
+        ctx.fillText(formatNumber(total) + '원', centerX, centerY + 10);
+    }
+}
+
+// 숫자 애니메이션 함수
+function animateNumber(element, targetValue) {
+    var currentValue = parseInt(element.textContent.replace(/,/g, '')) || 0;
+    var increment = (targetValue - currentValue) / 30; // 30프레임으로 애니메이션
+    var counter = 0;
+    
+    var timer = setInterval(function() {
+        counter++;
+        currentValue += increment;
+        
+        if (counter >= 30) {
+            currentValue = targetValue;
+            clearInterval(timer);
         }
         
-        // 메인 사용자 레벨 업데이트 (BLACK 고정)
-        var mainUserLevel = document.getElementById('mainUserLevel');
-        var navUserLevel = document.getElementById('navUserLevel');
-        
-        if (mainUserLevel) {
-            mainUserLevel.textContent = 'BLACK';
-        }
-        if (navUserLevel) {
-            navUserLevel.textContent = 'BLACK';
-        }
+        element.textContent = formatNumber(Math.round(currentValue));
+    }, 50);
+}
+
+// 숫자 포맷팅 함수
+function formatNumber(num) {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+// 알림 기능
+function showNotifications() {
+    alert('📱 새 알림이 없습니다.');
+}
         
         // 가입일 업데이트
         var mainJoinDays = document.getElementById('mainJoinDays');
