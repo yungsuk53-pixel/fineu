@@ -4,372 +4,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>FINE U - 실시간 투자</title>
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* 기본 스타일 */
         body {
-            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             overflow-x: hidden;
-            background: #F8FAFC;
-            margin: 0;
-            padding: 0;
+            zoom: 1;
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
         }
-        
         .screen {
             display: none;
             min-height: 100vh;
             position: relative;
-            background: #F8FAFC;
         }
-        
         .screen.active {
             display: block;
         }
-
-        /* 헤더 */
-        .header {
-            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
-            color: white;
-            padding: 20px;
+        .card-shadow {
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
-
-        .header-content {
-            max-width: 28rem;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .header h1 {
-            font-size: 24px;
-            font-weight: 800;
-            margin: 0;
-            letter-spacing: -0.5px;
-        }
-
-        /* 컨텐츠 컨테이너 */
-        .content-container {
-            max-width: 28rem;
-            margin: 0 auto;
-            padding: 30px 20px 120px;
-        }
-
-        /* 카드 스타일 */
-        .content-card {
-            background: white;
-            border-radius: 24px;
-            padding: 24px;
-            margin-bottom: 20px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
-            border: 1px solid rgba(0,0,0,0.05);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .content-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 16px 32px rgba(0,0,0,0.12);
-        }
-
-        /* 섹션 헤더 */
-        .section-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .section-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 20px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-        }
-
-        .section-title {
-            font-size: 20px;
-            font-weight: 700;
-            color: #1F2937;
-            margin: 0;
-            letter-spacing: -0.3px;
-        }
-
-        /* 주식 아이템 */
-        .stock-item {
-            background: #F8FAFC;
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 12px;
-            border: 1px solid rgba(0,0,0,0.05);
+        .btn-primary {
+            background: linear-gradient(135deg, #4A6FA5, #6B8DC7);
             transition: all 0.3s ease;
-            cursor: pointer;
         }
-
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(74, 111, 165, 0.3);
+        }
+        .stock-item {
+            transition: all 0.3s ease;
+        }
         .stock-item:hover {
-            background: white;
-            transform: translateX(4px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            transform: scale(1.02);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
         }
-
-        .stock-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-
-        .stock-name {
-            font-size: 16px;
-            font-weight: 600;
-            color: #1F2937;
-        }
-
-        .stock-price {
-            font-size: 16px;
-            font-weight: 700;
-        }
-
-        .stock-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 14px;
-        }
-
-        .stock-code {
-            color: #64748B;
-            font-weight: 500;
-        }
-
-        .stock-change {
-            font-weight: 600;
-        }
-
         .profit { color: #DC2626; }
         .loss { color: #2563EB; }
-
-        /* 버튼 스타일 */
-        .primary-button {
-            background: linear-gradient(135deg, #10B981, #059669);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            padding: 14px 20px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-            width: 100%;
-        }
-
-        .primary-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
-        }
-
-        .secondary-button {
-            background: white;
-            color: #10B981;
-            border: 2px solid #10B981;
-            border-radius: 12px;
-            padding: 12px 20px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            width: 100%;
-        }
-
-        .secondary-button:hover {
-            background: #10B981;
-            color: white;
-        }
-
-        /* 차트 컨테이너 */
-        .chart-container {
-            background: white;
-            border-radius: 16px;
-            padding: 20px;
-            height: 300px;
-            position: relative;
-        }
-
-        /* 포트폴리오 통계 */
-        .portfolio-stats {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-            margin-bottom: 20px;
-        }
-
-        .stat-item {
-            background: #F8FAFC;
-            border-radius: 16px;
-            padding: 20px;
-            text-align: center;
-            border: 1px solid rgba(0,0,0,0.05);
-        }
-
-        .stat-value {
-            font-size: 24px;
-            font-weight: 800;
-            color: #1F2937;
-            margin-bottom: 4px;
-        }
-
-        .stat-label {
-            font-size: 12px;
-            color: #64748B;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        /* 네비게이션 */
-        .bottom-navigation {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(0,0,0,0.05);
-            padding: 16px 0 12px 0;
-            z-index: 50;
-            box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
-        }
-
-        .nav-container {
-            max-width: 28rem;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-            align-items: end;
-            position: relative;
-            height: 70px;
-            padding: 0 20px;
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-            padding: 8px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border-radius: 16px;
-        }
-
-        .nav-item:hover {
-            transform: translateY(-2px);
-            background: rgba(16, 185, 129, 0.08);
-        }
-
-        .nav-item i {
-            font-size: 22px;
-            color: #9CA3AF;
-            transition: all 0.3s ease;
-        }
-
-        .nav-item span {
-            font-size: 11px;
-            font-weight: 600;
-            color: #9CA3AF;
-            transition: all 0.3s ease;
-        }
-
-        .nav-item.active i,
-        .nav-item:hover i {
-            color: #10B981;
-            transform: scale(1.1);
-        }
-
-        .nav-item.active span,
-        .nav-item:hover span {
-            color: #10B981;
-        }
-
-        .nav-center {
-            grid-column: 3;
-            display: flex;
-            justify-content: center;
-            align-items: end;
-            height: 100%;
-            position: relative;
-        }
-
+        
         .level-badge-nav {
-            width: 64px;
-            height: 64px;
+            width: 56px;
+            height: 56px;
             border-radius: 50%;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            color: white;
-            font-size: 11px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-            position: absolute;
-            top: -12px;
-            left: 50%;
-            transform: translateX(-50%);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-            z-index: 10;
-            cursor: pointer;
-            border: 3px solid white;
-            transition: all 0.3s ease;
-        }
-
-        .level-badge-nav:hover {
-            transform: translateX(-50%) scale(1.1);
-        }
-
-        .level-yellow { background: linear-gradient(135deg, #FEF3C7, #F59E0B); }
-        .level-orange { background: linear-gradient(135deg, #FED7AA, #EA580C); }
-        .level-green { background: linear-gradient(135deg, #A7F3D0, #059669); }
-        .level-blue { background: linear-gradient(135deg, #BFDBFE, #2563EB); }
-        .level-brown { background: linear-gradient(135deg, #D2B48C, #92400E); }
-        .level-black { background: linear-gradient(135deg, #6B7280, #111827); }
-        .level-red { background: linear-gradient(135deg, #FECACA, #DC2626); }
-
-        /* 반응형 디자인 */
-        @media (max-width: 480px) {
-            .header {
-                padding: 16px;
-            }
-            
-            .header h1 {
-                font-size: 20px;
-            }
-            
-            .content-container {
-                padding: 20px 16px 100px;
-            }
-            
-            .content-card {
-                padding: 20px;
-            }
-            
-            .nav-container {
-                padding: 0 16px;
-            }
-        }
-    </style>
             align-items: center;
             justify-content: center;
             font-weight: bold;
@@ -679,151 +358,55 @@
     </style>
 </head>
 <body>
-    <!-- 실시간 투자 화면 -->
-    <div id="stockScreen" class="screen active">
-        <!-- 헤더 -->
-        <div class="header">
-            <div class="header-content">
-                <button onclick="goToMainPage()" class="text-white hover:text-green-200 transition-colors">
+
+<!-- 주식 화면 -->
+<div id="stockScreen" class="screen active">
+    <div class="min-h-screen bg-gray-100">
+        <div class="bg-white shadow-sm p-4">
+            <div class="flex items-center justify-between max-w-md mx-auto">
+                <button onclick="goToMainPage()" class="text-gray-600">
                     <i class="fas fa-arrow-left text-xl"></i>
                 </button>
                 <div class="text-center">
-                    <h1><i class="fas fa-chart-line mr-2"></i>실시간 투자</h1>
-                    <div class="text-sm opacity-90 mt-1">
-                        <i class="fas fa-circle text-red-400 mr-1 animate-pulse"></i>
-                        <span id="currentDateTime">LIVE</span>
+                    <h1 class="text-xl font-bold">실시간 투자</h1>
+                    <div class="flex items-center justify-center">
+                        <span class="real-time-indicator"></span>
+                        <span class="text-xs text-green-600">LIVE</span>
+                        <span class="text-xs text-blue-600 ml-1" id="currentDateTime">실시간</span>
                     </div>
                 </div>
-                <button onclick="refreshStockData()" class="text-white hover:text-green-200 transition-colors">
+                <button onclick="refreshStockData()" class="text-blue-500">
                     <i class="fas fa-sync-alt text-xl" id="refreshIcon"></i>
                 </button>
             </div>
         </div>
 
-        <!-- 컨텐츠 -->
-        <div class="content-container">
-            <!-- 포트폴리오 요약 -->
-            <div class="content-card">
-                <div class="section-header">
-                    <div class="section-icon" style="background: linear-gradient(135deg, #10B981, #059669);">
-                        <i class="fas fa-wallet"></i>
-                    </div>
-                    <div>
-                        <h2 class="section-title">내 포트폴리오</h2>
-                        <p class="text-sm text-gray-600" id="lastUpdateTime">마지막 업데이트: 방금 전</p>
-                    </div>
-                </div>
-                
-                <div class="portfolio-stats">
-                    <div class="stat-item">
-                        <div class="stat-value" id="totalValue">₩1,250,000</div>
-                        <div class="stat-label">총 자산</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value profit" id="totalProfit">+₩125,000</div>
-                        <div class="stat-label">수익/손실</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value" id="holdingCount">5</div>
-                        <div class="stat-label">보유 종목</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value" id="profitRate">+12.5%</div>
-                        <div class="stat-label">수익률</div>
-                    </div>
-                </div>
+        <div class="max-w-md mx-auto px-4 py-6">
+            <!-- 현재 시간 표시 -->
+            <div class="bg-blue-50 rounded-lg p-3 mb-6 text-center">
+                <p class="text-sm text-blue-600">현재 시간 (KST)</p>
+                <p class="text-lg font-bold text-blue-800" id="currentTime">2025년 8월 9일 11:55:23</p>
+                <p class="text-xs text-blue-500 mt-1">마지막 업데이트: <span id="lastStockUpdate">방금 전</span></p>
             </div>
 
-            <!-- 검색 -->
-            <div class="content-card">
-                <div class="flex items-center gap-12px bg-gray-50 rounded-16px p-16px">
+            <div class="bg-white rounded-xl p-4 card-shadow mb-6">
+                <div class="flex items-center space-x-3">
                     <i class="fas fa-search text-gray-400"></i>
                     <input type="text" id="stockSearch" placeholder="종목명 또는 종목코드 검색" 
-                           class="flex-1 bg-transparent outline-none text-gray-700" onkeyup="searchStocks()">
+                           class="flex-1 bg-transparent outline-none" onkeyup="searchStocks()">
                 </div>
             </div>
 
-            <!-- 국내 주식 -->
-            <div class="content-card">
-                <div class="section-header">
-                    <div class="section-icon" style="background: linear-gradient(135deg, #3B82F6, #1D4ED8);">
-                        <i class="fas fa-flag"></i>
-                    </div>
-                    <div>
-                        <h2 class="section-title">국내 주식</h2>
-                        <div class="flex items-center gap-4px">
-                            <div class="w-2 h-2 bg-red-400 rounded-full animate-pulse"></div>
-                            <span class="text-sm text-gray-600">실시간</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div id="domesticStocks">
+            <div class="mb-6">
+                <h2 class="text-lg font-bold mb-4">
+                    국내 주식 
+                    <span class="real-time-indicator ml-2"></span>
+                </h2>
+                <div id="domesticStocks" class="space-y-3">
                     <div class="text-center py-8">
-                        <div class="w-12 h-12 border-4 border-green-200 border-t-green-500 rounded-full animate-spin mx-auto mb-4"></div>
-                        <p class="text-gray-500">실시간 데이터 로딩 중...</p>
+                        <div class="loading mx-auto mb-4"></div>
+                        <p class="text-gray-500">실시간 한국 주식 데이터 로딩 중...</p>
                     </div>
-                </div>
-            </div>
-
-            <!-- 해외 주식 -->
-            <div class="content-card">
-                <div class="section-header">
-                    <div class="section-icon" style="background: linear-gradient(135deg, #8B5CF6, #7C3AED);">
-                        <i class="fas fa-globe"></i>
-                    </div>
-                    <div>
-                        <h2 class="section-title">해외 주식</h2>
-                        <span class="text-sm text-gray-600">주요 글로벌 종목</span>
-                    </div>
-                </div>
-                
-                <div id="globalStocks">
-                    <div class="text-center py-8">
-                        <div class="w-12 h-12 border-4 border-purple-200 border-t-purple-500 rounded-full animate-spin mx-auto mb-4"></div>
-                        <p class="text-gray-500">해외 주식 데이터 로딩 중...</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 암호화폐 -->
-            <div class="content-card">
-                <div class="section-header">
-                    <div class="section-icon" style="background: linear-gradient(135deg, #F59E0B, #D97706);">
-                        <i class="fab fa-bitcoin"></i>
-                    </div>
-                    <div>
-                        <h2 class="section-title">암호화폐</h2>
-                        <span class="text-sm text-gray-600">주요 디지털 자산</span>
-                    </div>
-                </div>
-                
-                <div id="cryptoStocks">
-                    <div class="text-center py-8">
-                        <div class="w-12 h-12 border-4 border-orange-200 border-t-orange-500 rounded-full animate-spin mx-auto mb-4"></div>
-                        <p class="text-gray-500">암호화폐 데이터 로딩 중...</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 차트 분석 -->
-            <div class="content-card">
-                <div class="section-header">
-                    <div class="section-icon" style="background: linear-gradient(135deg, #EF4444, #DC2626);">
-                        <i class="fas fa-chart-area"></i>
-                    </div>
-                    <div>
-                        <h2 class="section-title">시장 분석</h2>
-                        <span class="text-sm text-gray-600">실시간 차트</span>
-                    </div>
-                </div>
-                
-                <div class="chart-container">
-                    <canvas id="marketChart"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
                 </div>
             </div>
 
@@ -2077,33 +1660,6 @@ if ('ontouchstart' in window) {
 
 console.log('실시간 투자 페이지 스크립트 로드 완료 - 2025년 8월 9일 11:59:08 KST');
 </script>
-
-    <!-- 하단 네비게이션 -->
-    <div class="bottom-navigation">
-        <div class="nav-container">
-            <button onclick="goToMainPage()" class="nav-item active">
-                <i class="fas fa-home"></i>
-                <span>홈</span>
-            </button>
-            <button onclick="goToNewsPage()" class="nav-item">
-                <i class="fas fa-newspaper"></i>
-                <span>뉴스</span>
-            </button>
-            <div class="nav-center">
-                <div id="navLevelBadge" class="level-badge-nav level-yellow" onclick="goToGradePage()">
-                    YELLOW
-                </div>
-            </div>
-            <button onclick="goToGamePage()" class="nav-item">
-                <i class="fas fa-gamepad"></i>
-                <span>게임</span>
-            </button>
-            <button onclick="goToMorePage()" class="nav-item">
-                <i class="fas fa-ellipsis-h"></i>
-                <span>더보기</span>
-            </button>
-        </div>
-    </div>
 
 </body>
 </html>
