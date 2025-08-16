@@ -910,340 +910,596 @@
 
 <!-- 메인 화면 -->
 <div id="mainScreen" class="screen">
-    <!-- 메인페이지-견본 구조 기반으로 재구성 -->
-    <div style="width: 100%; height: 100vh; overflow: auto; background-color: #FFFFFF; display: flex; justify-content: center; align-items: flex-start;">
-        <table width="1126" height="2437" border="0" cellpadding="0" cellspacing="0" style="background-color: #FFFFFF; max-width: 100%; height: auto;">
-            <!-- 상단 헤더 영역 -->
+    <!-- 메인페이지-견본.html의 정확한 픽셀 구조로 재구성 -->
+    <div style="width: 100%; height: 100vh; overflow: auto; background-color: #FFFFFF; margin: 0; padding: 0;">
+        <table width="1126" height="2437" border="0" cellpadding="0" cellspacing="0" style="margin: 0 auto;">
+            <!-- 상단 배경 (1125x187) -->
             <tr>
-                <td colspan="44" style="position: relative;">
-                    <img src="images/메인페이지-견본_01.png" style="width: 100%; height: auto; display: block;" alt="">
+                <td colspan="44">
+                    <img src="images/메인페이지-견본_01.png" width="1125" height="187" border="0" alt="">
+                </td>
+                <td>
+                    <img src="images/스페이서.gif" width="1" height="187" alt="">
                 </td>
             </tr>
             
-            <!-- 상단바 영역 -->
+            <!-- 헤더 영역 시작 -->
             <tr>
-                <td colspan="18" rowspan="2" style="position: relative;">
-                    <img src="images/메인페이지-견본_02.png" style="width: 100%; height: auto; display: block;" alt="">
+                <td colspan="18" rowspan="2">
+                    <img src="images/메인페이지-견본_02.png" width="330" height="22" border="0" alt="">
                 </td>
-                <td colspan="15" rowspan="5" style="position: relative;">
-                    <img src="images/메인페이지-견본_03.png" style="width: 100%; height: auto; display: block;" alt="">
-                    <!-- FINE U 로고 위치 -->
+                <td colspan="15" rowspan="5">
+                    <img src="images/메인페이지-견본_03.png" width="467" height="153" border="0" alt="">
                 </td>
-                <td colspan="11" style="position: relative;">
-                    <img src="images/메인페이지-견본_04.png" style="width: 100%; height: auto; display: block;" alt="">
+                <td colspan="11">
+                    <img src="images/메인페이지-견본_04.png" width="328" height="21" border="0" alt="">
+                </td>
+                <td>
+                    <img src="images/스페이서.gif" width="1" height="21" alt="">
                 </td>
             </tr>
             
-            <!-- 프로필 및 설정 영역 -->
             <tr>
-                <td colspan="3" rowspan="7" style="position: relative;">
-                    <img src="images/메인페이지-견본_05.png" style="width: 100%; height: auto; display: block;" alt="">
+                <td colspan="3" rowspan="7">
+                    <img src="images/메인페이지-견본_05.png" width="163" height="356" border="0" alt="">
                 </td>
-                <td colspan="4" rowspan="3" style="position: relative;">
-                    <img src="images/메인페이지-견본_06.png" style="width: 100%; height: auto; display: block;" alt="">
-                    <!-- 상단바 종 위치 -->
+                <td colspan="4" rowspan="3">
+                    <img src="images/메인페이지-견본_06.png" width="96" height="115" border="0" alt="">
                 </td>
-                <td colspan="4" rowspan="7" style="position: relative;">
-                    <img src="images/메인페이지-견본_07.png" style="width: 100%; height: auto; display: block;" alt="">
+                <td colspan="4" rowspan="7">
+                    <img src="images/메인페이지-견본_07.png" width="69" height="356" border="0" alt="">
+                </td>
+                <td>
+                    <img src="images/스페이서.gif" width="1" height="1" alt="">
                 </td>
             </tr>
             
-            <!-- 프로필 영역 시작 -->
+            <!-- 프로필 상단 영역 -->
             <tr>
-                <td rowspan="41" style="position: relative;">
-                    <img src="images/메인페이지-견본_08.png" style="width: 100%; height: auto; display: block;" alt="">
+                <td rowspan="41">
+                    <img src="images/메인페이지-견본_08.png" width="70" height="2227" border="0" alt="">
                 </td>
                 <td colspan="10" style="position: relative;">
-                    <img src="images/메인페이지-견본_09.png" style="width: 100%; height: auto; display: block;" alt="">
-                    <!-- 상단바 프로필 위치 -->
+                    <img src="images/메인페이지-견본_09.png" width="113" height="112" border="0" alt="">
+                    <!-- 프로필 아이콘 오버레이 -->
+                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); cursor: pointer;" onclick="showProfileModal()">
+                        <img id="headerProfileImage" src="" alt="Profile" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; display: none;">
+                        <i id="headerProfileIcon" class="fas fa-user" style="font-size: 24px; color: #666; display: block;"></i>
+                    </div>
                 </td>
-                <td colspan="7" rowspan="4" style="position: relative;">
-                    <img src="images/메인페이지-견본_10.png" style="width: 100%; height: auto; display: block;" alt="">
+                <td colspan="7" rowspan="4">
+                    <img src="images/메인페이지-견본_10.png" width="147" height="248" border="0" alt="">
                 </td>
-            </tr>
-            
-            <!-- PROFILE 텍스트 영역 -->
-            <tr>
-                <td colspan="2" rowspan="2" style="position: relative;">
-                    <img src="images/메인페이지-견본_14.png" style="width: 100%; height: auto; display: block;" alt="">
-                </td>
-                <td colspan="12" style="position: relative;">
-                    <img src="images/메인페이지-견본_15.png" style="width: 100%; height: auto; display: block;" alt="">
-                    <!-- PROFILE 글자 -->
-                </td>
-                <td colspan="3" rowspan="2" style="position: relative;">
-                    <img src="images/메인페이지-견본_16.png" style="width: 100%; height: auto; display: block;" alt="">
+                <td>
+                    <img src="images/스페이서.gif" width="1" height="112" alt="">
                 </td>
             </tr>
             
-            <!-- 프로필 상세 영역 -->
             <tr>
-                <td colspan="12" style="position: relative;">
-                    <img src="images/메인페이지-견본_17.png" style="width: 100%; height: auto; display: block;" alt="">
+                <td colspan="10" rowspan="3">
+                    <img src="images/메인페이지-견본_11.png" width="113" height="136" border="0" alt="">
+                </td>
+                <td>
+                    <img src="images/스페이서.gif" width="1" height="2" alt="">
+                </td>
+            </tr>
+            
+            <tr>
+                <td colspan="4" rowspan="4">
+                    <img src="images/메인페이지-견본_12.png" width="96" height="241" border="0" alt="">
+                </td>
+                <td>
+                    <img src="images/스페이서.gif" width="1" height="17" alt="">
+                </td>
+            </tr>
+            
+            <tr>
+                <td colspan="15" rowspan="3">
+                    <img src="images/메인페이지-견본_13.png" width="467" height="224" border="0" alt="">
+                </td>
+                <td>
+                    <img src="images/스페이서.gif" width="1" height="117" alt="">
+                </td>
+            </tr>
+            
+            <!-- PROFILE 텍스트 섹션 -->
+            <tr>
+                <td colspan="2" rowspan="2">
+                    <img src="images/메인페이지-견본_14.png" width="3" height="107" border="0" alt="">
+                </td>
+                <td colspan="12">
+                    <img src="images/메인페이지-견본_15.png" width="219" height="46" border="0" alt="">
+                </td>
+                <td colspan="3" rowspan="2">
+                    <img src="images/메인페이지-견본_16.png" width="38" height="107" border="0" alt="">
+                </td>
+                <td>
+                    <img src="images/스페이서.gif" width="1" height="46" alt="">
+                </td>
+            </tr>
+            
+            <tr>
+                <td colspan="12">
+                    <img src="images/메인페이지-견본_17.png" width="219" height="61" border="0" alt="">
+                </td>
+                <td>
+                    <img src="images/스페이서.gif" width="1" height="61" alt="">
                 </td>
             </tr>
             
             <!-- 프로필 메인 컨테이너 -->
             <tr>
-                <td colspan="40" style="position: relative; height: 43px;">
-                    <img src="images/메인페이지-견본_18.png" style="width: 100%; height: auto; display: block;" alt="">
-                    <!-- 프로필 배경 -->
+                <td colspan="40" style="position: relative;">
+                    <img src="images/메인페이지-견본_18.png" width="988" height="43" border="0" alt="">
                 </td>
-                <td colspan="3" rowspan="13" style="position: relative;">
-                    <img src="images/메인페이지-견본_19.png" style="width: 100%; height: auto; display: block;" alt="">
+                <td colspan="3" rowspan="13">
+                    <img src="images/메인페이지-견본_19.png" width="67" height="520" border="0" alt="">
+                </td>
+                <td>
+                    <img src="images/스페이서.gif" width="1" height="43" alt="">
                 </td>
             </tr>
             
-            <!-- 프로필 내용 영역 -->
+            <!-- 프로필 상세 영역 -->
             <tr>
-                <td colspan="6" rowspan="9" style="position: relative;">
-                    <img src="images/메인페이지-견본_20.png" style="width: 100%; height: auto; display: block;" alt="">
+                <td colspan="6" rowspan="9">
+                    <img src="images/메인페이지-견본_20.png" width="56" height="302" border="0" alt="">
                 </td>
                 <td colspan="13" rowspan="8" style="position: relative;">
-                    <img src="images/메인페이지-견본_21.png" style="width: 100%; height: auto; display: block;" alt="">
-                    <!-- 프로필 사진 영역 - 동적 구현 -->
-                    <div style="position: absolute; top: 10%; left: 10%; width: 80%; height: 80%; background: #f0f0f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px solid #ddd;">
-                        <img id="mainProfileImage" src="" alt="Profile" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: none;">
-                        <i id="mainProfileIcon" class="fas fa-user" style="font-size: 60px; color: #999;"></i>
+                    <img src="images/메인페이지-견본_21.png" width="258" height="260" border="0" alt="">
+                    <!-- 프로필 사진 영역 - 정확한 위치에 배치 -->
+                    <div style="position: absolute; top: 15px; left: 15px; width: 228px; height: 230px; border-radius: 50%; overflow: hidden; background: #f5f5f5; border: 2px solid #ddd; display: flex; align-items: center; justify-content: center;">
+                        <img id="mainProfileImage" src="" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; display: none;">
+                        <i id="mainProfileIcon" class="fas fa-user" style="font-size: 80px; color: #ccc; display: block;"></i>
                     </div>
                 </td>
-                <td colspan="2" rowspan="9" style="position: relative;">
-                    <img src="images/메인페이지-견본_22.png" style="width: 100%; height: auto; display: block;" alt="">
+                <td colspan="2" rowspan="9">
+                    <img src="images/메인페이지-견본_22.png" width="52" height="302" border="0" alt="">
                 </td>
                 <td colspan="9" rowspan="3" style="position: relative;">
-                    <img src="images/메인페이지-견본_23.png" style="width: 100%; height: auto; display: block;" alt="">
-                    <!-- 등급 뱃지 영역 - 동적 구현 -->
-                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-weight: bold; font-size: clamp(16px, 4vw, 24px);" id="mainUserLevel">YELLOW</div>
+                    <img src="images/메인페이지-견본_23.png" width="307" height="70" border="0" alt="">
+                    <!-- 등급 뱃지 텍스트 - 정확한 위치에 배치 -->
+                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-weight: bold; font-size: 18px; text-align: center;" id="mainUserLevel">YELLOW</div>
                 </td>
-                <td colspan="10" style="position: relative;">
-                    <img src="images/메인페이지-견본_24.png" style="width: 100%; height: auto; display: block;" alt="">
+                <td colspan="10">
+                    <img src="images/메인페이지-견본_24.png" width="315" height="4" border="0" alt="">
+                </td>
+                <td>
+                    <img src="images/스페이서.gif" width="1" height="4" alt="">
                 </td>
             </tr>
             
-            <!-- 프로필 설정 및 이름 영역 -->
+            <!-- 프로필 설정 버튼 영역 -->
             <tr>
-                <td colspan="4" rowspan="8" style="position: relative;">
-                    <img src="images/메인페이지-견본_25.png" style="width: 100%; height: auto; display: block;" alt="">
+                <td colspan="4" rowspan="8">
+                    <img src="images/메인페이지-견본_25.png" width="205" height="298" border="0" alt="">
                 </td>
                 <td colspan="3" style="position: relative; cursor: pointer;" onclick="showProfileModal()">
-                    <img src="images/메인페이지-견본_26.png" style="width: 100%; height: auto; display: block;" alt="">
-                    <!-- 프로필 설정 버튼 -->
+                    <img src="images/메인페이지-견본_26.png" width="58" height="61" border="0" alt="">
                 </td>
-                <td colspan="3" rowspan="8" style="position: relative;">
-                    <img src="images/메인페이지-견본_27.png" style="width: 100%; height: auto; display: block;" alt="">
+                <td colspan="3" rowspan="8">
+                    <img src="images/메인페이지-견본_27.png" width="52" height="298" border="0" alt="">
+                </td>
+                <td>
+                    <img src="images/스페이서.gif" width="1" height="61" alt="">
+                </td>
+            </tr>
+            
+            <tr>
+                <td colspan="3" rowspan="7">
+                    <img src="images/메인페이지-견본_28.png" width="58" height="237" border="0" alt="">
+                </td>
+                <td>
+                    <img src="images/스페이서.gif" width="1" height="5" alt="">
+                </td>
+            </tr>
+            
+            <tr>
+                <td colspan="9">
+                    <img src="images/메인페이지-견본_29.png" width="307" height="52" border="0" alt="">
+                </td>
+                <td>
+                    <img src="images/스페이서.gif" width="1" height="52" alt="">
                 </td>
             </tr>
             
             <!-- 이름 표시 영역 -->
             <tr>
-                <td colspan="3" rowspan="2" style="position: relative;">
-                    <img src="images/메인페이지-견본_30.png" style="width: 100%; height: auto; display: block;" alt="">
+                <td colspan="3" rowspan="2">
+                    <img src="images/메인페이지-견본_30.png" width="58" height="94" border="0" alt="">
                 </td>
                 <td colspan="4" style="position: relative;">
-                    <img src="images/메인페이지-견본_31.png" style="width: 100%; height: auto; display: block;" alt="">
-                    <!-- 이름 표시 영역 - 동적 구현 -->
-                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: bold; font-size: clamp(14px, 4vw, 18px); color: #333;" id="mainUserName">사용자</div>
+                    <img src="images/메인페이지-견본_31.png" width="195" height="48" border="0" alt="">
+                    <!-- 이름 텍스트 - 정확한 위치에 배치 -->
+                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: bold; font-size: 16px; color: #333; text-align: center;" id="mainUserName">사용자</div>
                 </td>
-                <td colspan="2" rowspan="2" style="position: relative;">
-                    <img src="images/메인페이지-견본_32.png" style="width: 100%; height: auto; display: block;" alt="">
+                <td colspan="2" rowspan="2">
+                    <img src="images/메인페이지-견본_32.png" width="54" height="94" border="0" alt="">
+                </td>
+                <td>
+                    <img src="images/스페이서.gif" width="1" height="48" alt="">
                 </td>
             </tr>
             
-            <!-- 가입일 영역 -->
             <tr>
-                <td rowspan="3" style="position: relative;">
-                    <img src="images/메인페이지-견본_34.png" style="width: 100%; height: auto; display: block;" alt="">
+                <td colspan="4">
+                    <img src="images/메인페이지-견본_33.png" width="195" height="46" border="0" alt="">
+                </td>
+                <td>
+                    <img src="images/스페이서.gif" width="1" height="46" alt="">
+                </td>
+            </tr>
+            
+            <!-- 가입일 표시 영역 -->
+            <tr>
+                <td rowspan="3">
+                    <img src="images/메인페이지-견본_34.png" width="6" height="86" border="0" alt="">
                 </td>
                 <td colspan="8" style="position: relative;">
-                    <img src="images/메인페이지-견본_35.png" style="width: 100%; height: auto; display: block;" alt="">
-                    <!-- FINE U와 함께한지 N일 - 동적 구현 -->
-                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: clamp(12px, 3vw, 14px); color: #666;" id="mainJoinDays">FINE U와 함께한지 1일</div>
+                    <img src="images/메인페이지-견본_35.png" width="301" height="29" border="0" alt="">
+                    <!-- 가입일 텍스트 - 정확한 위치에 배치 -->
+                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 12px; color: #666; text-align: center;" id="mainJoinDays">FINE U와 함께한지 1일</div>
+                </td>
+                <td>
+                    <img src="images/스페이서.gif" width="1" height="29" alt="">
+                </td>
+            </tr>
+            
+            <tr>
+                <td colspan="8" rowspan="2">
+                    <img src="images/메인페이지-견본_36.png" width="301" height="57" border="0" alt="">
+                </td>
+                <td>
+                    <img src="images/스페이서.gif" width="1" height="15" alt="">
+                </td>
+            </tr>
+            
+            <tr>
+                <td colspan="13">
+                    <img src="images/메인페이지-견본_37.png" width="258" height="42" border="0" alt="">
+                </td>
+                <td>
+                    <img src="images/스페이서.gif" width="1" height="42" alt="">
                 </td>
             </tr>
             
             <!-- ASSETS 섹션 시작 -->
             <tr>
-                <td rowspan="24" style="position: relative;">
-                    <img src="images/메인페이지-견본_39.png" style="width: 100%; height: auto; display: block;" alt="">
+                <td colspan="40">
+                    <img src="images/메인페이지-견본_38.png" width="988" height="66" border="0" alt="">
                 </td>
-                <td colspan="12" style="position: relative;">
-                    <img src="images/메인페이지-견본_40.png" style="width: 100%; height: auto; display: block;" alt="">
-                    <!-- ASSETS 글자 -->
+                <td>
+                    <img src="images/스페이서.gif" width="1" height="66" alt="">
                 </td>
-                <td colspan="27" rowspan="2" style="position: relative;">
-                    <img src="images/메인페이지-견본_41.png" style="width: 100%; height: auto; display: block;" alt="">
+            </tr>
+            
+            <tr>
+                <td rowspan="24">
+                    <img src="images/메인페이지-견본_39.png" width="1" height="1461" border="0" alt="">
+                </td>
+                <td colspan="12">
+                    <img src="images/메인페이지-견본_40.png" width="203" height="46" border="0" alt="">
+                </td>
+                <td colspan="27" rowspan="2">
+                    <img src="images/메인페이지-견본_41.png" width="784" height="109" border="0" alt="">
+                </td>
+                <td>
+                    <img src="images/스페이서.gif" width="1" height="46" alt="">
+                </td>
+            </tr>
+            
+            <tr>
+                <td colspan="12">
+                    <img src="images/메인페이지-견본_42.png" width="203" height="63" border="0" alt="">
+                </td>
+                <td>
+                    <img src="images/스페이서.gif" width="1" height="63" alt="">
+                </td>
+            </tr>
+            
+            <!-- ASSETS 상세 영역 -->
+            <tr>
+                <td rowspan="22">
+                    <img src="images/메인페이지-견본_43.png" width="2" height="1352" border="0" alt="">
+                </td>
+                <td colspan="39">
+                    <img src="images/메인페이지-견본_44.png" width="988" height="38" border="0" alt="">
+                </td>
+                <td colspan="2" rowspan="12">
+                    <img src="images/메인페이지-견본_45.png" width="64" height="520" border="0" alt="">
+                </td>
+                <td>
+                    <img src="images/스페이서.gif" width="1" height="38" alt="">
+                </td>
+            </tr>
+            
+            <tr>
+                <td colspan="5" rowspan="8">
+                    <img src="images/메인페이지-견본_46.png" width="54" height="307" border="0" alt="">
+                </td>
+                <td colspan="5" rowspan="3">
+                    <img src="images/메인페이지-견본_47.png" width="95" height="91" border="0" alt="">
+                </td>
+                <td colspan="29">
+                    <img src="images/메인페이지-견본_48.png" width="839" height="19" border="0" alt="">
+                </td>
+                <td>
+                    <img src="images/스페이서.gif" width="1" height="19" alt="">
                 </td>
             </tr>
             
             <!-- 현금보유량 영역 -->
             <tr>
-                <td colspan="3" rowspan="3" style="position: relative;">
-                    <img src="images/메인페이지-견본_49.png" style="width: 100%; height: auto; display: block;" alt="">
+                <td colspan="3" rowspan="3">
+                    <img src="images/메인페이지-견본_49.png" width="71" height="116" border="0" alt="">
                 </td>
                 <td colspan="12" style="position: relative;">
-                    <img src="images/메인페이지-견본_50.png" style="width: 100%; height: auto; display: block;" alt="">
-                    <!-- 현금보유량 표시 - 동적 구현 -->
-                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: bold; font-size: clamp(16px, 4vw, 20px); color: #333;" id="mainCashAmount">10,000,000원</div>
+                    <img src="images/메인페이지-견본_50.png" width="375" height="52" border="0" alt="">
+                    <!-- 현금보유량 텍스트 - 정확한 위치에 배치 -->
+                    <div style="position: absolute; top: 50%; left: 20%; transform: translateY(-50%); font-weight: bold; font-size: 16px; color: #333;" id="mainCashAmount">10,000,000원</div>
                 </td>
-                <td colspan="14" rowspan="3" style="position: relative;">
-                    <img src="images/메인페이지-견본_51.png" style="width: 100%; height: auto; display: block;" alt="">
+                <td colspan="14" rowspan="3">
+                    <img src="images/메인페이지-견본_51.png" width="393" height="116" border="0" alt="">
+                </td>
+                <td>
+                    <img src="images/스페이서.gif" width="1" height="52" alt="">
                 </td>
             </tr>
             
-            <!-- 주식 섹션 -->
             <tr>
-                <td rowspan="4" style="position: relative;">
-                    <img src="images/메인페이지-견본_54.png" style="width: 100%; height: auto; display: block;" alt="">
+                <td colspan="12" rowspan="2">
+                    <img src="images/메인페이지-견본_52.png" width="375" height="64" border="0" alt="">
+                </td>
+                <td>
+                    <img src="images/스페이서.gif" width="1" height="20" alt="">
+                </td>
+            </tr>
+            
+            <tr>
+                <td colspan="5">
+                    <img src="images/메인페이지-견본_53.png" width="95" height="44" border="0" alt="">
+                </td>
+                <td>
+                    <img src="images/스페이서.gif" width="1" height="44" alt="">
+                </td>
+            </tr>
+            
+            <!-- 주식 영역 -->
+            <tr>
+                <td rowspan="4">
+                    <img src="images/메인페이지-견본_54.png" width="1" height="172" border="0" alt="">
                 </td>
                 <td colspan="28" style="position: relative;">
-                    <img src="images/메인페이지-견본_55.png" style="width: 100%; height: auto; display: block;" alt="">
-                    <!-- 주식 정보 - 동적 구현 -->
-                    <div style="position: absolute; top: 50%; left: 20%; transform: translateY(-50%); font-weight: bold; font-size: clamp(14px, 3.5vw, 16px); color: #333;">주식: <span id="mainStockValue">0원</span></div>
+                    <img src="images/메인페이지-견본_55.png" width="874" height="48" border="0" alt="">
+                    <!-- 주식 텍스트 - 정확한 위치에 배치 -->
+                    <div style="position: absolute; top: 50%; left: 5%; transform: translateY(-50%); font-weight: bold; font-size: 14px; color: #333;">주식: <span id="mainStockValue">0원</span></div>
                 </td>
-                <td colspan="5" rowspan="4" style="position: relative;">
-                    <img src="images/메인페이지-견본_56.png" style="width: 100%; height: auto; display: block;" alt="">
+                <td colspan="5" rowspan="4">
+                    <img src="images/메인페이지-견본_56.png" width="59" height="172" border="0" alt="">
+                </td>
+                <td>
+                    <img src="images/스페이서.gif" width="1" height="48" alt="">
                 </td>
             </tr>
             
-            <!-- 적금 섹션 -->
             <tr>
-                <td rowspan="2" style="position: relative;">
-                    <img src="images/메인페이지-견본_58.png" style="width: 100%; height: auto; display: block;" alt="">
+                <td colspan="28">
+                    <img src="images/메인페이지-견본_57.png" width="874" height="31" border="0" alt="">
+                </td>
+                <td>
+                    <img src="images/스페이서.gif" width="1" height="31" alt="">
+                </td>
+            </tr>
+            
+            <!-- 적금 영역 -->
+            <tr>
+                <td rowspan="2">
+                    <img src="images/메인페이지-견본_58.png" width="1" height="93" border="0" alt="">
                 </td>
                 <td colspan="16" style="position: relative;">
-                    <img src="images/메인페이지-견본_59.png" style="width: 100%; height: auto; display: block;" alt="">
-                    <!-- 적금 정보 - 동적 구현 -->
-                    <div style="position: absolute; top: 50%; left: 20%; transform: translateY(-50%); font-weight: bold; font-size: clamp(14px, 3.5vw, 16px); color: #333;">적금: <span id="mainSavingsValue">0원</span></div>
+                    <img src="images/메인페이지-견본_59.png" width="444" height="48" border="0" alt="">
+                    <!-- 적금 텍스트 - 정확한 위치에 배치 -->
+                    <div style="position: absolute; top: 50%; left: 5%; transform: translateY(-50%); font-weight: bold; font-size: 14px; color: #333;">적금: <span id="mainSavingsValue">0원</span></div>
                 </td>
-                <td colspan="11" rowspan="2" style="position: relative;">
-                    <img src="images/메인페이지-견본_60.png" style="width: 100%; height: auto; display: block;" alt="">
+                <td colspan="11" rowspan="2">
+                    <img src="images/메인페이지-견본_60.png" width="429" height="93" border="0" alt="">
+                </td>
+                <td>
+                    <img src="images/스페이서.gif" width="1" height="48" alt="">
+                </td>
+            </tr>
+            
+            <tr>
+                <td colspan="16">
+                    <img src="images/메인페이지-견본_61.png" width="444" height="45" border="0" alt="">
+                </td>
+                <td>
+                    <img src="images/스페이서.gif" width="1" height="45" alt="">
                 </td>
             </tr>
             
             <!-- PORTFOLIO 섹션 시작 -->
             <tr>
-                <td rowspan="12" style="position: relative;">
-                    <img src="images/메인페이지-견본_63.png" style="width: 100%; height: auto; display: block;" alt="">
+                <td colspan="39">
+                    <img src="images/메인페이지-견본_62.png" width="988" height="66" border="0" alt="">
                 </td>
-                <td colspan="15" style="position: relative;">
-                    <img src="images/메인페이지-견본_64.png" style="width: 100%; height: auto; display: block;" alt="">
-                    <!-- PORTFOLIO 글자 -->
+                <td>
+                    <img src="images/스페이서.gif" width="1" height="66" alt="">
                 </td>
-                <td colspan="23" rowspan="2" style="position: relative;">
-                    <img src="images/메인페이지-견본_65.png" style="width: 100%; height: auto; display: block;" alt="">
+            </tr>
+            
+            <tr>
+                <td rowspan="12">
+                    <img src="images/메인페이지-견본_63.png" width="2" height="941" border="0" alt="">
+                </td>
+                <td colspan="15">
+                    <img src="images/메인페이지-견본_64.png" width="296" height="46" border="0" alt="">
+                </td>
+                <td colspan="23" rowspan="2">
+                    <img src="images/메인페이지-견본_65.png" width="690" height="109" border="0" alt="">
+                </td>
+                <td>
+                    <img src="images/스페이서.gif" width="1" height="46" alt="">
+                </td>
+            </tr>
+            
+            <tr>
+                <td colspan="15">
+                    <img src="images/메인페이지-견본_66.png" width="296" height="63" border="0" alt="">
+                </td>
+                <td>
+                    <img src="images/스페이서.gif" width="1" height="63" alt="">
                 </td>
             </tr>
             
             <!-- 포트폴리오 차트 영역 -->
             <tr>
-                <td rowspan="10" style="position: relative;">
-                    <img src="images/메인페이지-견본_67.png" style="width: 100%; height: auto; display: block;" alt="">
+                <td rowspan="10">
+                    <img src="images/메인페이지-견본_67.png" width="5" height="832" border="0" alt="">
                 </td>
-                <td colspan="38" style="position: relative;">
-                    <img src="images/메인페이지-견본_68.png" style="width: 100%; height: auto; display: block;" alt="">
+                <td colspan="38">
+                    <img src="images/메인페이지-견본_68.png" width="987" height="41" border="0" alt="">
                 </td>
-                <td rowspan="10" style="position: relative;">
-                    <img src="images/메인페이지-견본_69.png" style="width: 100%; height: auto; display: block;" alt="">
+                <td rowspan="10">
+                    <img src="images/메인페이지-견본_69.png" width="58" height="832" border="0" alt="">
+                </td>
+                <td>
+                    <img src="images/스페이서.gif" width="1" height="41" alt="">
                 </td>
             </tr>
             
-            <!-- 포트폴리오 차트 메인 -->
             <tr>
-                <td colspan="14" rowspan="2" style="position: relative;">
-                    <img src="images/메인페이지-견본_70.png" style="width: 100%; height: auto; display: block;" alt="">
+                <td colspan="14" rowspan="2">
+                    <img src="images/메인페이지-견본_70.png" width="291" height="450" border="0" alt="">
                 </td>
                 <td colspan="13" style="position: relative;">
-                    <img src="images/메인페이지-견본_71.png" style="width: 100%; height: auto; display: block;" alt="">
-                    <!-- 원 그래프 영역 - 동적 구현 -->
-                    <div style="position: absolute; top: 10%; left: 10%; width: 80%; height: 80%;">
-                        <canvas id="mainPortfolioChart" style="width: 100%; height: 100%;"></canvas>
+                    <img src="images/메인페이지-견본_71.png" width="408" height="409" border="0" alt="">
+                    <!-- 포트폴리오 차트 - 정확한 위치에 배치 -->
+                    <div style="position: absolute; top: 20px; left: 20px; width: 368px; height: 369px;">
+                        <canvas id="mainPortfolioChart" width="368" height="369" style="width: 100%; height: 100%;"></canvas>
                     </div>
                 </td>
-                <td colspan="11" rowspan="2" style="position: relative;">
-                    <img src="images/메인페이지-견본_72.png" style="width: 100%; height: auto; display: block;" alt="">
+                <td colspan="11" rowspan="2">
+                    <img src="images/메인페이지-견본_72.png" width="288" height="450" border="0" alt="">
+                </td>
+                <td>
+                    <img src="images/스페이서.gif" width="1" height="409" alt="">
+                </td>
+            </tr>
+            
+            <tr>
+                <td colspan="13">
+                    <img src="images/메인페이지-견본_73.png" width="408" height="41" border="0" alt="">
+                </td>
+                <td>
+                    <img src="images/스페이서.gif" width="1" height="41" alt="">
                 </td>
             </tr>
             
             <!-- 하단 네비게이션 영역 -->
             <tr>
-                <td colspan="19" style="position: relative;">
-                    <img src="images/메인페이지-견본_74.png" style="width: 100%; height: auto; display: block;" alt="">
+                <td colspan="19">
+                    <img src="images/메인페이지-견본_74.png" width="392" height="132" border="0" alt="">
                 </td>
                 <td colspan="3" rowspan="4" style="position: relative; cursor: pointer;" onclick="navigateToPage('a5.html')">
-                    <img src="images/메인페이지-견본_75.png" style="width: 100%; height: auto; display: block;" alt="">
-                    <!-- 등급 버튼 - 동적 구현 -->
-                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-weight: bold; font-size: clamp(12px, 3vw, 16px);" id="navUserLevel">YELLOW</div>
+                    <img src="images/메인페이지-견본_75.png" width="181" height="180" border="0" alt="">
+                    <!-- 등급 버튼 텍스트 - 정확한 위치에 배치 -->
+                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-weight: bold; font-size: 16px; text-align: center;" id="navUserLevel">YELLOW</div>
                 </td>
-                <td colspan="16" rowspan="2" style="position: relative;">
-                    <img src="images/메인페이지-견본_76.png" style="width: 100%; height: auto; display: block;" alt="">
+                <td colspan="16" rowspan="2">
+                    <img src="images/메인페이지-견본_76.png" width="414" height="135" border="0" alt="">
+                </td>
+                <td>
+                    <img src="images/스페이서.gif" width="1" height="132" alt="">
                 </td>
             </tr>
             
             <!-- 네비게이션 버튼들 -->
             <tr>
-                <td rowspan="6" style="position: relative;">
-                    <img src="images/메인페이지-견본_77.png" style="width: 100%; height: auto; display: block;" alt="">
+                <td rowspan="6">
+                    <img src="images/메인페이지-견본_77.png" width="17" height="209" border="0" alt="">
                 </td>
-                <td colspan="6" rowspan="5" style="position: relative; cursor: pointer;" onclick="showMainScreen()">
-                    <img src="images/메인페이지-견본_78.png" style="width: 100%; height: auto; display: block;" alt="">
+                <td colspan="6" rowspan="5" style="cursor: pointer;" onclick="showMainScreen()">
+                    <img src="images/메인페이지-견본_78.png" width="95" height="96" border="0" alt="">
                     <!-- 홈 버튼 -->
                 </td>
-                <td colspan="5" rowspan="6" style="position: relative;">
-                    <img src="images/메인페이지-견본_79.png" style="width: 100%; height: auto; display: block;" alt="">
+                <td colspan="5" rowspan="6">
+                    <img src="images/메인페이지-견본_79.png" width="120" height="209" border="0" alt="">
                 </td>
-                <td colspan="4" rowspan="5" style="position: relative; cursor: pointer;" onclick="navigateToPage('a2.html')">
-                    <img src="images/메인페이지-견본_80.png" style="width: 100%; height: auto; display: block;" alt="">
+                <td colspan="4" rowspan="5" style="cursor: pointer;" onclick="navigateToPage('a2.html')">
+                    <img src="images/메인페이지-견본_80.png" width="76" height="96" border="0" alt="">
                     <!-- 뉴스 버튼 -->
                 </td>
-                <td colspan="3" rowspan="6" style="position: relative;">
-                    <img src="images/메인페이지-견본_81.png" style="width: 100%; height: auto; display: block;" alt="">
+                <td colspan="3" rowspan="6">
+                    <img src="images/메인페이지-견본_81.png" width="84" height="209" border="0" alt="">
+                </td>
+                <td>
+                    <img src="images/스페이서.gif" width="1" height="3" alt="">
                 </td>
             </tr>
             
-            <!-- 게임/더보기 버튼 영역 -->
             <tr>
-                <td colspan="3" rowspan="5" style="position: relative;">
-                    <img src="images/메인페이지-견본_82.png" style="width: 100%; height: auto; display: block;" alt="">
+                <td colspan="3" rowspan="5">
+                    <img src="images/메인페이지-견본_82.png" width="72" height="206" border="0" alt="">
                 </td>
-                <td colspan="4" rowspan="4" style="position: relative; cursor: pointer;" onclick="navigateToPage('a3.html')">
-                    <img src="images/메인페이지-견본_83.png" style="width: 100%; height: auto; display: block;" alt="">
+                <td colspan="4" rowspan="4" style="cursor: pointer;" onclick="navigateToPage('a3.html')">
+                    <img src="images/메인페이지-견본_83.png" width="93" height="93" border="0" alt="">
                     <!-- 더보기 버튼 -->
                 </td>
-                <td colspan="9" style="position: relative;">
-                    <img src="images/메인페이지-견본_84.png" style="width: 100%; height: auto; display: block;" alt="">
+                <td colspan="9">
+                    <img src="images/메인페이지-견본_84.png" width="249" height="42" border="0" alt="">
+                </td>
+                <td>
+                    <img src="images/스페이서.gif" width="1" height="42" alt="">
                 </td>
             </tr>
             
-            <!-- 게임 버튼 -->
             <tr>
-                <td rowspan="4" style="position: relative;">
-                    <img src="images/메인페이지-견본_85.png" style="width: 100%; height: auto; display: block;" alt="">
+                <td rowspan="4">
+                    <img src="images/메인페이지-견본_85.png" width="130" height="164" border="0" alt="">
                 </td>
-                <td colspan="4" rowspan="2" style="position: relative;">
-                    <img src="images/메인페이지-견본_86.png" style="width: 100%; height: auto; display: block;" alt="">
-                </td>
-                <td colspan="4" rowspan="4" style="position: relative;">
-                    <img src="images/메인페이지-견본_87.png" style="width: 100%; height: auto; display: block;" alt="">
-                </td>
-            </tr>
-            
-            <!-- 최종 네비게이션 버튼들 -->
-            <tr>
-                <td colspan="3" rowspan="3" style="position: relative; cursor: pointer;" onclick="navigateToPage('a4.html')">
-                    <img src="images/메인페이지-견본_88.png" style="width: 100%; height: auto; display: block;" alt="">
+                <td colspan="4" rowspan="2" style="cursor: pointer;" onclick="navigateToPage('a4.html')">
+                    <img src="images/메인페이지-견본_86.png" width="60" height="12" border="0" alt="">
                     <!-- 게임 버튼 -->
                 </td>
+                <td colspan="4" rowspan="4">
+                    <img src="images/메인페이지-견본_87.png" width="59" height="164" border="0" alt="">
+                </td>
+                <td>
+                    <img src="images/스페이서.gif" width="1" height="3" alt="">
+                </td>
             </tr>
             
             <tr>
-                <td colspan="6" style="position: relative;">
-                    <img src="images/메인페이지-견본_90.png" style="width: 100%; height: auto; display: block;" alt="">
+                <td colspan="3" rowspan="3">
+                    <img src="images/메인페이지-견본_88.png" width="181" height="161" border="0" alt="">
                 </td>
-                <td colspan="4" style="position: relative;">
-                    <img src="images/메인페이지-견본_91.png" style="width: 100%; height: auto; display: block;" alt="">
+                <td>
+                    <img src="images/스페이서.gif" width="1" height="9" alt="">
                 </td>
-                <td colspan="4" style="position: relative;">
-                    <img src="images/메인페이지-견본_92.png" style="width: 100%; height: auto; display: block;" alt="">
+            </tr>
+            
+            <tr>
+                <td colspan="4" rowspan="2">
+                    <img src="images/메인페이지-견본_89.png" width="60" height="152" border="0" alt="">
+                </td>
+                <td>
+                    <img src="images/스페이서.gif" width="1" height="39" alt="">
+                </td>
+            </tr>
+            
+            <tr>
+                <td colspan="6">
+                    <img src="images/메인페이지-견본_90.png" width="95" height="113" border="0" alt="">
+                </td>
+                <td colspan="4">
+                    <img src="images/메인페이지-견본_91.png" width="76" height="113" border="0" alt="">
+                </td>
+                <td colspan="4">
+                    <img src="images/메인페이지-견본_92.png" width="93" height="113" border="0" alt="">
+                </td>
+                <td>
+                    <img src="images/스페이서.gif" width="1" height="113" alt="">
                 </td>
             </tr>
         </table>
