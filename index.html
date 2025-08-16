@@ -828,12 +828,12 @@
 <!-- 로그인 화면 -->
 <div id="loginScreen" class="screen active">
     <!-- FINEU 이미지 기반 로그인 디자인 -->
-    <div style="width: 100%; height: 100vh; overflow: auto; background-image: url('images/배경.png'); background-size: cover; background-position: center; background-repeat: no-repeat; display: flex; justify-content: center; align-items: center;">
-        <div style="width: 90%; max-width: 400px; padding: 20px;">
+    <div style="width: 100%; height: 100vh; overflow: auto; background-image: url('images/배경.png'); background-size: contain; background-position: center; background-repeat: no-repeat; display: flex; justify-content: center; align-items: center; background-color: #f0f0f0;">
+        <div style="width: 100%; max-width: 400px; padding: 20px;">
             <!-- 아이디 입력창 -->
             <div style="position: relative; margin-bottom: 20px;">
                 <img src="images/아이디입력창.png" width="100%" style="display: block;" alt="아이디 입력창">
-                <input type="text" id="userId" placeholder="아이디를 입력하세요" value="gunwoo55"
+                <input type="text" id="userId" placeholder="" value="gunwoo55"
                        onkeypress="if(event.key==='Enter') performLogin()"
                        style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
                               width: 80%; height: 60%; border: none; background: transparent; font-size: 16px; 
@@ -843,7 +843,7 @@
             <!-- 비밀번호 입력창 -->
             <div style="position: relative; margin-bottom: 20px;">
                 <img src="images/비밀번호입력창.png" width="100%" style="display: block;" alt="비밀번호 입력창">
-                <input type="password" id="userPassword" placeholder="비밀번호를 입력하세요" value="test123"
+                <input type="password" id="userPassword" placeholder="" value="test123"
                        onkeypress="if(event.key==='Enter') performLogin()"
                        style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
                               width: 80%; height: 60%; border: none; background: transparent; font-size: 16px; 
@@ -858,75 +858,10 @@
                     <div class="loading"></div>
                 </div>
                 <span id="loginBtnText" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-                                              color: white; font-weight: bold; font-size: 18px; pointer-events: none; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">로그인</span>
+                                              color: white; font-weight: bold; font-size: 18px; pointer-events: none; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); opacity: 0;">로그인</span>
             </div>
-            
-            <!-- 추가 기능 버튼들 -->
-            <div style="margin-top: 30px; text-align: center;">
-                <!-- 특별 계정 안내 -->
-                <div style="margin-bottom: 20px; padding: 15px; 
-                            background: linear-gradient(135deg, rgba(255,248,230,0.95), rgba(255,237,213,0.95)); 
-                            border: 2px solid #fbbf24; border-radius: 15px; backdrop-filter: blur(5px);">
-                    <div style="color: #92400e; font-weight: bold; font-size: 14px; margin-bottom: 8px;">
-                        <i class="fas fa-star" style="color: #f59e0b; margin-right: 5px;"></i>특별 계정 안내
-                    </div>
-                    <div style="color: #78350f; font-size: 12px; line-height: 1.4;">
-                        • test: 블랙 등급으로 시작 (5천만원 자산)<br>
-                        • gunwoo55: 시스템 관리자 계정
-                    </div>
-                </div>
-                
-                <!-- 빠른 로그인 버튼들 -->
-                <div style="margin-bottom: 20px;">
-                    <button onclick="quickLoginTest()" class="quick-login-button" 
-                            style="margin: 8px; padding: 12px 24px; background: linear-gradient(135deg, #1f2937, #374151); 
-                                   color: white; border: none; border-radius: 25px; font-weight: bold; cursor: pointer; 
-                                   box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: all 0.3s ease;">
-                        <i class="fas fa-bolt" style="margin-right: 8px;"></i>test 계정 빠른 로그인
-                    </button>
-                    <br>
-                    <button onclick="quickLoginGunwoo()" class="quick-login-button" 
-                            style="margin: 8px; padding: 12px 24px; background: linear-gradient(135deg, #7c3aed, #8b5cf6); 
-                                   color: white; border: none; border-radius: 25px; font-weight: bold; cursor: pointer; 
-                                   box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: all 0.3s ease;">
-                        <i class="fas fa-crown" style="margin-right: 8px;"></i>gunwoo55 빠른 로그인
-                    </button>
-                    <br>
-                    <button onclick="loginWithoutFirebase()" class="quick-login-button" 
-                            style="margin: 8px; padding: 12px 24px; background: linear-gradient(135deg, #059669, #10b981); 
-                                   color: white; border: none; border-radius: 25px; font-weight: bold; cursor: pointer; 
-                                   box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: all 0.3s ease;">
-                        <i class="fas fa-user" style="margin-right: 8px;"></i>로컬 로그인 (Firebase 없이)
-                    </button>
-                </div>
-                
-                <!-- 회원가입/계정찾기 링크 -->
-                <div style="margin-bottom: 20px;">
-                    <a href="#" onclick="showRegisterModal()" 
-                       style="color: #374151; text-decoration: none; margin: 0 15px; font-weight: 500; 
-                              padding: 8px 16px; background: rgba(255,255,255,0.8); border-radius: 20px; 
-                              transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">회원가입</a>
-                    <span style="color: #6b7280; margin: 0 8px;">|</span>
-                    <a href="#" onclick="showFindModal()" 
-                       style="color: #374151; text-decoration: none; margin: 0 15px; font-weight: 500; 
-                              padding: 8px 16px; background: rgba(255,255,255,0.8); border-radius: 20px; 
-                              transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">아이디/비밀번호 찾기</a>
-                </div>
-                
-                <!-- Firebase 상태 및 디버그 정보 -->
-                <div>
-                    <div id="firebaseStatusMini" style="font-size: 12px; color: #374151; margin-bottom: 10px; 
-                                                       background: rgba(255,255,255,0.9); padding: 5px 10px; border-radius: 10px;
-                                                       box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                        Firebase 연결 확인 중...
-                    </div>
-                    <button onclick="toggleDebug()" 
-                            style="background: rgba(255,255,255,0.9); border: 1px solid #d1d5db; padding: 6px 12px; 
-                                   border-radius: 15px; font-size: 12px; cursor: pointer; transition: all 0.3s ease;
-                                   box-shadow: 0 2px 8px rgba(0,0,0,0.1); color: #374151;">
-                        <i class="fas fa-bug" style="margin-right: 4px;"></i>디버그 모드
-                    </button>
-                </div>
+        </div>
+    </div>
             </div>
         </div>
     </div>
