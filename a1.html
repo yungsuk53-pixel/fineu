@@ -234,19 +234,19 @@
         /* 투자 리스트 모바일 최적화 */
         @media (max-width: 768px) {
             #investmentList {
-                font-size: clamp(10px, 2.5vw, 28px) !important;
+                font-size: clamp(14px, 3.2vw, 36px) !important;
             }
             
             #investmentList div {
-                padding: 4px 0 !important;
-                line-height: 1.2 !important;
+                padding: 6px 0 !important;
+                line-height: 1.3 !important;
             }
         }
 
         /* 현금 표시 모바일 최적화 */
         @media (max-width: 768px) {
             #cashAmount {
-                font-size: clamp(14px, 3.2vw, 36px) !important;
+                font-size: clamp(18px, 4.2vw, 48px) !important;
             }
         }
 
@@ -411,8 +411,8 @@
                     <img src="images/레이어.png" style="position: absolute; top: 3px; left: 3px; width: 100%; height: 100%; object-fit: cover; z-index: 970;" alt="레이어" loading="eager">
                     
                     <!-- 상단 아이콘들 -->
-                    <!-- 똑부리 프로필 아이콘 -->
-                    <img src="images/똑부리.png" style="position: absolute; left: 6.6%; top: 8.7%; width: 9.9%; height: 4.5%; z-index: 990; cursor: pointer;" alt="똑부리" onclick="openProfileSettings()" loading="eager">
+                    <!-- 똑부리 프로필 아이콘 (크기 증가) -->
+                    <img src="images/똑부리.png" style="position: absolute; left: 5.8%; top: 7.9%; width: 12.5%; height: 5.8%; z-index: 990; cursor: pointer;" alt="똑부리" onclick="openProfileMenu()" loading="eager">
                     
                     <!-- 빛 반사 효과 -->
                     <img src="images/빛 반사.png" style="position: absolute; left: 29.5%; top: 7.8%; width: 41.5%; height: 6.3%; z-index: 989;" alt="빛 반사" loading="eager">
@@ -440,13 +440,13 @@
                     <!-- 자산 배경 (동적으로 높이 조정) -->
                     <img id="assetBackground" src="images/사각형.png" style="position: absolute; left: 6.8%; top: 44.6%; width: 87.8%; height: 14.2%; z-index: 979;" alt="자산 배경" loading="eager">
                     
-                    <!-- 현금 보유량 (실제 데이터) -->
-                    <div style="position: absolute; left: 22.2%; top: 47.0%; width: 33.3%; height: 2.1%; z-index: 982; font-size: clamp(16px, 3.6vw, 41px); font-family: 'Jalnan2', 'Malgun Gothic', sans-serif; color: #333333; text-align: left; line-height: 1.4; white-space: pre-wrap; display: flex; align-items: center; font-weight: 900;">
+                    <!-- 현금 보유량 (실제 데이터) - 글자 크기 증가 -->
+                    <div style="position: absolute; left: 22.2%; top: 47.0%; width: 33.3%; height: 2.1%; z-index: 982; font-size: clamp(20px, 4.5vw, 52px); font-family: 'Jalnan2', 'Malgun Gothic', sans-serif; color: #333333; text-align: left; line-height: 1.4; white-space: pre-wrap; display: flex; align-items: center; font-weight: 900;">
                         <span id="cashAmount">₩10,000,000</span>
                     </div>
                     
-                    <!-- 투자 자산 리스트 (동적으로 생성) - 위치 조정 -->
-                    <div id="investmentList" style="position: absolute; left: 11.6%; top: 52.5%; width: 77.7%; z-index: 981; font-size: clamp(12px, 2.8vw, 32px); font-family: 'Jalnan2', 'Malgun Gothic', sans-serif; color: #333333;">
+                    <!-- 투자 자산 리스트 (동적으로 생성) - 위치 조정, 글자 크기 증가 -->
+                    <div id="investmentList" style="position: absolute; left: 11.6%; top: 52.5%; width: 77.7%; z-index: 981; font-size: clamp(16px, 3.5vw, 40px); font-family: 'Jalnan2', 'Malgun Gothic', sans-serif; color: #333333;">
                         <!-- 동적으로 생성되는 투자 자산 목록 -->
                     </div>
                     
@@ -484,7 +484,49 @@
     </div>
 </div>
 
-<!-- 프로필 모달 -->
+<!-- 프로필 메뉴 모달 -->
+<div id="profileMenuModal" class="fixed inset-0 bg-black bg-opacity-50 modal hidden z-50">
+    <div class="flex items-center justify-center min-h-screen">
+        <div class="bg-white rounded-2xl w-full max-w-sm mx-4 p-6">
+            <div class="text-center mb-6">
+                <div class="relative inline-block mb-4">
+                    <img src="images/똑부리.png" alt="똑부리" class="w-20 h-20 mx-auto rounded-2xl">
+                </div>
+                <h3 class="text-xl font-bold" id="profileMenuUserName">사용자</h3>
+                <p class="text-sm text-gray-500" id="profileMenuUserId">ID: user</p>
+            </div>
+            
+            <div class="space-y-3">
+                <button onclick="openProfileSettings()" 
+                        class="w-full bg-blue-500 text-white py-3 rounded-xl font-semibold flex items-center justify-center">
+                    <i class="fas fa-user-edit mr-2"></i>
+                    프로필 설정
+                </button>
+                
+                <button onclick="showSettings()" 
+                        class="w-full bg-gray-500 text-white py-3 rounded-xl font-semibold flex items-center justify-center">
+                    <i class="fas fa-cog mr-2"></i>
+                    환경설정
+                </button>
+                
+                <button onclick="performLogout()" 
+                        class="w-full bg-red-500 text-white py-3 rounded-xl font-semibold flex items-center justify-center">
+                    <i class="fas fa-sign-out-alt mr-2"></i>
+                    로그아웃
+                </button>
+            </div>
+            
+            <div class="mt-6">
+                <button onclick="hideProfileMenu()" 
+                        class="w-full bg-gray-300 text-gray-700 py-3 rounded-xl font-semibold">
+                    취소
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 프로필 설정 모달 -->
 <div id="profileModal" class="fixed inset-0 bg-black bg-opacity-50 modal hidden z-50">
     <div class="flex items-center justify-center min-h-screen">
         <div class="bg-white rounded-2xl w-full max-w-sm mx-4 p-6">
@@ -773,12 +815,12 @@ function updateInvestmentList() {
                 var profitValue = investment.change || investment.profit || 0;
                 
                 html += '<div style="position: absolute; top: ' + yPosition + 'px; left: 0; width: 100%; height: 50px; display: flex; align-items: center; justify-content: space-between; line-height: 1.4; padding: 8px 0;">';
-                html += '<span style="font-weight: 600;">' + investment.name;
+                html += '<span style="font-weight: 600; font-size: clamp(14px, 3.2vw, 36px);">' + investment.name;
                 if (investment.quantity) {
                     html += ' (' + investment.quantity + '주)';
                 }
                 html += '</span>';
-                html += '<span style="color: ' + changeColor + '; font-weight: bold; font-size: 28px;">' + changeSign + profitValue + '%</span>';
+                html += '<span style="color: ' + changeColor + '; font-weight: bold; font-size: clamp(16px, 3.5vw, 40px);">' + changeSign + profitValue + '%</span>';
                 html += '</div>';
                 
                 yPosition += itemSpacing;
@@ -791,8 +833,8 @@ function updateInvestmentList() {
                 var changeSign = stock.change >= 0 ? '+' : '';
                 
                 html += '<div style="position: absolute; top: ' + yPosition + 'px; left: 0; width: 100%; height: 50px; display: flex; align-items: center; justify-content: space-between; line-height: 1.4; padding: 8px 0;">';
-                html += '<span style="font-weight: 600;">' + stockName + ' (' + stock.quantity + '주)</span>';
-                html += '<span style="color: ' + changeColor + '; font-weight: bold; font-size: 28px;">' + changeSign + stock.change + '%</span>';
+                html += '<span style="font-weight: 600; font-size: clamp(14px, 3.2vw, 36px);">' + stockName + ' (' + stock.quantity + '주)</span>';
+                html += '<span style="color: ' + changeColor + '; font-weight: bold; font-size: clamp(16px, 3.5vw, 40px);">' + changeSign + stock.change + '%</span>';
                 html += '</div>';
                 
                 yPosition += itemSpacing;
@@ -800,7 +842,7 @@ function updateInvestmentList() {
         } else {
             // Firebase에서 실제 데이터가 없는 경우 빈 상태로 유지
             html += '<div style="position: absolute; top: 0px; left: 0; width: 100%; height: 50px; display: flex; align-items: center; justify-content: center; line-height: 1.4; padding: 8px 0; color: #999;">';
-            html += '<span style="font-style: italic;">투자 자산 정보를 불러오는 중...</span>';
+            html += '<span style="font-style: italic; font-size: clamp(12px, 2.8vw, 32px);">투자 자산 정보를 불러오는 중...</span>';
             html += '</div>';
             yPosition = 60;
         }
@@ -969,8 +1011,41 @@ function showSettings() {
     alert('환경설정 기능은 준비 중입니다.');
 }
 
+function openProfileMenu() {
+    updateDebugInfo('똑부리 프로필 메뉴 클릭');
+    var modal = document.getElementById('profileMenuModal');
+    if (modal) {
+        modal.classList.remove('hidden');
+        
+        // 현재 사용자 정보 표시
+        var userNameElement = document.getElementById('profileMenuUserName');
+        var userIdElement = document.getElementById('profileMenuUserId');
+        
+        if (userNameElement && currentUser) {
+            userNameElement.textContent = currentUser.name || currentUser.id || '사용자';
+        }
+        
+        if (userIdElement && currentUser) {
+            userIdElement.textContent = 'ID: ' + (currentUser.id || 'user');
+        }
+    } else {
+        alert('프로필 메뉴 기능은 준비 중입니다.');
+    }
+}
+
+function hideProfileMenu() {
+    var modal = document.getElementById('profileMenuModal');
+    if (modal) {
+        modal.classList.add('hidden');
+    }
+}
+
 function openProfileSettings() {
     updateDebugInfo('프로필 설정 클릭');
+    
+    // 프로필 메뉴 닫기
+    hideProfileMenu();
+    
     var modal = document.getElementById('profileModal');
     if (modal) {
         modal.classList.remove('hidden');
@@ -982,6 +1057,38 @@ function openProfileSettings() {
         }
     } else {
         alert('프로필 설정 기능은 준비 중입니다.');
+    }
+}
+
+function performLogout() {
+    updateDebugInfo('로그아웃 시도');
+    
+    if (confirm('정말 로그아웃 하시겠습니까?')) {
+        try {
+            // 로컬 저장소 정리
+            localStorage.removeItem('fineu_current_user');
+            
+            // 전역 변수 초기화
+            currentUser = null;
+            userAssets = {};
+            userLevel = 'yellow';
+            userExp = 0;
+            totalAssets = 10000000;
+            cash = 10000000;
+            
+            showMessage('로그아웃되었습니다.', 'success');
+            
+            updateDebugInfo('로그아웃 완료');
+            
+            // 1.5초 후 로그인 페이지로 이동
+            setTimeout(function() {
+                window.location.href = 'index.html';
+            }, 1500);
+            
+        } catch (error) {
+            updateDebugInfo('로그아웃 오류: ' + error.message);
+            showMessage('로그아웃 중 오류가 발생했습니다.', 'error');
+        }
     }
 }
 
@@ -1137,8 +1244,14 @@ document.addEventListener('DOMContentLoaded', function() {
 // 모달 외부 클릭 이벤트
 document.addEventListener('click', function(e) {
     var profileModal = document.getElementById('profileModal');
+    var profileMenuModal = document.getElementById('profileMenuModal');
+    
     if (profileModal && e.target === profileModal) {
         hideProfileModal();
+    }
+    
+    if (profileMenuModal && e.target === profileMenuModal) {
+        hideProfileMenu();
     }
 });
 
