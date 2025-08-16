@@ -6,238 +6,48 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>FINE U - 학습 센터</title>
+    <title>FINE U - 뉴스</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
     <style>
         body {
-            font-family: 'Malgun Gothic', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             overflow-x: hidden;
             zoom: 1;
             -webkit-text-size-adjust: 100%;
             -ms-text-size-adjust: 100%;
-            background: #f0f0f0;
         }
-
-        .container {
-            position: relative;
-            width: 100%;
-            max-width: 390px;
-            height: 844px;
-            background: #f0f0f0;
-            margin: 0 auto;
-            overflow-y: auto;
+        .card-shadow {
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
-
-        /* 상단바 스타일 */
-        .top-header {
-            position: relative;
-            height: 120px;
+        .btn-primary {
             background: linear-gradient(135deg, #4A6FA5, #6B8DC7);
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(74, 111, 165, 0.3);
+        }
+        .level-badge-nav {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            padding: 20px;
+            justify-content: center;
+            font-weight: bold;
             color: white;
-        }
-
-        .profile-section {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .profile-image {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: white;
-            color: #4A6FA5;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 16px;
-        }
-
-        .title-section {
-            text-align: center;
-            flex: 1;
-        }
-
-        .title-main {
-            font-size: 24px;
-            font-weight: bold;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .title-glow {
-            height: 3px;
-            background: rgba(255,255,255,0.6);
-            border-radius: 2px;
-            margin-top: 5px;
-        }
-
-        .notification-icon {
-            width: 40px;
-            height: 40px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .notification-icon:hover {
-            background: rgba(255,255,255,0.3);
-            transform: scale(1.1);
-        }
-
-        /* STUDY ZONE 타이틀 */
-        .study-zone-title {
-            text-align: center;
-            padding: 30px 20px 20px;
-            background: #f0f0f0;
-        }
-
-        .study-zone-text {
-            font-size: 28px;
-            font-weight: bold;
-            color: #333;
-            letter-spacing: 3px;
-        }
-
-        /* 학습 카드 섹션 */
-        .study-cards {
-            padding: 0 20px 120px;
-            background: #f0f0f0;
-        }
-
-        .study-card {
-            background: white;
-            border-radius: 20px;
-            margin-bottom: 25px;
-            padding: 25px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .study-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
-        }
-
-        .study-card::before {
-            content: '';
+            font-size: 12px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 5px;
-            height: 100%;
-            background: linear-gradient(135deg, #4A6FA5, #6B8DC7);
-            border-radius: 0 10px 10px 0;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 10;
         }
+        .level-yellow { background: linear-gradient(135deg, #FCD34D, #F59E0B); }
 
-        .card-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 15px;
-        }
-
-        .card-title {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .card-icon {
-            width: 60px;
-            height: 60px;
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-        }
-
-        .card-text h3 {
-            font-size: 20px;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 5px;
-        }
-
-        .card-text p {
-            font-size: 14px;
-            color: #666;
-        }
-
-        .star-rating {
-            width: 40px;
-            height: 40px;
-            background-image: url('문서페이지 이미지/금융 용어 별.png');
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-        }
-
-        /* 특정 카드 아이콘 */
-        .financial-terms-icon {
-            background-image: url('문서페이지 이미지/금융 용어.png');
-        }
-
-        .financial-news-icon {
-            background-image: url('문서페이지 이미지/금융 뉴스.png');
-        }
-
-        .financial-quiz-icon {
-            background-image: url('문서페이지 이미지/금융 퀴즈.png');
-        }
-
-        /* 진행률 바 */
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background-color: #E5E7EB;
-            border-radius: 4px;
-            overflow: hidden;
-            margin-top: 15px;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #4A6FA5, #6B8DC7);
-            border-radius: 4px;
-            transition: width 0.3s ease;
-        }
-
-        /* 스크랩 섹션 */
-        .scrap-section {
-            background: white;
-            border-radius: 20px;
-            margin: 0 20px 30px;
-            padding: 30px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-
-        .scrap-title {
-            font-size: 20px;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 15px;
-        }
-
-        .scrap-content {
-            color: #666;
-            line-height: 1.6;
-        }
-
-        /* 하단 네비게이션 */
         .bottom-navigation {
             position: fixed;
             bottom: 0;
@@ -250,7 +60,7 @@
         }
 
         .nav-container {
-            max-width: 390px;
+            max-width: 28rem;
             margin: 0 auto;
             display: grid;
             grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
@@ -285,11 +95,11 @@
         }
 
         .nav-item.active i {
-            color: #4A6FA5;
+            color: #3B82F6;
         }
 
         .nav-item.active span {
-            color: #4A6FA5;
+            color: #3B82F6;
         }
 
         .nav-center {
@@ -301,28 +111,51 @@
             position: relative;
         }
 
-        .level-badge-nav {
-            width: 56px;
-            height: 56px;
+        .news-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border-left: 4px solid;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .news-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .news-card.featured {
+            border-left-color: #F59E0B;
+            background: linear-gradient(135deg, #FEF3C7, #FFFFFF);
+        }
+
+        .news-card.normal {
+            border-left-color: #3B82F6;
+        }
+
+        .news-card .icon {
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
+            margin-bottom: 12px;
             color: white;
-            font-size: 12px;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-            position: absolute;
-            top: -8px;
-            left: 50%;
-            transform: translateX(-50%);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            z-index: 10;
-            background: linear-gradient(135deg, #FCD34D, #F59E0B);
-            cursor: pointer;
+            font-size: 18px;
         }
 
-        /* 모달 스타일 */
+        .news-card.featured .icon {
+            background: linear-gradient(135deg, #F59E0B, #D97706);
+        }
+
+        .news-card.normal .icon {
+            background: linear-gradient(135deg, #3B82F6, #2563EB);
+        }
+
         .modal {
             display: none;
             position: fixed;
@@ -343,11 +176,27 @@
         .modal-content {
             background: white;
             border-radius: 16px;
-            max-width: 350px;
+            max-width: 400px;
             width: 90%;
             max-height: 80vh;
             overflow-y: auto;
             padding: 24px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background-color: #E5E7EB;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 12px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3B82F6, #6B8DC7);
+            border-radius: 4px;
+            transition: width 0.3s ease;
         }
 
         .term-card {
@@ -355,7 +204,7 @@
             border-radius: 12px;
             padding: 16px;
             margin-bottom: 12px;
-            border-left: 4px solid #4A6FA5;
+            border-left: 4px solid #3B82F6;
             cursor: pointer;
             transition: all 0.2s ease;
         }
@@ -398,7 +247,7 @@
         .card-news-image {
             width: 100%;
             height: 120px;
-            background: linear-gradient(135deg, #4A6FA5, #6B8DC7);
+            background: linear-gradient(135deg, #3B82F6, #6B8DC7);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -406,14 +255,38 @@
             font-size: 24px;
         }
 
-        .btn-primary {
-            background: linear-gradient(135deg, #4A6FA5, #6B8DC7);
-            transition: all 0.3s ease;
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
         }
 
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(74, 111, 165, 0.3);
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .api-status {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+
+        .api-live {
+            background-color: #10B981;
+            color: white;
+        }
+
+        .api-error {
+            background-color: #EF4444;
+            color: white;
         }
 
         .real-time-indicator {
@@ -442,131 +315,92 @@
                 box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
             }
         }
-
-        .api-status {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: bold;
-            margin-left: 8px;
-        }
-
-        .api-live {
-            background-color: #10B981;
-            color: white;
-        }
-
-        .api-error {
-            background-color: #EF4444;
-            color: white;
-        }
-
-        .loading-spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #4A6FA5;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
     </style>
 </head>
 <body>
 
-<div class="container">
+<div class="min-h-screen bg-gray-100">
     <!-- 상단 헤더 -->
-    <div class="top-header">
-        <div class="profile-section">
-            <div class="profile-image">똑</div>
-        </div>
-        
-        <div class="title-section">
-            <div class="title-main">FINE U</div>
-            <div class="title-glow"></div>
-        </div>
-        
-        <div class="notification-icon">
-            <i class="fas fa-bell"></i>
+    <div class="bg-white shadow-sm p-4">
+        <div class="flex items-center justify-between max-w-md mx-auto">
+            <button onclick="location.href='index.html'" class="text-gray-600">
+                <i class="fas fa-arrow-left text-xl"></i>
+            </button>
+            <div class="text-center">
+                <h1 class="text-xl font-bold">투자 뉴스</h1>
+                <div class="flex items-center justify-center text-xs">
+                    <span class="real-time-indicator"></span>
+                    <span class="text-green-600 mr-1">실시간</span>
+                    <span class="text-gray-500" id="currentTime">12:01:35</span>
+                    <span class="api-status api-live" id="apiStatus">API 연결됨</span>
+                </div>
+            </div>
+            <button onclick="refreshNews()" class="text-purple-500">
+                <i class="fas fa-sync-alt text-xl" id="refreshIcon"></i>
+            </button>
         </div>
     </div>
 
-    <!-- STUDY ZONE 타이틀 -->
-    <div class="study-zone-title">
-        <div class="study-zone-text">STUDY ZONE</div>
-    </div>
-
-    <!-- 학습 카드 섹션 -->
-    <div class="study-cards">
-        <!-- 금융 용어 카드 -->
-        <div class="study-card" onclick="showTermStudy()">
-            <div class="card-header">
-                <div class="card-title">
-                    <div class="card-icon financial-terms-icon"></div>
-                    <div class="card-text">
-                        <h3>금융 용어</h3>
-                        <p id="termStudyDesc">실시간 업데이트되는 투자 필수 금융 용어 학습</p>
-                    </div>
-                </div>
-                <div class="star-rating" style="background-image: url('문서페이지 이미지/금융 용어 별.png');"></div>
+    <!-- 뉴스 콘텐츠 -->
+    <div class="max-w-md mx-auto px-4 py-6 mb-24">
+        <!-- 오늘의 금융 용어 (실시간 API 데이터) -->
+        <div class="news-card featured" onclick="showTodayTerm()">
+            <div class="icon">
+                <i class="fas fa-star"></i>
             </div>
+            <h3 class="text-lg font-bold mb-2">오늘의 금융 용어</h3>
+            <p class="text-gray-600 text-sm" id="todayTermDesc">실시간 금융 용어를 불러오는 중...</p>
             <div class="progress-bar">
-                <div class="progress-fill" id="studyProgress" style="width: 75%"></div>
+                <div class="progress-fill" id="termProgress" style="width: 0%"></div>
             </div>
         </div>
 
-        <!-- 금융 뉴스 카드 -->
-        <div class="study-card" onclick="showTodayNewsletter()">
-            <div class="card-header">
-                <div class="card-title">
-                    <div class="card-icon financial-news-icon"></div>
-                    <div class="card-text">
-                        <h3>금융 뉴스</h3>
-                        <p id="newsletterDesc">실시간 경제 이슈와 시장 동향을 확인하세요</p>
-                    </div>
-                </div>
-                <div class="star-rating" style="background-image: url('문서페이지 이미지/금융 뉴스 별.png');"></div>
+        <!-- 오늘의 뉴스레터 (실시간 뉴스 API) -->
+        <div class="news-card featured" onclick="showTodayNewsletter()">
+            <div class="icon">
+                <i class="fas fa-newspaper"></i>
             </div>
+            <h3 class="text-lg font-bold mb-2">오늘의 뉴스레터</h3>
+            <p class="text-gray-600 text-sm" id="newsletterDesc">실시간 경제 이슈를 불러오는 중...</p>
             <div class="progress-bar">
-                <div class="progress-fill" id="newsletterProgress" style="width: 60%"></div>
+                <div class="progress-fill" id="newsletterProgress" style="width: 0%"></div>
             </div>
         </div>
 
-        <!-- 금융 퀴즈 카드 -->
-        <div class="study-card" onclick="showCardNews()">
-            <div class="card-header">
-                <div class="card-title">
-                    <div class="card-icon financial-quiz-icon"></div>
-                    <div class="card-text">
-                        <h3>금융 퀴즈</h3>
-                        <p id="cardNewsDesc">실시간 업데이트되는 시각적 금융 교육 콘텐츠</p>
-                    </div>
-                </div>
-                <div class="star-rating" style="background-image: url('문서페이지 이미지/금융 퀴즈 별.png');"></div>
+        <!-- 금융 용어 공부하기 (API 기반 용어 데이터) -->
+        <div class="news-card normal" onclick="showTermStudy()">
+            <div class="icon">
+                <i class="fas fa-book"></i>
             </div>
+            <h3 class="text-lg font-bold mb-2">금융 용어 공부하기</h3>
+            <p class="text-gray-600 text-sm" id="termStudyDesc">API에서 금융 용어를 불러오는 중...</p>
             <div class="progress-bar">
-                <div class="progress-fill" id="cardProgress" style="width: 30%"></div>
+                <div class="progress-fill" id="studyProgress" style="width: 0%"></div>
             </div>
         </div>
-    </div>
 
-    <!-- 스크랩 섹션 -->
-    <div class="scrap-section">
-        <div class="scrap-title">스크랩</div>
-        <div class="scrap-content">
-            <div class="flex items-center justify-center text-sm">
-                <span class="real-time-indicator"></span>
-                <span class="text-green-600 mr-1">실시간</span>
-                <span class="text-gray-500" id="currentTime">12:01:35</span>
-                <span class="api-status api-live" id="apiStatus">API 연결됨</span>
+        <!-- 주간 뉴스레터 (실시간 주간 데이터) -->
+        <div class="news-card normal" onclick="showWeeklyNewsletter()">
+            <div class="icon">
+                <i class="fas fa-calendar-week"></i>
             </div>
-            <p class="mt-3">즐겨찾기한 학습 콘텐츠와 실시간 업데이트를 확인하세요.</p>
+            <h3 class="text-lg font-bold mb-2">주간 뉴스레터</h3>
+            <p class="text-gray-600 text-sm" id="weeklyDesc">실시간 주간 경제 동향을 불러오는 중...</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="weeklyProgress" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <!-- 카드뉴스로 보는 금융이야기 (실시간 카드뉴스 API) -->
+        <div class="news-card normal" onclick="showCardNews()">
+            <div class="icon">
+                <i class="fas fa-images"></i>
+            </div>
+            <h3 class="text-lg font-bold mb-2">카드뉴스로 보는 금융이야기</h3>
+            <p class="text-gray-600 text-sm" id="cardNewsDesc">실시간 금융 카드뉴스를 불러오는 중...</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="cardProgress" style="width: 0%"></div>
+            </div>
         </div>
     </div>
 
@@ -577,12 +411,12 @@
                 <i class="fas fa-home text-gray-400"></i>
                 <span class="text-gray-400">홈</span>
             </button>
-            <button class="nav-item active">
-                <i class="fas fa-book"></i>
-                <span>학습</span>
+            <button onclick="location.href='a2.html'" class="nav-item active">
+                <i class="fas fa-newspaper"></i>
+                <span>뉴스</span>
             </button>
             <div class="nav-center">
-                <div class="level-badge-nav" onclick="location.href='a5.html'">
+                <div class="level-badge-nav level-yellow" onclick="location.href='a5.html'">
                     YELLOW
                 </div>
             </div>
@@ -598,7 +432,76 @@
     </div>
 </div>
 
-<!-- 금융 용어 공부 모달 -->
+<!-- 오늘의 금융 용어 모달 (실시간 API 데이터) -->
+<div id="todayTermModal" class="modal">
+    <div class="modal-content">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-bold">오늘의 금융 용어</h3>
+            <button onclick="closeTodayTermModal()" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        
+        <div class="text-center mb-6">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full mb-4">
+                <i class="fas fa-star text-white text-2xl"></i>
+            </div>
+            <h4 class="text-2xl font-bold text-gray-800 mb-2" id="todayTermName">로딩 중...</h4>
+            <p class="text-gray-600 text-sm" id="todayTermDate">2025년 8월 9일</p>
+        </div>
+
+        <div class="bg-blue-50 rounded-lg p-4 mb-4">
+            <p class="text-gray-700 leading-relaxed" id="todayTermDefinition">
+                실시간 API에서 금융 용어를 불러오는 중입니다...
+            </p>
+        </div>
+
+        <div class="mb-4">
+            <h5 class="font-semibold mb-2">💡 실시간 예시</h5>
+            <p class="text-sm text-gray-600" id="todayTermExample">
+                API에서 실제 예시를 불러오는 중...
+            </p>
+        </div>
+
+        <button onclick="completeTodayTerm()" class="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-3 rounded-lg font-semibold">
+            <i class="fas fa-check mr-2"></i>
+            학습 완료 (+50 EXP)
+        </button>
+    </div>
+</div>
+
+<!-- 오늘의 뉴스레터 모달 (실시간 뉴스 API) -->
+<div id="todayNewsletterModal" class="modal">
+    <div class="modal-content">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-bold">오늘의 뉴스레터</h3>
+            <button onclick="closeTodayNewsletterModal()" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        
+        <div class="mb-4">
+            <div class="bg-gradient-to-r from-purple-500 to-blue-500 text-white p-4 rounded-lg mb-4">
+                <h4 class="text-lg font-bold mb-2">📈 실시간 경제 이슈</h4>
+                <p class="text-sm opacity-90" id="todayNewsDate">2025년 8월 9일 12:01</p>
+            </div>
+            
+            <div class="space-y-4" id="todayNewsContent">
+                <div class="text-center py-4">
+                    <div class="loading-spinner mx-auto mb-2"></div>
+                    <p class="text-gray-500 text-sm">실시간 뉴스를 불러오는 중...</p>
+                </div>
+            </div>
+        </div>
+
+        <button onclick="completeTodayNewsletter()" class="w-full bg-gradient-to-r from-purple-500 to-blue-500 text-white py-3 rounded-lg font-semibold">
+            <i class="fas fa-check mr-2"></i>
+            읽기 완료 (+100 EXP)
+        </button>
+    </div>
+</div>
+
+<!-- 금융 용어 공부 모달 (API 데이터) -->
 <div id="termStudyModal" class="modal">
     <div class="modal-content">
         <div class="flex justify-between items-center mb-4">
@@ -638,42 +541,42 @@
     </div>
 </div>
 
-<!-- 오늘의 뉴스레터 모달 -->
-<div id="todayNewsletterModal" class="modal">
+<!-- 주간 뉴스레터 모달 (실시간 주간 데이터) -->
+<div id="weeklyNewsletterModal" class="modal">
     <div class="modal-content">
         <div class="flex justify-between items-center mb-4">
-            <h3 class="text-xl font-bold">금융 뉴스</h3>
-            <button onclick="closeTodayNewsletterModal()" class="text-gray-500 hover:text-gray-700">
+            <h3 class="text-xl font-bold">주간 뉴스레터</h3>
+            <button onclick="closeWeeklyNewsletterModal()" class="text-gray-500 hover:text-gray-700">
                 <i class="fas fa-times text-xl"></i>
             </button>
         </div>
         
         <div class="mb-4">
-            <div class="bg-gradient-to-r from-purple-500 to-blue-500 text-white p-4 rounded-lg mb-4">
-                <h4 class="text-lg font-bold mb-2">📈 실시간 경제 이슈</h4>
-                <p class="text-sm opacity-90" id="todayNewsDate">2025년 8월 16일 12:01</p>
+            <div class="bg-gradient-to-r from-indigo-500 to-purple-500 text-white p-4 rounded-lg mb-4">
+                <h4 class="text-lg font-bold mb-2">📰 실시간 주간 리뷰</h4>
+                <p class="text-sm opacity-90" id="weeklyPeriod">로딩 중...</p>
             </div>
             
-            <div class="space-y-4" id="todayNewsContent">
+            <div class="space-y-4" id="weeklyContent">
                 <div class="text-center py-4">
                     <div class="loading-spinner mx-auto mb-2"></div>
-                    <p class="text-gray-500 text-sm">실시간 뉴스를 불러오는 중...</p>
+                    <p class="text-gray-500 text-sm">실시간 주간 뉴스를 불러오는 중...</p>
                 </div>
             </div>
         </div>
 
-        <button onclick="completeTodayNewsletter()" class="w-full bg-gradient-to-r from-purple-500 to-blue-500 text-white py-3 rounded-lg font-semibold">
+        <button onclick="completeWeeklyNewsletter()" class="w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white py-3 rounded-lg font-semibold">
             <i class="fas fa-check mr-2"></i>
-            읽기 완료 (+100 EXP)
+            주간 리뷰 완료 (+150 EXP)
         </button>
     </div>
 </div>
 
-<!-- 카드뉴스 모달 -->
+<!-- 카드뉴스 모달 (실시간 카드뉴스 API) -->
 <div id="cardNewsModal" class="modal">
     <div class="modal-content">
         <div class="flex justify-between items-center mb-4">
-            <h3 class="text-xl font-bold">금융 퀴즈</h3>
+            <h3 class="text-xl font-bold">카드뉴스로 보는 금융이야기</h3>
             <button onclick="closeCardNewsModal()" class="text-gray-500 hover:text-gray-700">
                 <i class="fas fa-times text-xl"></i>
             </button>
@@ -682,7 +585,7 @@
         <div class="space-y-4" id="cardNewsList">
             <div class="text-center py-4">
                 <div class="loading-spinner mx-auto mb-2"></div>
-                <p class="text-gray-500 text-sm">실시간 퀴즈를 불러오는 중...</p>
+                <p class="text-gray-500 text-sm">실시간 카드뉴스를 불러오는 중...</p>
             </div>
         </div>
     </div>
@@ -708,9 +611,7 @@ var NEWS_API_CONFIG = {
             { term: 'ETF', definition: 'Exchange Traded Fund - 상장지수펀드', example: '주식처럼 거래되는 인덱스 펀드' },
             { term: 'Bull Market', definition: '강세장 - 주가가 지속적으로 상승하는 시장', example: '투자자들의 낙관적 심리가 지배적인 시장' },
             { term: 'Bear Market', definition: '약세장 - 주가가 지속적으로 하락하는 시장', example: '투자자들의 비관적 심리가 지배적인 시장' },
-            { term: 'P/E Ratio', definition: 'Price-to-Earnings Ratio - 주가수익비율', example: '주가를 주당순이익으로 나눈 지표' },
-            { term: 'Dividend', definition: '배당금 - 주주에게 지급하는 이익 분배금', example: '회사가 수익의 일부를 주주에게 현금으로 지급' },
-            { term: 'Portfolio', definition: '포트폴리오 - 투자자가 보유한 금융상품의 집합', example: '주식, 채권, 부동산 등 다양한 자산의 조합' }
+            { term: 'P/E Ratio', definition: 'Price-to-Earnings Ratio - 주가수익비율', example: '주가를 주당순이익으로 나눈 지표' }
         ]
     },
     economicNews: {
@@ -729,15 +630,12 @@ function updateCurrentTime() {
     var seconds = String(kstTime.getSeconds()).padStart(2, '0');
     
     var timeString = hours + ':' + minutes + ':' + seconds;
-    var timeElement = document.getElementById('currentTime');
-    if (timeElement) {
-        timeElement.textContent = timeString;
-    }
+    document.getElementById('currentTime').textContent = timeString;
 }
 
 // 페이지 로드 시 초기화
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('FINE U 학습 센터 페이지 로드 시작 - 2025년 8월 16일');
+    console.log('실시간 API 뉴스 페이지 로드 시작 - 2025년 8월 9일 12:01:35 KST');
     
     updateCurrentTime();
     loadAllRealTimeData();
@@ -754,8 +652,10 @@ async function loadAllRealTimeData() {
         
         // 병렬로 모든 API 호출
         await Promise.all([
-            loadTermStudyFromAPI(),
+            loadTodayTermFromAPI(),
             loadTodayNewsFromAPI(),
+            loadTermStudyFromAPI(),
+            loadWeeklyNewsFromAPI(),
             loadCardNewsFromAPI()
         ]);
         
@@ -772,7 +672,6 @@ async function loadAllRealTimeData() {
 // API 상태 업데이트
 function updateApiStatus(status) {
     var statusElement = document.getElementById('apiStatus');
-    if (!statusElement) return;
     
     switch(status) {
         case 'loading':
@@ -790,64 +689,47 @@ function updateApiStatus(status) {
     }
 }
 
-// 금융 용어 공부 실시간 API 로드
-async function loadTermStudyFromAPI() {
+// 오늘의 금융 용어 실시간 API 로드
+async function loadTodayTermFromAPI() {
     try {
+        var randomTerm = NEWS_API_CONFIG.financialTerms.fallbackTerms[
+            Math.floor(Math.random() * NEWS_API_CONFIG.financialTerms.fallbackTerms.length)
+        ];
+        
+        // 실제 API 호출 시뮬레이션 (금융 용어 API)
         setTimeout(() => {
-            var termStudyDesc = document.getElementById('termStudyDesc');
-            if (termStudyDesc) {
-                termStudyDesc.textContent = '실시간 업데이트되는 투자 필수 금융 용어 학습';
-            }
-            var studyProgress = document.getElementById('studyProgress');
-            if (studyProgress) {
-                studyProgress.style.width = '75%';
-            }
+            document.getElementById('todayTermDesc').textContent = '매일 새로운 금융 용어를 실시간으로 학습하세요';
+            document.getElementById('termProgress').style.width = '75%';
             
-            updateTermStudyModal();
+            // 모달 내용 업데이트
+            document.getElementById('todayTermName').textContent = randomTerm.term;
+            document.getElementById('todayTermDefinition').textContent = randomTerm.definition;
+            document.getElementById('todayTermExample').innerHTML = randomTerm.example;
+            document.getElementById('todayTermDate').textContent = new Date().toLocaleDateString('ko-KR');
         }, 1000);
         
     } catch (error) {
-        console.error('금융 용어 학습 API 오류:', error);
+        console.error('금융 용어 API 오류:', error);
         throw error;
-    }
-}
-
-// 금융 용어 학습 모달 업데이트
-function updateTermStudyModal() {
-    var terms = NEWS_API_CONFIG.financialTerms.fallbackTerms;
-    var termsHTML = '';
-    
-    terms.forEach(function(term, index) {
-        termsHTML += '<div class="term-card" onclick="showTermDetail(\'' + term.term + '\', \'' + term.definition + '\', \'' + term.example + '\')">';
-        termsHTML += '<h5 class="font-semibold">' + term.term + '</h5>';
-        termsHTML += '<p class="text-sm text-gray-600">' + term.definition.split(' - ')[1] + '</p>';
-        termsHTML += '<p class="text-xs text-blue-500 mt-1">실시간 업데이트됨</p>';
-        termsHTML += '</div>';
-    });
-    
-    var termList = document.getElementById('termList');
-    if (termList) {
-        termList.innerHTML = termsHTML;
     }
 }
 
 // 오늘의 뉴스레터 실시간 API 로드
 async function loadTodayNewsFromAPI() {
     try {
+        // NewsAPI 또는 대체 뉴스 API 호출
+        var newsApiUrl = NEWS_API_CONFIG.newsapi.corsProxy + 
+                        encodeURIComponent(NEWS_API_CONFIG.newsapi.baseUrl + 'top-headlines?country=kr&category=business&apiKey=' + NEWS_API_CONFIG.newsapi.key);
+        
+        // API 호출 시뮬레이션
         setTimeout(async () => {
             try {
                 // 실제 뉴스 데이터 (현재 시간 기준)
                 var currentHour = new Date().getHours();
                 var newsData = generateRealTimeNewsData(currentHour);
                 
-                var newsletterDesc = document.getElementById('newsletterDesc');
-                if (newsletterDesc) {
-                    newsletterDesc.textContent = '실시간 경제 이슈와 시장 동향을 확인하세요';
-                }
-                var newsletterProgress = document.getElementById('newsletterProgress');
-                if (newsletterProgress) {
-                    newsletterProgress.style.width = '60%';
-                }
+                document.getElementById('newsletterDesc').textContent = '실시간 경제 이슈와 시장 동향을 확인하세요';
+                document.getElementById('newsletterProgress').style.width = '60%';
                 
                 // 모달 내용 업데이트
                 updateTodayNewsModal(newsData);
@@ -913,31 +795,97 @@ function updateTodayNewsModal(newsData) {
     contentHTML += '<p class="text-xs text-gray-500 mt-1">' + newsData.investmentTip.time + ' 업데이트</p>';
     contentHTML += '</div>';
     
-    var todayNewsContent = document.getElementById('todayNewsContent');
-    if (todayNewsContent) {
-        todayNewsContent.innerHTML = contentHTML;
+    document.getElementById('todayNewsContent').innerHTML = contentHTML;
+    document.getElementById('todayNewsDate').textContent = new Date().toLocaleDateString('ko-KR') + ' ' + new Date().toLocaleTimeString('ko-KR');
+}
+
+// 금융 용어 공부 실시간 API 로드
+async function loadTermStudyFromAPI() {
+    try {
+        setTimeout(() => {
+            document.getElementById('termStudyDesc').textContent = '실시간 업데이트되는 투자 필수 금융 용어 학습';
+            document.getElementById('studyProgress').style.width = '40%';
+            
+            updateTermStudyModal();
+        }, 2000);
+        
+    } catch (error) {
+        console.error('금융 용어 학습 API 오류:', error);
+        throw error;
     }
-    var todayNewsDate = document.getElementById('todayNewsDate');
-    if (todayNewsDate) {
-        todayNewsDate.textContent = new Date().toLocaleDateString('ko-KR') + ' ' + new Date().toLocaleTimeString('ko-KR');
+}
+
+// 금융 용어 학습 모달 업데이트
+function updateTermStudyModal() {
+    var terms = NEWS_API_CONFIG.financialTerms.fallbackTerms;
+    var termsHTML = '';
+    
+    terms.forEach(function(term, index) {
+        termsHTML += '<div class="term-card" onclick="showTermDetail(\'' + term.term + '\', \'' + term.definition + '\', \'' + term.example + '\')">';
+        termsHTML += '<h5 class="font-semibold">' + term.term + '</h5>';
+        termsHTML += '<p class="text-sm text-gray-600">' + term.definition.split(' - ')[1] + '</p>';
+        termsHTML += '<p class="text-xs text-blue-500 mt-1">실시간 업데이트됨</p>';
+        termsHTML += '</div>';
+    });
+    
+    document.getElementById('termList').innerHTML = termsHTML;
+}
+
+// 주간 뉴스레터 실시간 API 로드
+async function loadWeeklyNewsFromAPI() {
+    try {
+        setTimeout(() => {
+            document.getElementById('weeklyDesc').textContent = '실시간 주간 경제 동향과 시장 분석 리포트';
+            document.getElementById('weeklyProgress').style.width = '85%';
+            
+            updateWeeklyNewsModal();
+        }, 2500);
+        
+    } catch (error) {
+        console.error('주간 뉴스 API 오류:', error);
+        throw error;
     }
+}
+
+// 주간 뉴스레터 모달 업데이트
+function updateWeeklyNewsModal() {
+    var currentDate = new Date();
+    var weekStart = new Date(currentDate.setDate(currentDate.getDate() - currentDate.getDay()));
+    var weekEnd = new Date(currentDate.setDate(currentDate.getDate() - currentDate.getDay() + 6));
+    
+    var weeklyPeriod = weekStart.toLocaleDateString('ko-KR') + ' - ' + weekEnd.toLocaleDateString('ko-KR');
+    document.getElementById('weeklyPeriod').textContent = weeklyPeriod;
+    
+    var weeklyHTML = '';
+    var weeklyNews = [
+        { day: '월요일', title: '주요 경제지표 발표', content: '실시간 CPI 데이터 분석 및 시장 영향도 평가' },
+        { day: '수요일', title: '중앙은행 정책 결정', content: '기준금리 및 통화정책 방향성에 대한 실시간 분석' },
+        { day: '금요일', title: '주요 기업 실적 발표', content: '실시간 실적 분석 및 향후 전망' }
+    ];
+    
+    weeklyNews.forEach(function(news) {
+        weeklyHTML += '<div class="newsletter-item" onclick="showNewsletterDetail(\'' + news.day + '\', \'' + news.title + '\', \'' + news.content + '\')">';
+        weeklyHTML += '<div class="flex justify-between items-center">';
+        weeklyHTML += '<div>';
+        weeklyHTML += '<h5 class="font-semibold">' + news.day + ' - ' + news.title + '</h5>';
+        weeklyHTML += '<p class="text-xs text-gray-500">실시간 업데이트</p>';
+        weeklyHTML += '</div>';
+        weeklyHTML += '<i class="fas fa-chevron-right text-gray-400"></i>';
+        weeklyHTML += '</div></div>';
+    });
+    
+    document.getElementById('weeklyContent').innerHTML = weeklyHTML;
 }
 
 // 카드뉴스 실시간 API 로드
 async function loadCardNewsFromAPI() {
     try {
         setTimeout(() => {
-            var cardNewsDesc = document.getElementById('cardNewsDesc');
-            if (cardNewsDesc) {
-                cardNewsDesc.textContent = '실시간 업데이트되는 시각적 금융 교육 콘텐츠';
-            }
-            var cardProgress = document.getElementById('cardProgress');
-            if (cardProgress) {
-                cardProgress.style.width = '30%';
-            }
+            document.getElementById('cardNewsDesc').textContent = '실시간 업데이트되는 시각적 금융 교육 콘텐츠';
+            document.getElementById('cardProgress').style.width = '30%';
             
             updateCardNewsModal();
-        }, 2000);
+        }, 3000);
         
     } catch (error) {
         console.error('카드뉴스 API 오류:', error);
@@ -947,75 +895,40 @@ async function loadCardNewsFromAPI() {
 
 // 카드뉴스 모달 업데이트
 function updateCardNewsModal() {
-    var quizzes = [
-        { 
-            question: '투자 수익률을 의미하는 용어는?', 
-            options: ['ROI', 'GDP', 'CPI', 'PER'], 
-            answer: 0,
-            explanation: 'ROI(Return on Investment)는 투자 수익률을 의미합니다.'
-        },
-        { 
-            question: '주식처럼 거래되는 인덱스 펀드는?', 
-            options: ['REITs', 'ETF', 'IPO', 'FDI'], 
-            answer: 1,
-            explanation: 'ETF(Exchange Traded Fund)는 상장지수펀드로 주식처럼 거래됩니다.'
-        },
-        { 
-            question: '주가가 지속적으로 상승하는 시장을 무엇이라고 하나요?', 
-            options: ['Bear Market', 'Bull Market', 'Flat Market', 'Down Market'], 
-            answer: 1,
-            explanation: 'Bull Market(강세장)은 주가가 지속적으로 상승하는 시장을 의미합니다.'
-        }
+    var cardNews = [
+        { title: '실시간 투자 기초', subtitle: '현재 시장 상황에 맞는 투자 전략', icon: 'fas fa-seedling' },
+        { title: '실시간 분산투자', subtitle: '오늘의 시장 데이터로 보는 리스크 관리', icon: 'fas fa-chart-pie' },
+        { title: '실시간 복리효과', subtitle: '현재 금리로 계산하는 장기 투자 수익', icon: 'fas fa-magic' }
     ];
     
-    var quizHTML = '';
-    quizzes.forEach(function(quiz, index) {
-        quizHTML += '<div class="card-news-item" onclick="showQuizDetail(' + index + ')">';
-        quizHTML += '<div class="card-news-image"><i class="fas fa-question"></i></div>';
-        quizHTML += '<div class="p-4">';
-        quizHTML += '<h5 class="font-semibold mb-2">퀴즈 ' + (index + 1) + '</h5>';
-        quizHTML += '<p class="text-sm text-gray-600">' + quiz.question + '</p>';
-        quizHTML += '<p class="text-xs text-blue-500 mt-2">실시간 업데이트됨</p>';
-        quizHTML += '</div></div>';
+    var cardHTML = '';
+    cardNews.forEach(function(card) {
+        cardHTML += '<div class="card-news-item" onclick="showCardNewsDetail(\'' + card.title + '\', \'' + card.subtitle + '\')">';
+        cardHTML += '<div class="card-news-image"><i class="' + card.icon + '"></i></div>';
+        cardHTML += '<div class="p-4">';
+        cardHTML += '<h5 class="font-semibold mb-2">' + card.title + '</h5>';
+        cardHTML += '<p class="text-sm text-gray-600">' + card.subtitle + '</p>';
+        cardHTML += '<p class="text-xs text-blue-500 mt-2">실시간 업데이트됨</p>';
+        cardHTML += '</div></div>';
     });
     
-    var cardNewsList = document.getElementById('cardNewsList');
-    if (cardNewsList) {
-        cardNewsList.innerHTML = quizHTML;
-    }
-    
-    // 전역 변수로 퀴즈 데이터 저장
-    window.quizData = quizzes;
+    document.getElementById('cardNewsList').innerHTML = cardHTML;
 }
 
 // 대체 데이터 로드 (API 실패 시)
 function loadFallbackData() {
-    var termStudyDesc = document.getElementById('termStudyDesc');
-    if (termStudyDesc) {
-        termStudyDesc.textContent = '오프라인 모드 - 기본 금융 용어 제공';
-    }
-    var newsletterDesc = document.getElementById('newsletterDesc');
-    if (newsletterDesc) {
-        newsletterDesc.textContent = '오프라인 모드 - 기본 경제 이슈 제공';
-    }
-    var cardNewsDesc = document.getElementById('cardNewsDesc');
-    if (cardNewsDesc) {
-        cardNewsDesc.textContent = '오프라인 모드 - 기본 퀴즈 제공';
-    }
+    document.getElementById('todayTermDesc').textContent = '오프라인 모드 - 기본 금융 용어 제공';
+    document.getElementById('newsletterDesc').textContent = '오프라인 모드 - 기본 경제 이슈 제공';
+    document.getElementById('termStudyDesc').textContent = '오프라인 모드 - 기본 용어 학습 제공';
+    document.getElementById('weeklyDesc').textContent = '오프라인 모드 - 기본 주간 리포트 제공';
+    document.getElementById('cardNewsDesc').textContent = '오프라인 모드 - 기본 카드뉴스 제공';
     
     // 진행률을 낮게 설정
-    var studyProgress = document.getElementById('studyProgress');
-    if (studyProgress) {
-        studyProgress.style.width = '20%';
-    }
-    var newsletterProgress = document.getElementById('newsletterProgress');
-    if (newsletterProgress) {
-        newsletterProgress.style.width = '20%';
-    }
-    var cardProgress = document.getElementById('cardProgress');
-    if (cardProgress) {
-        cardProgress.style.width = '20%';
-    }
+    document.getElementById('termProgress').style.width = '20%';
+    document.getElementById('newsletterProgress').style.width = '20%';
+    document.getElementById('studyProgress').style.width = '20%';
+    document.getElementById('weeklyProgress').style.width = '20%';
+    document.getElementById('cardProgress').style.width = '20%';
 }
 
 // 자동 업데이트 시작
@@ -1027,7 +940,48 @@ function startAutoUpdate() {
     }, 5 * 60 * 1000); // 5분
 }
 
-// 모달 제어 함수들
+// 뉴스 새로고침
+function refreshNews() {
+    var refreshIcon = document.getElementById('refreshIcon');
+    refreshIcon.style.transform = 'rotate(360deg)';
+    refreshIcon.style.transition = 'transform 0.5s ease';
+    
+    loadAllRealTimeData();
+    
+    setTimeout(function() {
+        refreshIcon.style.transform = 'rotate(0deg)';
+    }, 500);
+}
+
+// 모달 제어 함수들 (기존 디자인 유지)
+function showTodayTerm() {
+    document.getElementById('todayTermModal').classList.add('show');
+}
+
+function closeTodayTermModal() {
+    document.getElementById('todayTermModal').classList.remove('show');
+}
+
+function completeTodayTerm() {
+    addExperience(50);
+    alert('오늘의 금융 용어 학습을 완료했습니다! (+50 EXP)');
+    closeTodayTermModal();
+}
+
+function showTodayNewsletter() {
+    document.getElementById('todayNewsletterModal').classList.add('show');
+}
+
+function closeTodayNewsletterModal() {
+    document.getElementById('todayNewsletterModal').classList.remove('show');
+}
+
+function completeTodayNewsletter() {
+    addExperience(100);
+    alert('오늘의 뉴스레터 읽기를 완료했습니다! (+100 EXP)');
+    closeTodayNewsletterModal();
+}
+
 function showTermStudy() {
     document.getElementById('termStudyModal').classList.add('show');
 }
@@ -1041,18 +995,23 @@ function showTermDetail(term, fullName, description) {
     addExperience(25);
 }
 
-function showTodayNewsletter() {
-    document.getElementById('todayNewsletterModal').classList.add('show');
+function showWeeklyNewsletter() {
+    document.getElementById('weeklyNewsletterModal').classList.add('show');
 }
 
-function closeTodayNewsletterModal() {
-    document.getElementById('todayNewsletterModal').classList.remove('show');
+function closeWeeklyNewsletterModal() {
+    document.getElementById('weeklyNewsletterModal').classList.remove('show');
 }
 
-function completeTodayNewsletter() {
-    addExperience(100);
-    alert('금융 뉴스 읽기를 완료했습니다! (+100 EXP)');
-    closeTodayNewsletterModal();
+function showNewsletterDetail(day, title, content) {
+    alert('📅 ' + day + '\n' + title + '\n\n' + content + '\n\n+30 EXP 획득!');
+    addExperience(30);
+}
+
+function completeWeeklyNewsletter() {
+    addExperience(150);
+    alert('주간 뉴스레터 읽기를 완료했습니다! (+150 EXP)');
+    closeWeeklyNewsletterModal();
 }
 
 function showCardNews() {
@@ -1063,26 +1022,9 @@ function closeCardNewsModal() {
     document.getElementById('cardNewsModal').classList.remove('show');
 }
 
-function showQuizDetail(quizIndex) {
-    if (!window.quizData || !window.quizData[quizIndex]) return;
-    
-    var quiz = window.quizData[quizIndex];
-    var optionsText = quiz.options.map(function(option, index) {
-        return (index + 1) + '. ' + option;
-    }).join('\n');
-    
-    var userAnswer = prompt('💡 ' + quiz.question + '\n\n' + optionsText + '\n\n정답 번호를 입력하세요 (1-4):');
-    
-    if (userAnswer) {
-        var answerIndex = parseInt(userAnswer) - 1;
-        if (answerIndex === quiz.answer) {
-            alert('🎉 정답입니다!\n\n' + quiz.explanation + '\n\n+50 EXP 획득!');
-            addExperience(50);
-        } else {
-            alert('❌ 틀렸습니다.\n\n정답: ' + (quiz.answer + 1) + '. ' + quiz.options[quiz.answer] + '\n\n' + quiz.explanation + '\n\n+10 EXP 획득!');
-            addExperience(10);
-        }
-    }
+function showCardNewsDetail(title, subtitle) {
+    alert('🎨 ' + title + '\n' + subtitle + '\n\n실시간 데이터로 업데이트된 콘텐츠!\n\n+75 EXP 획득!');
+    addExperience(75);
 }
 
 // 경험치 추가
@@ -1114,7 +1056,7 @@ window.addEventListener('beforeunload', function() {
     }
 });
 
-console.log('FINE U 학습 센터 페이지 로드 완료 - 2025년 8월 16일');
+console.log('실시간 API 뉴스 페이지 로드 완료 - 2025년 8월 9일 12:01:35 KST');
 </script>
 
 </body>

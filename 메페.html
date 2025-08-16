@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>제목 없음-1</title>
+    <style>
+        /* 기본 스타일 리셋 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* 바디 스타일 */
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #f0f0f0;
+            font-family: "Malgun Gothic", "맑은 고딕", sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* 포토샵 캔버스 */
+        .photoshop-canvas {
+            position: relative;
+            width: 1125px;
+            height: 2436px;
+            background: white;
+            box-shadow: 0 0 50px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        /* 모든 레이어 공통 스타일 */
+        .layer {
+            position: absolute;
+        }
+
+        /* 숨겨진 레이어 */
+        .layer.hidden {
+            display: none;
+        }
+
+        /* 각 레이어별 스타일 */
+        /* 배경 */
+        .layer-1 {
+            left: 3px;
+            top: 3px;
+            width: 1125px;
+            height: 2436px;
+            z-index: 969;
+        }
+
+        /* 레이어 */
+        .layer-2 {
+            left: 3px;
+            top: 3px;
+            width: 1125px;
+            height: 2436px;
+            z-index: 970;
+        }
+
+        /* 더보기 */
+        .layer-3 {
+            left: 951px;
+            top: 2275px;
+            width: 60px;
+            height: 12px;
+            z-index: 971;
+        }
+
+        /* 채팅 */
+        .layer-4 {
+            left: 728px;
+            top: 2233px;
+            width: 93px;
+            height: 93px;
+            z-index: 972;
+        }
+
+        /* 문서 */
+        .layer-5 {
+            left: 315px;
+            top: 2230px;
+            width: 76px;
+            height: 96px;
+            z-index: 973;
+        }
+
+        /* 집 */
+        .layer-6 {
+            left: 100px;
+            top: 2230px;
+            width: 95px;
+            height: 96px;
+            z-index: 974;
+        }
+
+        /* BLACK */
+        .layer-7 {
+            left: 476px;
+            top: 2098px;
+            width: 180px;
+            height: 180px;
+            z-index: 975;
+        }
+
+        /* 사각형 */
+        .layer-8 {
+            left: 83px;
+            top: 1607px;
+            width: 987px;
+            height: 491px;
+            z-index: 976;
+        }
+
+        /* 원 그래프 */
+        .layer-9 {
+            left: 374px;
+            top: 1648px;
+            width: 408px;
+            height: 409px;
+            z-index: 977;
+        }
+
+        /* PORTFOLIO */
+        .layer-10 {
+            left: 78px;
+            top: 1498px;
+            width: 296px;
+            height: 46px;
+            z-index: 978;
+            font-size: 50px;
+            font-family: "Jalnan2", "Malgun Gothic", sans-serif;
+            color: #333333;
+            text-align: left;
+            line-height: 1.4;
+            white-space: pre-wrap;
+        }
+
+        /* 사각형 */
+        .layer-11 {
+            left: 76px;
+            top: 1087px;
+            width: 988px;
+            height: 345px;
+            z-index: 979;
+        }
+
+        /* 청년희망적금  (3.0%) */
+        .layer-12 {
+            left: 132px;
+            top: 1339px;
+            width: 444px;
+            height: 48px;
+            z-index: 980;
+            font-size: 41px;
+            font-family: "Jalnan2", "Malgun Gothic", sans-serif;
+            color: #333333;
+            text-align: left;
+            line-height: 1.4;
+            white-space: pre-wrap;
+        }
+
+        /* 삼성전자  (100주)                                    + 1.8% */
+        .layer-13 {
+            left: 131px;
+            top: 1260px;
+            width: 874px;
+            height: 48px;
+            z-index: 981;
+            font-size: 41px;
+            font-family: "Jalnan2", "Malgun Gothic", sans-serif;
+            color: #333333;
+            text-align: left;
+            line-height: 1.4;
+            white-space: pre-wrap;
+        }
+
+        /* 1 9, 9 9 0, 1 0 2 */
+        .layer-14 {
+            left: 296px;
+            top: 1144px;
+            width: 375px;
+            height: 52px;
+            z-index: 982;
+            font-size: 41px;
+            font-family: "Jalnan2", "Malgun Gothic", sans-serif;
+            color: #333333;
+            text-align: center;
+            line-height: 1.4;
+            white-space: pre-wrap;
+        }
+
+        /* ASSETS */
+        .layer-15 {
+            left: 74px;
+            top: 978px;
+            width: 203px;
+            height: 238px;
+            z-index: 983;
+        }
+
+        /* 사각형 */
+        .layer-16 {
+            left: 73px;
+            top: 567px;
+            width: 988px;
+            height: 345px;
+            z-index: 984;
+        }
+
+        /* 환경설정 */
+        .layer-17 {
+            left: 951px;
+            top: 614px;
+            width: 58px;
+            height: 61px;
+            z-index: 985;
+        }
+
+        /* 레이어 1 */
+        .layer-18 {
+            left: 130px;
+            top: 610px;
+            width: 257px;
+            height: 259px;
+            z-index: 986;
+        }
+
+        /* PROFILE */
+        .layer-19 {
+            left: 76px;
+            top: 460px;
+            width: 670px;
+            height: 395px;
+            z-index: 987;
+        }
+
+        /* 알림 */
+        .layer-20 {
+            left: 963px;
+            top: 211px;
+            width: 96px;
+            height: 115px;
+            z-index: 988;
+        }
+
+        /* 빛 반사 */
+        .layer-21 {
+            left: 332px;
+            top: 190px;
+            width: 467px;
+            height: 153px;
+            z-index: 989;
+        }
+
+        /* 똑부리 */
+        .layer-22 {
+            left: 74px;
+            top: 213px;
+            width: 112px;
+            height: 111px;
+            z-index: 990;
+        }
+
+        /* 레이어 2 */
+        .layer-23 {
+            left: 0px;
+            top: 0px;
+            width: 1px;
+            height: 1px;
+            z-index: 1000;
+            font-size: 16px;
+            font-family: "Malgun Gothic", "Malgun Gothic", sans-serif;
+            color: #000000;
+            text-align: left;
+            line-height: 1.4;
+            white-space: pre-wrap;
+        }
+
+    </style>
+</head>
+<body>
+    <!-- 포토샵 문서 정보
+         파일명: 제목 없음-1
+         캔버스 크기: 1125 x 2436px
+         총 레이어 수: 23개
+         생성 시간: 토요일, 8월 16 2025 19:46:19
+    -->
+
+    <div class="photoshop-canvas">
+        <img src="images/배경.png" class="layer layer-1" alt="배경" data-layer-name="배경">
+        <img src="images/레이어.png" class="layer layer-2" alt="레이어" data-layer-name="레이어">
+        <img src="images/더보기.png" class="layer layer-3" alt="더보기" data-layer-name="더보기">
+        <img src="images/채팅.png" class="layer layer-4" alt="채팅" data-layer-name="채팅">
+        <img src="images/문서.png" class="layer layer-5" alt="문서" data-layer-name="문서">
+        <img src="images/집.png" class="layer layer-6" alt="집" data-layer-name="집">
+        <img src="images/BLACK.png" class="layer layer-7" alt="BLACK" data-layer-name="BLACK">
+        <img src="images/사각형.png" class="layer layer-8" alt="사각형" data-layer-name="사각형">
+        <img src="images/원 그래프.png" class="layer layer-9" alt="원 그래프" data-layer-name="원 그래프">
+        <div class="layer layer-10" data-layer-name="PORTFOLIO">PORTFOLIO</div>
+        <img src="images/사각형.png" class="layer layer-11" alt="사각형" data-layer-name="사각형">
+        <div class="layer layer-12" data-layer-name="청년희망적금  (3.0%)">청년희망적금  (3.0%)</div>
+        <div class="layer layer-13" data-layer-name="삼성전자  (100주)                                    + 1.8%">삼성전자  (100주)                                    + 1.8%</div>
+        <div class="layer layer-14" data-layer-name="1 9, 9 9 0, 1 0 2">1 9, 9 9 0, 1 0 2</div>
+        <img src="images/ASSETS.png" class="layer layer-15" alt="ASSETS" data-layer-name="ASSETS">
+        <img src="images/사각형.png" class="layer layer-16" alt="사각형" data-layer-name="사각형">
+        <img src="images/환경설정.png" class="layer layer-17" alt="환경설정" data-layer-name="환경설정">
+        <img src="images/레이어 1.png" class="layer layer-18" alt="레이어 1" data-layer-name="레이어 1">
+        <img src="images/PROFILE.png" class="layer layer-19" alt="PROFILE" data-layer-name="PROFILE">
+        <img src="images/알림.png" class="layer layer-20" alt="알림" data-layer-name="알림">
+        <img src="images/빛 반사.png" class="layer layer-21" alt="빛 반사" data-layer-name="빛 반사">
+        <img src="images/똑부리.png" class="layer layer-22" alt="똑부리" data-layer-name="똑부리">
+        <div class="layer layer-23" data-layer-name="레이어 2">레이어 2</div>
+    </div>
+
+    <!-- 레이어 목록 정보 -->
+    <script>
+        // 레이어 정보 (디버깅용)
+        var layerInfo = [
+            {
+                name: "배경",
+                type: "image",
+                position: {x: 3, y: 3},
+                size: {width: 1125, height: 2436},
+                visible: true,
+                opacity: 1,
+                zIndex: 969
+            },
+            {
+                name: "레이어",
+                type: "image",
+                position: {x: 3, y: 3},
+                size: {width: 1125, height: 2436},
+                visible: true,
+                opacity: 1,
+                zIndex: 970
+            },
+            {
+                name: "더보기",
+                type: "image",
+                position: {x: 951, y: 2275},
+                size: {width: 60, height: 12},
+                visible: true,
+                opacity: 1,
+                zIndex: 971
+            },
+            {
+                name: "채팅",
+                type: "image",
+                position: {x: 728, y: 2233},
+                size: {width: 93, height: 93},
+                visible: true,
+                opacity: 1,
+                zIndex: 972
+            },
+            {
+                name: "문서",
+                type: "image",
+                position: {x: 315, y: 2230},
+                size: {width: 76, height: 96},
+                visible: true,
+                opacity: 1,
+                zIndex: 973
+            },
+            {
+                name: "집",
+                type: "image",
+                position: {x: 100, y: 2230},
+                size: {width: 95, height: 96},
+                visible: true,
+                opacity: 1,
+                zIndex: 974
+            },
+            {
+                name: "BLACK",
+                type: "image",
+                position: {x: 476, y: 2098},
+                size: {width: 180, height: 180},
+                visible: true,
+                opacity: 1,
+                zIndex: 975
+            },
+            {
+                name: "사각형",
+                type: "image",
+                position: {x: 83, y: 1607},
+                size: {width: 987, height: 491},
+                visible: true,
+                opacity: 1,
+                zIndex: 976
+            },
+            {
+                name: "원 그래프",
+                type: "image",
+                position: {x: 374, y: 1648},
+                size: {width: 408, height: 409},
+                visible: true,
+                opacity: 1,
+                zIndex: 977
+            },
+            {
+                name: "PORTFOLIO",
+                type: "text",
+                position: {x: 78, y: 1498},
+                size: {width: 296, height: 46},
+                visible: true,
+                opacity: 1,
+                zIndex: 978
+            },
+            {
+                name: "사각형",
+                type: "image",
+                position: {x: 76, y: 1087},
+                size: {width: 988, height: 345},
+                visible: true,
+                opacity: 1,
+                zIndex: 979
+            },
+            {
+                name: "청년희망적금  (3.0%)",
+                type: "text",
+                position: {x: 132, y: 1339},
+                size: {width: 444, height: 48},
+                visible: true,
+                opacity: 1,
+                zIndex: 980
+            },
+            {
+                name: "삼성전자  (100주)                                    + 1.8%",
+                type: "text",
+                position: {x: 131, y: 1260},
+                size: {width: 874, height: 48},
+                visible: true,
+                opacity: 1,
+                zIndex: 981
+            },
+            {
+                name: "1 9, 9 9 0, 1 0 2",
+                type: "text",
+                position: {x: 296, y: 1144},
+                size: {width: 375, height: 52},
+                visible: true,
+                opacity: 1,
+                zIndex: 982
+            },
+            {
+                name: "ASSETS",
+                type: "image",
+                position: {x: 74, y: 978},
+                size: {width: 203, height: 238},
+                visible: true,
+                opacity: 1,
+                zIndex: 983
+            },
+            {
+                name: "사각형",
+                type: "image",
+                position: {x: 73, y: 567},
+                size: {width: 988, height: 345},
+                visible: true,
+                opacity: 1,
+                zIndex: 984
+            },
+            {
+                name: "환경설정",
+                type: "image",
+                position: {x: 951, y: 614},
+                size: {width: 58, height: 61},
+                visible: true,
+                opacity: 1,
+                zIndex: 985
+            },
+            {
+                name: "레이어 1",
+                type: "image",
+                position: {x: 130, y: 610},
+                size: {width: 257, height: 259},
+                visible: true,
+                opacity: 1,
+                zIndex: 986
+            },
+            {
+                name: "PROFILE",
+                type: "image",
+                position: {x: 76, y: 460},
+                size: {width: 670, height: 395},
+                visible: true,
+                opacity: 1,
+                zIndex: 987
+            },
+            {
+                name: "알림",
+                type: "image",
+                position: {x: 963, y: 211},
+                size: {width: 96, height: 115},
+                visible: true,
+                opacity: 1,
+                zIndex: 988
+            },
+            {
+                name: "빛 반사",
+                type: "image",
+                position: {x: 332, y: 190},
+                size: {width: 467, height: 153},
+                visible: true,
+                opacity: 1,
+                zIndex: 989
+            },
+            {
+                name: "똑부리",
+                type: "image",
+                position: {x: 74, y: 213},
+                size: {width: 112, height: 111},
+                visible: true,
+                opacity: 1,
+                zIndex: 990
+            },
+            {
+                name: "레이어 2",
+                type: "text",
+                position: {x: 0, y: 0},
+                size: {width: 1, height: 1},
+                visible: true,
+                opacity: 1,
+                zIndex: 1000
+            }
+        ];
+        console.log("포토샵 레이어 정보:", layerInfo);
+        console.log("총 23개 레이어 로드됨");
+    </script>
+</body>
+</html>
