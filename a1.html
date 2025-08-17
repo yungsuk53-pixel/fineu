@@ -502,6 +502,16 @@
                     <!-- 환경설정 -->
                     <img src="images/환경설정.png" style="position: absolute; left: 84.5%; top: 25.2%; width: 5.2%; height: 2.5%; z-index: 985; cursor: pointer;" alt="환경설정" onclick="showSettings()" loading="eager">
                     
+                    <!-- 사용자 이름 텍스트 -->
+                    <div id="userNameDisplay" style="position: absolute; left: 38.0%; top: 26.5%; width: 40.0%; height: 3.0%; z-index: 987; font-size: clamp(16px, 4vw, 32px); font-family: 'Jalnan2', 'Malgun Gothic', sans-serif; color: #333333; text-align: left; line-height: 1.2; display: flex; align-items: center; font-weight: 700;">
+                        <span id="userName">똑부리</span><span style="color: #666;">님</span>
+                    </div>
+                    
+                    <!-- 멤버십 일수 텍스트 -->
+                    <div id="membershipDisplay" style="position: absolute; left: 38.0%; top: 30.5%; width: 50.0%; height: 2.5%; z-index: 987; font-size: clamp(12px, 3vw, 24px); font-family: 'Jalnan2', 'Malgun Gothic', sans-serif; color: #666666; text-align: left; line-height: 1.2; display: flex; align-items: center; font-weight: 500;">
+                        FINE U와 함께한지 <span id="membershipDays">1</span>일
+                    </div>
+                    
                     <!-- 자산 섹션 -->
                     <!-- ASSETS 이미지 -->
                     <img src="images/ASSETS.png" style="position: absolute; left: 6.6%; top: 40.1%; width: 18.0%; height: 9.8%; z-index: 983;" alt="ASSETS" loading="eager">
@@ -858,11 +868,77 @@ function updateDisplay() {
         // 자산 배경 크기 동적 조정
         updateAssetBackground();
         
+        // 사용자 이름 업데이트
+        updateUserDisplayName();
+        
+        // 멤버십 일수 계산 및 표시
+        updateMembershipDays();
+        
         updateDebugInfo('디스플레이 업데이트 완료 - 현금: ₩' + cash.toLocaleString());
         
     } catch (error) {
         console.error('디스플레이 업데이트 오류:', error);
         updateDebugInfo('디스플레이 업데이트 오류: ' + error.message);
+    }
+}
+
+// 사용자 이름 표시 업데이트
+function updateUserDisplayName() {
+    try {
+        var userNameElement = document.getElementById('userName');
+        if (userNameElement && currentUser) {
+            userNameElement.textContent = currentUser.name || currentUser.id || '똑부리';
+        }
+    } catch (error) {
+        console.error('사용자 이름 업데이트 오류:', error);
+    }
+}
+
+// 멤버십 일수 계산 및 표시
+function updateMembershipDays() {
+    try {
+        var membershipDaysElement = document.getElementById('membershipDays');
+        if (!membershipDaysElement) return;
+        
+        var joinDate = null;
+        
+        // 1. 현재 사용자의 joinDate 확인
+        if (currentUser && currentUser.joinDate) {
+            joinDate = new Date(currentUser.joinDate);
+        } else {
+            // 2. 로컬 저장소에서 joinDate 확인
+            var savedJoinDate = localStorage.getItem('fineu_join_date');
+            if (savedJoinDate) {
+                joinDate = new Date(savedJoinDate);
+            } else {
+                // 3. 가입일이 없으면 현재 날짜로 설정
+                joinDate = new Date();
+                localStorage.setItem('fineu_join_date', joinDate.toISOString());
+                
+                // currentUser에도 저장
+                if (currentUser) {
+                    currentUser.joinDate = joinDate.toISOString();
+                    localStorage.setItem('fineu_current_user', JSON.stringify(currentUser));
+                }
+            }
+        }
+        
+        // 일수 계산
+        var today = new Date();
+        var diffTime = Math.abs(today - joinDate);
+        var diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        
+        membershipDaysElement.textContent = diffDays;
+        
+        updateDebugInfo('멤버십 일수 업데이트: ' + diffDays + '일');
+        
+    } catch (error) {
+        console.error('멤버십 일수 업데이트 오류:', error);
+        // 오류 발생 시 기본값 설정
+        var membershipDaysElement = document.getElementById('membershipDays');
+        if (membershipDaysElement) {
+            membershipDaysElement.textContent = '1';
+        }
     }
 }
 
@@ -973,9 +1049,13 @@ function updatePortfolioChart() {
         // 실제 Firebase 데이터만 사용
         var data = [];
         
-        // 현금은 항상 표시
+        // 파스텔 색상 팔레트
+        var pastelColors = ['#ffb3ba', '#bae1ff', '#ffffba', '#baffc9', '#ffdfba', '#e0bbff', '#ffc9de'];
+        var colorIndex = 0;
+        
+        // 현금은 항상 표시 (파스텔 회색)
         if (cash > 0) {
-            data.push({ label: '현금', value: cash, color: '#6B7280' });
+            data.push({ label: '현금', value: cash, color: '#d3d3d3' });
         }
         
         // 실제 투자 데이터가 있는 경우만 추가
@@ -985,8 +1065,9 @@ function updatePortfolioChart() {
                     data.push({ 
                         label: investment.name, 
                         value: investment.value, 
-                        color: investment.color || '#3B82F6' 
+                        color: pastelColors[colorIndex % pastelColors.length]
                     });
+                    colorIndex++;
                 }
             });
         } else if (currentUser && currentUser.stocks) {
@@ -996,8 +1077,9 @@ function updatePortfolioChart() {
                     data.push({ 
                         label: stockName, 
                         value: stock.value, 
-                        color: stock.color || '#3B82F6' 
+                        color: pastelColors[colorIndex % pastelColors.length]
                     });
+                    colorIndex++;
                 }
             });
         }
