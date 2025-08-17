@@ -54,6 +54,12 @@
             font-weight: bold;
         }
 
+        .logo-image {
+            height: 40px;
+            width: auto;
+            object-fit: contain;
+        }
+
         .fine-text {
             color: #7cb9e8;
         }
@@ -72,10 +78,10 @@
 
         /* 메인 콘텐츠 */
         .main-content {
-            padding: 70px 20px 140px;
+            padding: 70px 20px 160px;
             max-width: 400px;
             margin: 0 auto;
-            height: calc(100vh - 140px);
+            height: calc(100vh - 160px);
             display: flex;
             flex-direction: column;
         }
@@ -104,6 +110,9 @@
             justify-content: center;
             margin-right: 10px;
             font-size: 20px;
+            background-image: url('images/똑부리.png');
+            background-size: cover;
+            background-position: center;
         }
 
         .chatbot-message {
@@ -159,7 +168,7 @@
         /* 입력 영역 */
         .input-area {
             position: fixed;
-            bottom: 70px;
+            bottom: 100px;
             left: 50%;
             transform: translateX(-50%);
             width: 100%;
@@ -194,7 +203,7 @@
         .send-button {
             width: 40px;
             height: 40px;
-            background: #7cb9e8;
+            background: #333;
             border: none;
             border-radius: 50%;
             color: white;
@@ -204,7 +213,7 @@
         }
 
         .send-button:hover {
-            background: #5aa3d1;
+            background: #555;
             transform: scale(1.05);
         }
 
@@ -237,11 +246,32 @@
             right: 0;
             height: 70px;
             background: white;
+            background-image: url('images/배경.png');
+            background-size: cover;
+            background-position: center;
             display: flex;
             justify-content: space-around;
             align-items: center;
             box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
             z-index: 100;
+        }
+
+        /* 중앙 반원 돌출 부분 추가 */
+        .bottom-nav::before {
+            content: '';
+            position: absolute;
+            top: -32px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 65px;
+            height: 65px;
+            background: white;
+            background-image: url('images/배경.png');
+            background-size: cover;
+            background-position: center;
+            border-radius: 50%;
+            box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+            z-index: -1;
         }
 
         .nav-item {
@@ -250,6 +280,7 @@
             align-items: center;
             cursor: pointer;
             transition: all 0.3s ease;
+            padding: 8px;
         }
 
         .nav-item.active {
@@ -257,13 +288,24 @@
         }
 
         .nav-icon {
-            font-size: 20px;
+            font-size: 18px;
             margin-bottom: 4px;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-icon img {
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
         }
 
         .black-button {
-            width: 50px;
-            height: 50px;
+            width: 55px;
+            height: 55px;
             background: #333;
             border-radius: 50%;
             display: flex;
@@ -274,6 +316,10 @@
             font-size: 12px;
             cursor: pointer;
             transition: all 0.3s ease;
+            position: relative;
+            top: -35px;
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
 
         .black-button:hover {
@@ -283,7 +329,7 @@
         /* 반응형 */
         @media (max-width: 480px) {
             .main-content {
-                padding: 70px 15px 140px;
+                padding: 70px 15px 160px;
             }
             
             .input-area {
@@ -297,8 +343,7 @@
     <div class="header">
         <i class="fas fa-power-off power-icon" onclick="logout()"></i>
         <div class="fine-u-logo">
-            <span class="fine-text">FINE</span>
-            <span class="u-text">U</span>
+            <img src="images/레이어 1.png" alt="FINE U 로고" class="logo-image">
         </div>
         <i class="fas fa-bell notification-icon" onclick="showNotifications()"></i>
     </div>
@@ -309,7 +354,7 @@
         
         <!-- 챗봇 인사 -->
         <div class="chatbot-intro">
-            <div class="chatbot-avatar">🤖</div>
+            <div class="chatbot-avatar"></div>
             <div class="chatbot-message">
                 안녕하세요.<br>
                 저는 여러분의 슬기로운 금융 생활을 돕는 똑부리에요.<br>
@@ -339,17 +384,25 @@
     <!-- 하단 네비게이션 -->
     <div class="bottom-nav">
         <div class="nav-item" onclick="goToPage('a1.html')">
-            <i class="fas fa-home nav-icon"></i>
+            <div class="nav-icon">
+                <img src="images/집.png" alt="홈">
+            </div>
         </div>
         <div class="nav-item" onclick="goToPage('a2.html')">
-            <i class="fas fa-file-alt nav-icon"></i>
+            <div class="nav-icon">
+                <img src="images/문서.png" alt="문서">
+            </div>
         </div>
-        <div class="black-button" onclick="goToPage('a3.html')">BLACK</div>
+        <div class="black-button">BLACK</div>
         <div class="nav-item active" onclick="goToPage('a4.html')">
-            <i class="fas fa-comments nav-icon"></i>
+            <div class="nav-icon">
+                <img src="images/채팅.png" alt="채팅">
+            </div>
         </div>
         <div class="nav-item" onclick="goToPage('a5.html')">
-            <i class="fas fa-ellipsis-h nav-icon"></i>
+            <div class="nav-icon">
+                <img src="images/더보기.png" alt="더보기">
+            </div>
         </div>
     </div>
 
@@ -414,6 +467,7 @@
             document.querySelectorAll('.nav-item').forEach(item => {
                 item.classList.remove('active');
             });
+            event.currentTarget.classList.add('active');
             
             if (page !== 'a4.html') {
                 window.location.href = page;

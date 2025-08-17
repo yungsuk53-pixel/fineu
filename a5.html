@@ -54,6 +54,12 @@
             font-weight: bold;
         }
 
+        .logo-image {
+            height: 40px;
+            width: auto;
+            object-fit: contain;
+        }
+
         .fine-text {
             color: #7cb9e8;
         }
@@ -119,7 +125,7 @@
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 15px;
-            margin-top: 20px;
+            margin: 20px 0;
         }
 
         .social-item {
@@ -143,25 +149,13 @@
             align-items: center;
             justify-content: center;
             margin-bottom: 8px;
-            font-size: 24px;
-            color: white;
+            overflow: hidden;
         }
 
-        .social-icon.kakao {
-            background: #fee500;
-            color: #3c1e1e;
-        }
-
-        .social-icon.youtube {
-            background: #ff0000;
-        }
-
-        .social-icon.instagram {
-            background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
-        }
-
-        .social-icon.blog {
-            background: #03c75a;
+        .social-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .social-label {
@@ -212,11 +206,32 @@
             right: 0;
             height: 70px;
             background: white;
+            background-image: url('images/배경.png');
+            background-size: cover;
+            background-position: center;
             display: flex;
             justify-content: space-around;
             align-items: center;
             box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
             z-index: 100;
+        }
+
+        /* 중앙 반원 돌출 부분 추가 */
+        .bottom-nav::before {
+            content: '';
+            position: absolute;
+            top: -32px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 65px;
+            height: 65px;
+            background: white;
+            background-image: url('images/배경.png');
+            background-size: cover;
+            background-position: center;
+            border-radius: 50%;
+            box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+            z-index: -1;
         }
 
         .nav-item {
@@ -225,6 +240,7 @@
             align-items: center;
             cursor: pointer;
             transition: all 0.3s ease;
+            padding: 8px;
         }
 
         .nav-item.active {
@@ -232,13 +248,24 @@
         }
 
         .nav-icon {
-            font-size: 20px;
+            font-size: 18px;
             margin-bottom: 4px;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .black-button {
-            width: 50px;
-            height: 50px;
+        .nav-icon img {
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
+        }
+
+                .black-button {
+            width: 55px;
+            height: 55px;
             background: #333;
             border-radius: 50%;
             display: flex;
@@ -249,6 +276,10 @@
             font-size: 12px;
             cursor: pointer;
             transition: all 0.3s ease;
+            position: relative;
+            top: -35px;
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
 
         .black-button:hover {
@@ -278,8 +309,7 @@
     <div class="header">
         <i class="fas fa-power-off power-icon" onclick="logout()"></i>
         <div class="fine-u-logo">
-            <span class="fine-text">FINE</span>
-            <span class="u-text">U</span>
+            <img src="images/레이어 1.png" alt="FINE U 로고" class="logo-image">
         </div>
         <i class="fas fa-bell notification-icon" onclick="showNotifications()"></i>
     </div>
@@ -292,37 +322,38 @@
         <div class="section">
             <div class="content-card">
                 <div class="section-title">금융감독원 공식 홈페이지</div>
-                
-                <div class="social-grid">
-                    <a href="#" class="social-item" onclick="openSocial('kakao')">
-                        <div class="social-icon kakao">
-                            <i class="fas fa-comment"></i>
-                        </div>
-                        <div class="social-label">카카오톡</div>
-                    </a>
-                    
-                    <a href="#" class="social-item" onclick="openSocial('youtube')">
-                        <div class="social-icon youtube">
-                            <i class="fab fa-youtube"></i>
-                        </div>
-                        <div class="social-label">유튜브</div>
-                    </a>
-                    
-                    <a href="#" class="social-item" onclick="openSocial('instagram')">
-                        <div class="social-icon instagram">
-                            <i class="fab fa-instagram"></i>
-                        </div>
-                        <div class="social-label">인스타그램</div>
-                    </a>
-                    
-                    <a href="#" class="social-item" onclick="openSocial('blog')">
-                        <div class="social-icon blog">
-                            <i class="fas fa-blog"></i>
-                        </div>
-                        <div class="social-label">블로그</div>
-                    </a>
-                </div>
             </div>
+        </div>
+
+        <!-- 소셜 아이콘 그리드 -->
+        <div class="social-grid">
+            <a href="#" class="social-item" onclick="openSocial('kakao')">
+                <div class="social-icon">
+                    <img src="images/카카오톡.png" alt="카카오톡">
+                </div>
+                <div class="social-label">카카오톡</div>
+            </a>
+            
+            <a href="#" class="social-item" onclick="openSocial('youtube')">
+                <div class="social-icon">
+                    <img src="images/유튜브.png" alt="유튜브">
+                </div>
+                <div class="social-label">유튜브</div>
+            </a>
+            
+            <a href="#" class="social-item" onclick="openSocial('instagram')">
+                <div class="social-icon">
+                    <img src="images/인스타그램.png" alt="인스타그램">
+                </div>
+                <div class="social-label">인스타그램</div>
+            </a>
+            
+            <a href="#" class="social-item" onclick="openSocial('blog')">
+                <div class="social-icon">
+                    <img src="images/블로그.png" alt="블로그">
+                </div>
+                <div class="social-label">블로그</div>
+            </a>
         </div>
 
         <!-- 메뉴 항목들 -->
@@ -345,17 +376,25 @@
     <!-- 하단 네비게이션 -->
     <div class="bottom-nav">
         <div class="nav-item" onclick="goToPage('a1.html')">
-            <i class="fas fa-home nav-icon"></i>
+            <div class="nav-icon">
+                <img src="images/집.png" alt="홈">
+            </div>
         </div>
-        <div class="nav-item active" onclick="goToPage('a2.html')">
-            <i class="fas fa-file-alt nav-icon"></i>
+        <div class="nav-item" onclick="goToPage('a2.html')">
+            <div class="nav-icon">
+                <img src="images/문서.png" alt="문서">
+            </div>
         </div>
-        <div class="black-button" onclick="goToPage('a3.html')">BLACK</div>
+        <div class="black-button">BLACK</div>
         <div class="nav-item" onclick="goToPage('a4.html')">
-            <i class="fas fa-comments nav-icon"></i>
+            <div class="nav-icon">
+                <img src="images/채팅.png" alt="채팅">
+            </div>
         </div>
-        <div class="nav-item" onclick="goToPage('a5.html')">
-            <i class="fas fa-ellipsis-h nav-icon"></i>
+        <div class="nav-item active" onclick="goToPage('a5.html')">
+            <div class="nav-icon">
+                <img src="images/더보기.png" alt="더보기">
+            </div>
         </div>
     </div>
 
@@ -397,8 +436,9 @@
             document.querySelectorAll('.nav-item').forEach(item => {
                 item.classList.remove('active');
             });
+            event.currentTarget.classList.add('active');
             
-            if (page !== 'a2.html') {
+            if (page !== 'a5.html') {
                 window.location.href = page;
             }
         }
