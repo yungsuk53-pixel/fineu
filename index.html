@@ -14,10 +14,36 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
     
-    <!-- Firebase SDK - Realtime Database -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
+        import { getDatabase, ref, get, set, update } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js';
+
+        // Firebase 설정
+        const firebaseConfig = {
+            apiKey: "AIzaSyApKJHvNXftrzXAZsH41FxqVj0_Byh_V28",
+            authDomain: "invest-97aa7.firebaseapp.com",
+            databaseURL: "https://invest-97aa7-default-rtdb.firebaseio.com",
+            projectId: "invest-97aa7",
+            storageBucket: "invest-97aa7.firebasestorage.app",
+            messagingSenderId: "136719207030",
+            appId: "1:136719207030:web:391bd46b7b79800c0fed57",
+            measurementId: "G-78K35WTPGQ"
+        };
+        
+        // Firebase 초기화
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        console.log('🔥 Index Firebase 초기화 완료');
+        
+        // 전역에서 사용할 수 있도록 설정
+        window.firebaseDB = database;
+        window.firebaseRef = ref;
+        window.firebaseGet = get;
+        window.firebaseSet = set;
+        window.firebaseUpdate = update;
+        console.log('🔥 Index Firebase 전역 설정 완료');
+    </script>
     
     <style>
         * {
@@ -290,22 +316,7 @@
 <div id="messageContainer" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1000;"></div>
 
 <script>
-// Firebase 설정 - Realtime Database
-const firebaseConfig = {
-  apiKey: "AIzaSyApKJHvNXftrzXAZsH41FxqVj0_Byh_V28",
-  authDomain: "invest-97aa7.firebaseapp.com",
-  databaseURL: "https://invest-97aa7-default-rtdb.firebaseio.com",
-  projectId: "invest-97aa7",
-  storageBucket: "invest-97aa7.firebasestorage.app",
-  messagingSenderId: "136719207030",
-  appId: "1:136719207030:web:391bd46b7b79800c0fed57",
-  measurementId: "G-78K35WTPGQ"
-};
-
-// Firebase 초기화
-firebase.initializeApp(firebaseConfig);
-const database = firebase.database();
-const auth = firebase.auth();
+// Firebase는 위에서 모던 방식으로 초기화됨
 
 // 전역 변수
 var currentUser = null;
@@ -479,7 +490,7 @@ function getInitialUserData(userId) {
     }
 }
 
-// 로그인 수행 함수
+// 로그인 수행 함수 (새로운 Firebase 로직)
 async function performLogin() {
     var userId = document.getElementById('userId').value.trim();
     var password = document.getElementById('userPassword').value.trim();
@@ -489,7 +500,7 @@ async function performLogin() {
         return;
     }
     
-    // 비밀번호는 필수가 아님 (아이디만으로 로그인)
+    console.log('🔐 로그인 시도:', userId);
     
     // 로딩 표시
     var loginLoader = document.getElementById('loginLoader');
@@ -501,28 +512,72 @@ async function performLogin() {
     try {
         updateDebugInfo('로그인 시도: ' + userId);
         
-        // Firebase 로그인 시도
-        if (!firebaseConnected) {
-            await initializeFirebase();
+        // Firebase 연결 확인
+        if (!window.firebaseDB) {
+            console.log('❌ Firebase 연결 없음');
+            showMessage('Firebase 연결을 확인하는 중...', 'info');
+            setTimeout(performLogin, 1000);
+            return;
         }
         
-        // 아이디만으로 로그인 허용 (비밀번호 검증 제거)
-        // Firebase에서 사용자 데이터 로드 또는 생성
-        currentUser = getInitialUserData(userId);
+        console.log('✅ Firebase 연결 확인됨');
         
-        // 로컬 저장소에 저장
+        // Firebase에서 사용자 존재 확인
+        const userRef = window.firebaseRef(window.firebaseDB, `users/${userId}`);
+        const snapshot = await window.firebaseGet(userRef);
+        
+        let userData;
+        if (snapshot.exists()) {
+            // 기존 사용자
+            userData = snapshot.val();
+            console.log('✅ 기존 사용자 로그인:', userData);
+        } else {
+            // 새 사용자 생성 (100만원)
+            console.log('🆕 새 사용자 생성:', userId);
+            userData = {
+                id: userId,
+                name: userId,
+                cash: 1000000,
+                totalAssets: 1000000,
+                virtualBalance: 1000000,
+                level: 'yellow',
+                exp: 0,
+                portfolio: {},
+                lastUpdated: new Date().toISOString(),
+                loginMethod: 'realtime_db',
+                isSpecialAccount: false,
+                specialType: '',
+                lastSavedFrom: 'index',
+                saveTimestamp: Date.now()
+            };
+            
+            // Firebase에 새 사용자 저장
+            await window.firebaseSet(userRef, userData);
+            console.log('✅ 새 사용자 Firebase 저장 완료');
+        }
+        
+        // 사용자 정보를 localStorage에 저장
+        const currentUser = {
+            id: userId,
+            name: userData.name || userId,
+            email: userData.email || '',
+            loginTime: new Date().toISOString()
+        };
+        
         localStorage.setItem('fineu_current_user', JSON.stringify(currentUser));
-        localStorage.setItem('fineu_last_user_id', userId);
+        localStorage.setItem('fineu_user_assets', JSON.stringify(userData));
         
         updateDebugInfo('로그인 성공: ' + userId);
         showMessage('로그인 성공! 메인페이지로 이동합니다.', 'success');
         
-        // 2초 후 메인페이지로 이동
-        setTimeout(function() {
-            window.location.href = 'a1.html?v=' + Date.now();
-        }, 2000);
+        console.log('✅ 로그인 완료, a1.html로 이동');
         
+        // 메인 페이지로 이동
+        setTimeout(() => {
+            window.location.href = 'a1.html';
+        }, 1000);
     } catch (error) {
+        console.error('❌ 로그인 오류:', error);
         updateDebugInfo('로그인 실패: ' + error.message);
         showMessage('로그인 실패: ' + error.message, 'error');
     } finally {
@@ -531,6 +586,8 @@ async function performLogin() {
         loginBtnText.style.opacity = '1';
     }
 }
+window.performLogin = performLogin;
+
 
 // 페이지 로드 시 초기화
 document.addEventListener('DOMContentLoaded', function() {

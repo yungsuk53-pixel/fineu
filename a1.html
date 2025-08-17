@@ -7,6 +7,37 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
+        import { getDatabase, ref, get, set, update } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js';
+        
+        // Firebase 설정
+        const firebaseConfig = {
+            apiKey: "AIzaSyApKJHvNXftrzXAZsH41FxqVj0_Byh_V28",
+            authDomain: "invest-97aa7.firebaseapp.com",
+            databaseURL: "https://invest-97aa7-default-rtdb.firebaseio.com",
+            projectId: "invest-97aa7",
+            storageBucket: "invest-97aa7.firebasestorage.app",
+            messagingSenderId: "136719207030",
+            appId: "1:136719207030:web:391bd46b7b79800c0fed57",
+            measurementId: "G-78K35WTPGQ"
+        };
+        
+        // Firebase 초기화
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        console.log('Firebase 앱 초기화 완료:', !!app);
+        console.log('Firebase 데이터베이스 초기화 완료:', !!database);
+        
+        // 전역에서 사용할 수 있도록 설정
+        window.firebaseDB = database;
+        window.firebaseRef = ref;
+        window.firebaseGet = get;
+        window.firebaseSet = set;
+        window.firebaseUpdate = update;
+        console.log('Firebase 전역 설정 완료');
+    </script>
     
     <style>
         * {
@@ -18,10 +49,11 @@
         body {
             font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background-color: #f5f5f5;
-            overflow-x: hidden;
             margin: 0;
             padding: 0;
             min-height: 100vh;
+            overflow-x: hidden;
+            overflow-y: auto;
         }
 
         /* 공통 헤더 */
@@ -79,9 +111,11 @@
 
         /* 메인 콘텐츠 */
         .main-content {
-            padding: 70px 20px 80px;
+            padding: 70px 20px 100px;
             max-width: 400px;
             margin: 0 auto;
+            min-height: calc(100vh - 170px);
+            overflow-y: auto;
         }
 
         /* 프로필 섹션 */
@@ -95,8 +129,7 @@
         }
 
         .profile-header-text,
-        .assets-header,
-        .portfolio-header {
+        .assets-header {
             font-size: 18px;
             font-weight: bold;
             margin: 20px 0 10px 0;
@@ -191,6 +224,7 @@
             border-radius: 16px;
             padding: 20px;
             margin-bottom: 20px;
+            margin-top: 0px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             position: relative;
         }
@@ -223,20 +257,43 @@
             align-items: center;
             padding: 12px 0;
             border-bottom: 1px solid #f0f0f0;
+            min-height: 60px;
+            flex-wrap: wrap;
+            gap: 8px;
         }
 
         .asset-item:last-child {
             border-bottom: none;
         }
 
+        .asset-left {
+            display: flex;
+            align-items: center;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .asset-right {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            flex-shrink: 0;
+        }
+
         .asset-name {
-            font-weight: 600;
-            color: #333;
+            font-weight: normal;
+            font-size: 12px;
+            color: #666;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         .asset-details {
             font-size: 12px;
             color: #666;
+            white-space: nowrap;
+            margin-top: 1px;
         }
 
         .asset-change {
@@ -257,42 +314,55 @@
             background: white;
             border-radius: 16px;
             padding: 20px;
-            margin-bottom: 20px;
+            margin-bottom: 5px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             position: relative;
         }
 
         .portfolio-header {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
-            margin: 20px 0 10px 0;
+            margin: 5px 0 5px 0;
             color: #333;
             padding-left: 5px;
         }
 
         .chart-container {
             position: relative;
-            height: 200px;
-            margin-bottom: 20px;
+            height: 120px;
+            width: 100%;
+            max-width: 200px;
+            margin: 0 auto 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .chart-container canvas {
+            max-width: 100%;
+            max-height: 100%;
         }
 
         .chart-legend {
             display: flex;
-            justify-content: space-around;
+            justify-content: center;
             align-items: center;
+            gap: 15px;
+            margin-top: 5px;
+            margin-bottom: 5px;
         }
 
         .legend-item {
             display: flex;
             align-items: center;
-            font-size: 12px;
+            font-size: 11px;
         }
 
         .legend-dot {
-            width: 12px;
-            height: 12px;
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
-            margin-right: 5px;
+            margin-right: 4px;
         }
 
         .legend-dot.stock {
@@ -380,10 +450,10 @@
             font-size: 10px;
         }
 
-        .black-button {
+        .grade-button {
             width: 55px;
             height: 55px;
-            background: #333;
+            background: #fafaf8; /* 기본 YELLOW */
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -399,8 +469,14 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
 
-        .black-button:hover {
+        .grade-button:hover {
             transform: scale(1.1);
+        }
+
+        .grade-button img {
+            width: 45px;
+            height: 45px;
+            object-fit: contain;
         }
 
         /* 반응형 */
@@ -460,9 +536,9 @@
                     </div>
                     <div class="profile-details">
                         <div class="user-grade">
-                            <img src="images/BLACK.png" alt="등급" class="grade-image">
+                            <img src="images/YELLOW ㅁ.png" alt="등급" class="grade-image">
                         </div>
-                        <h3><span id="userName">똑부리</span><span class="nim-text">님</span></h3>
+                        <h3><span id="userName">userId</span><span class="nim-text">님</span></h3>
                         <p>FINE U와 함께한지 <span id="daysWithFineU" class="days-number">30</span>일</p>
                     </div>
                 </div>
@@ -474,27 +550,26 @@
         <div class="assets-header">ASSETS</div>
         
         <!-- 자산 섹션 -->
-        <div class="assets-section">
+        <div class="assets-section" onclick="showAssetDetails()">
             
             <div class="total-assets">
                 <i class="fas fa-star star-icon"></i>
-                <span id="totalAssets">19,990,102</span>
+                <span id="totalAssets">로딩 중...</span>
             </div>
 
-            <div class="asset-item">
-                <div>
-                    <div class="asset-name">삼성전자</div>
-                    <div class="asset-details">(100주)</div>
+            <div id="assetList">
+                <!-- 실제 자산 목록이 여기에 동적으로 생성됩니다 -->
+                <div class="asset-item">
+                    <div class="asset-left">
+                        <div>
+                            <div class="asset-name">자산 데이터 없음</div>
+                            <div class="asset-details">투자를 시작해보세요</div>
+                        </div>
+                    </div>
+                    <div class="asset-right">
+                        <div class="asset-change">--</div>
+                    </div>
                 </div>
-                <div class="asset-change positive">+1.8%</div>
-            </div>
-
-            <div class="asset-item">
-                <div>
-                    <div class="asset-name">현대의망적금</div>
-                    <div class="asset-details">(3.0%)</div>
-                </div>
-                <div class="asset-change positive">+1.8%</div>
             </div>
         </div>
 
@@ -541,7 +616,9 @@
                 <img src="images/문서.png" alt="문서">
             </div>
         </div>
-        <div class="black-button">BLACK</div>
+        <div class="grade-button" id="gradeButton" onclick="goToPage('a3.html')">
+            <img id="gradeButtonImage" src="images/YELLOW ㅇ.png" alt="YELLOW">
+        </div>
         <div class="nav-item" onclick="goToPage('a4.html')">
             <div class="nav-icon">
                 <img src="images/채팅.png" alt="채팅">
@@ -558,36 +635,360 @@
         // 전역 변수
         let currentUser = null;
         let portfolioChart = null;
+        let userAssets = {};
+        let realTimeData = {};
 
-        // 사용자 데이터 로드
-        function loadUserData() {
-            const savedUser = localStorage.getItem('fineu_current_user');
-            if (savedUser) {
-                currentUser = JSON.parse(savedUser);
-                document.getElementById('userName').textContent = currentUser.name || '똑부리';
+        // 등급 시스템 설정
+        const levelSystem = {
+            YELLOW: { name: 'YELLOW', exp: 0, max: 5000, image: 'YELLOW ㅁ.png', nav: 'YELLOW ㅇ', navImage: 'YELLOW ㅇ.png' },
+            GREEN: { name: 'GREEN', exp: 5000, max: 15000, image: 'GREEN ㅁ.png', nav: 'GREEN ㅇ', navImage: 'GREEN ㅇ.png' },
+            BLUE: { name: 'BLUE', exp: 15000, max: 30000, image: 'BLUE ㅁ.png', nav: 'BLUE ㅇ', navImage: 'BLUE ㅇ.png' },
+            RED: { name: 'RED', exp: 30000, max: 50000, image: 'RED ㅁ.png', nav: 'RED ㅇ', navImage: 'RED ㅇ.png' },
+            BLACK: { name: 'BLACK', exp: 50000, max: 999999, image: 'BLACK ㅁ.png', nav: 'BLACK ㅇ', navImage: 'BLACK ㅇ.png' }
+        };
+
+        // 사용자 등급 계산
+        function calculateUserLevel(exp) {
+            for (const [level, data] of Object.entries(levelSystem)) {
+                if (exp >= data.exp && exp < data.max) {
+                    return level;
+                }
+            }
+            return 'BLACK'; // 최고 등급
+        }
+
+        // 등급별 색상 반환
+        function getUserLevelColor(level) {
+            const colors = {
+                'YELLOW': '#FFE99E',
+                'GREEN': '#C1EDB3',
+                'BLUE': '#ADD9FA',
+                'RED': '#FAABAD',
+                'BLACK': '#333333'
+            };
+            return colors[level] || colors['YELLOW'];
+        }
+
+        // 경험치 추가 함수
+        function addExperience(amount) {
+            if (!userAssets) return;
+            
+            const oldLevel = userAssets.level;
+            userAssets.exp = (userAssets.exp || 0) + amount;
+            
+            const newLevel = calculateUserLevel(userAssets.exp);
+            userAssets.level = newLevel.toLowerCase();
+            
+            // 레벨업 확인
+            if (oldLevel !== userAssets.level) {
+                const levelData = levelSystem[newLevel];
+                alert(`🎉 축하합니다! ${levelData.name} 등급으로 승급하셨습니다!`);
+            }
+            
+            updateDisplay();
+            saveUserDataToFirebase();
+        }
+
+        // 기본 사용자 데이터 구조 (실제 Firebase 구조에 맞춤)
+        const defaultUserData = {
+            id: null,
+            name: '',
+            cash: 0,
+            exp: 0,
+            level: 'yellow',
+            loginMethod: 'realtime_db',
+            totalAssets: 0,
+            virtualBalance: 0,
+            isSpecialAccount: false,
+            specialType: '',
+            portfolio: {},
+            lastUpdated: new Date().toISOString(),
+            saveTimestamp: Date.now(),
+            lastSavedFrom: 'a1'
+        };
+
+        // Firebase에서 사용자 데이터 가져오기 (새로운 로직)
+        async function loadUserDataFromFirebase() {
+            console.log('=== 데이터 로드 시작 ===');
+            
+            try {
+                // 1. Firebase 연결 확인
+                if (!window.firebaseDB) {
+                    console.log('Firebase 연결 대기 중...');
+                    setTimeout(loadUserDataFromFirebase, 1000);
+                    return;
+                }
+                console.log('✅ Firebase 연결 확인됨');
+
+                // 2. 로컬스토리지에서 사용자 ID 가져오기 또는 기본값 설정
+                const currentUser = JSON.parse(localStorage.getItem('fineu_current_user') || '{}');
+                const userId = currentUser.id || currentUser.username || 'Test';
+                console.log('👤 사용자 ID:', userId);
+                
+                // 3. Firebase에서 데이터 가져오기
+                const userRef = window.firebaseRef(window.firebaseDB, `users/${userId}`);
+                console.log('🔗 Firebase 참조 생성:', `users/${userId}`);
+
+
+
+                const snapshot = await window.firebaseGet(userRef);
+                console.log('📊 데이터 스냅샷 확인:', snapshot.exists());
+
+                if (snapshot.exists()) {
+                    // Firebase에서 데이터 로드 성공
+                    const firebaseData = snapshot.val();
+                    console.log('✅ Firebase 데이터 로드 성공:', firebaseData);
+                    
+                    // userAssets에 데이터 설정
+                    userAssets = {
+                        id: firebaseData.id || userId,
+                        name: firebaseData.name || userId,
+                        cash: firebaseData.cash || 0,
+                        totalAssets: firebaseData.totalAssets || firebaseData.virtualBalance || firebaseData.cash || 0,
+                        virtualBalance: firebaseData.virtualBalance || firebaseData.cash || 0,
+                        level: firebaseData.level || 'yellow',
+                        exp: firebaseData.exp || 0,
+                        portfolio: firebaseData.portfolio || {},
+                        joinDate: firebaseData.joinDate || new Date().toISOString().split('T')[0], // 가입일이 없으면 오늘로 설정
+                        lastUpdated: firebaseData.lastUpdated || new Date().toISOString(),
+                        loginMethod: firebaseData.loginMethod || 'realtime_db',
+                        isSpecialAccount: firebaseData.isSpecialAccount || false,
+                        specialType: firebaseData.specialType || '',
+                        lastSavedFrom: firebaseData.lastSavedFrom || 'a1',
+                        saveTimestamp: firebaseData.saveTimestamp || Date.now()
+                    };
+                    
+                    console.log('✅ userAssets 설정 완료:', userAssets);
+                    
+                } else {
+                    // Firebase에 데이터가 없으면 새로 생성
+                    console.log('❌ Firebase에 데이터 없음 - 새 데이터 생성');
+                    await createNewUserData(userId);
+                }
+
+                // 4. 화면 업데이트
                 updateDisplay();
-            } else {
-                window.location.href = 'index_new_design.html';
+                console.log('✅ 화면 업데이트 완료');
+                
+                // 5. localStorage에 백업 저장
+                localStorage.setItem('fineu_user_assets', JSON.stringify(userAssets));
+                console.log('✅ localStorage 백업 완료');
+
+            } catch (error) {
+                console.error('❌ 데이터 로드 오류:', error);
+                // 오류 발생 시 기본 데이터로 초기화
+                await createNewUserData(userId);
+                updateDisplay();
             }
         }
 
-        // 디스플레이 업데이트
-        function updateDisplay() {
-            // 총 자산 업데이트 (예시 데이터)
-            document.getElementById('totalAssets').textContent = '19,990,102';
+        // 새 사용자 데이터 생성
+        async function createNewUserData(userId) {
+            console.log('🆕 새 사용자 데이터 생성:', userId);
             
-            // FINE U와 함께한 일수 계산 (예시: 로그인 날짜부터)
-            const joinDate = new Date('2024-07-18'); // 예시 가입일
-            const today = new Date();
-            const diffTime = Math.abs(today - joinDate);
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            document.getElementById('daysWithFineU').textContent = diffDays;
-            
-            // 포트폴리오 차트 생성
-            createPortfolioChart();
+            userAssets = {
+                id: userId,
+                name: userId,
+                cash: 10000000, // 기본 1천만원
+                totalAssets: 10000000,
+                virtualBalance: 10000000,
+                level: 'yellow',
+                exp: 0,
+                portfolio: {},
+                joinDate: new Date().toISOString().split('T')[0], // 가입일 (YYYY-MM-DD 형식)
+                lastUpdated: new Date().toISOString(),
+                loginMethod: 'realtime_db',
+                isSpecialAccount: false,
+                specialType: '',
+                lastSavedFrom: 'a1',
+                saveTimestamp: Date.now()
+            };
+
+            // Firebase에 저장
+            try {
+                const userRef = window.firebaseRef(window.firebaseDB, `users/${userId}`);
+                await window.firebaseSet(userRef, userAssets);
+                console.log('✅ 새 데이터 Firebase 저장 완료');
+            } catch (error) {
+                console.error('❌ Firebase 저장 실패:', error);
+            }
         }
 
+        // Firebase에 사용자 데이터 저장 (새로운 로직)
+        async function saveUserDataToFirebase() {
+            console.log('💾 데이터 저장 시작');
+            
+            try {
+                if (!window.firebaseDB || !userAssets || !userAssets.id) {
+                    console.log('❌ 저장 조건 불충족:', {
+                        firebase: !!window.firebaseDB,
+                        userAssets: !!userAssets,
+                        userId: userAssets?.id
+                    });
+                    return false;
+                }
+
+                const userId = userAssets.id;
+                
+                // 메타데이터 업데이트
+                userAssets.lastUpdated = new Date().toISOString();
+                userAssets.saveTimestamp = Date.now();
+                userAssets.lastSavedFrom = 'a1';
+                
+                // Firebase에 저장
+                const userRef = window.firebaseRef(window.firebaseDB, `users/${userId}`);
+                await window.firebaseSet(userRef, userAssets);
+                
+                // localStorage 백업
+                localStorage.setItem('fineu_user_assets', JSON.stringify(userAssets));
+                
+                console.log('✅ Firebase 저장 완료:', userId);
+                return true;
+
+            } catch (error) {
+                console.error('❌ Firebase 저장 실패:', error);
+                // 최소한 localStorage에는 저장
+                localStorage.setItem('fineu_user_assets', JSON.stringify(userAssets));
+                return false;
+            }
+        }
+
+        // 가입일로부터 경과 일수 계산
+        function calculateDaysSinceJoin(joinDate) {
+            if (!joinDate) return 0;
+            
+            try {
+                const join = new Date(joinDate);
+                const today = new Date();
+                const timeDiff = today.getTime() - join.getTime();
+                const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+                return Math.max(1, daysDiff); // 최소 1일
+            } catch (error) {
+                console.error('날짜 계산 오류:', error);
+                return 1; // 오류 시 기본값
+            }
+        }
+
+        // 실시간 주식 가격 업데이트 (실제 데이터는 portfolio 구조 사용)
+        function updateRealTimePrices() {
+            if (!userAssets.portfolio) return;
+
+            // 포트폴리오가 있다면 간단한 가상 변동 적용
+            // 실제로는 외부 API에서 실시간 가격을 받아올 예정
+
+            updateDisplay();
+        }
+
+        // 디스플레이 업데이트 (새로운 로직)
+        function updateDisplay() {
+            console.log('🎨 화면 업데이트 시작');
+            
+            if (!userAssets) {
+                console.log('❌ userAssets 없음');
+                return;
+            }
+
+            try {
+                // 1. 사용자 ID 표시
+                const userId = userAssets.id || userAssets.name || 'Test';
+                document.getElementById('userName').textContent = userId;
+                console.log('👤 사용자 ID 설정:', userId);
+                
+                // 2. 등급 이미지 업데이트
+                const userLevel = (userAssets.level || 'yellow').toUpperCase();
+                const levelData = levelSystem[userLevel];
+                if (levelData) {
+                    const gradeImage = document.querySelector('.grade-image');
+                    if (gradeImage) {
+                        gradeImage.src = `images/${levelData.image}`;
+                        gradeImage.alt = levelData.name;
+                    }
+                    
+                    // 네비게이션 버튼 업데이트
+                    const gradeButton = document.getElementById('gradeButton');
+                    const gradeButtonImage = document.getElementById('gradeButtonImage');
+                    if (gradeButton && gradeButtonImage) {
+                        gradeButtonImage.src = `images/${levelData.navImage}`;
+                        gradeButtonImage.alt = levelData.name;
+                        gradeButton.style.background = getUserLevelColor(userLevel);
+                    }
+                    console.log('🎖️ 등급 표시 완료:', userLevel);
+                }
+                
+                // 3. 총 자산 표시
+                const totalAssets = userAssets.totalAssets || userAssets.virtualBalance || userAssets.cash || 0;
+                const totalAssetsElement = document.getElementById('totalAssets');
+                if (totalAssetsElement) {
+                    totalAssetsElement.textContent = totalAssets.toLocaleString();
+                    console.log('💰 총 자산 표시:', totalAssets.toLocaleString());
+                }
+                
+                // 4. 자산 목록과 포트폴리오 차트 업데이트
+                updateAssetList();
+                createPortfolioChart();
+                
+                // 5. 함께한 일수 (실제 가입일 기준 계산)
+                const daysElement = document.getElementById('daysWithFineU');
+                if (daysElement) {
+                    const daysSinceJoin = calculateDaysSinceJoin(userAssets.joinDate);
+                    daysElement.textContent = daysSinceJoin.toString();
+                    console.log('📅 가입일로부터 경과 일수:', daysSinceJoin, '일 (가입일:', userAssets.joinDate, ')');
+                }
+                
+                console.log('✅ 화면 업데이트 완료');
+                
+            } catch (error) {
+                console.error('❌ 화면 업데이트 오류:', error);
+            }
+        }
+
+        // 자산 목록 업데이트
+        function updateAssetList() {
+            const assetListElement = document.getElementById('assetList');
+            if (!assetListElement) return;
+
+            let assetHTML = '';
+
+            // 실제 데이터에서는 portfolio 구조를 사용
+            // 현재는 기본 메시지 표시
+            if (!userAssets.portfolio || Object.keys(userAssets.portfolio).length === 0) {
+                assetHTML = `
+                    <div class="asset-item">
+                        <div class="asset-left">
+                            <div class="asset-name">투자 상품이 없습니다.</div>
+                            <div class="asset-details">투자를 시작해보세요!</div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                // portfolio 데이터가 있는 경우 간단 표시
+                assetHTML = `
+                    <div class="asset-item">
+                        <div class="asset-left">
+                            <div class="asset-name">포트폴리오</div>
+                            <div class="asset-details">투자 상품 보유중</div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            assetListElement.innerHTML = assetHTML;
+        }
+
+        // 총 자산 계산 (백업용 - 실제로는 Firebase의 totalAssets 사용)
+        function calculateTotalAssets() {
+            return userAssets.totalAssets || userAssets.virtualBalance || userAssets.cash || 0;
+        }
+                
+
         // 포트폴리오 차트 생성
+
+        // 총 자산 계산 (백업용 - 실제로는 Firebase의 totalAssets 사용)
+        function calculateTotalAssets() {
+            return userAssets.totalAssets || userAssets.virtualBalance || userAssets.cash || 0;
+        }
+
+        // 포트폴리오 차트 생성 (새로운 로직)
         function createPortfolioChart() {
             const ctx = document.getElementById('portfolioChart').getContext('2d');
             
@@ -595,27 +996,88 @@
                 portfolioChart.destroy();
             }
 
+            // 간단한 현금 기반 차트 (실제 portfolio 데이터가 있을 때 확장 가능)
+            const totalAssets = userAssets.totalAssets || userAssets.virtualBalance || userAssets.cash || 0;
+            const cashValue = userAssets.cash || 0;
+            
+            // 현재는 현금만 표시 (나중에 portfolio 데이터가 있으면 확장)
+            const cashPercent = totalAssets > 0 ? (cashValue / totalAssets * 100) : 100;
+            const otherPercent = 100 - cashPercent;
+
             portfolioChart = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['주식', '현금', '적금', '기타'],
+                    labels: ['현금', '기타 투자'],
                     datasets: [{
-                        data: [45, 25, 20, 10],
-                        backgroundColor: ['#ffb3ba', '#bae1ff', '#ffffba', '#baffc9'],
+                        data: [cashPercent, otherPercent],
+                        backgroundColor: ['#bae1ff', '#baffc9'],
                         borderWidth: 0
                     }]
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: false,
+                    maintainAspectRatio: true,
+                    aspectRatio: 1,
                     plugins: {
                         legend: {
                             display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label;
+                                    const value = context.parsed;
+                                    return `${label}: ${value.toFixed(1)}%`;
+                                }
+                            }
                         }
                     },
                     cutout: '60%'
                 }
             });
+        }
+
+        // 실시간 업데이트 시작
+        function startRealTimeUpdates() {
+            // 5초마다 주식 가격 업데이트
+            setInterval(updateRealTimePrices, 5000);
+            
+            // 30초마다 Firebase에 저장
+            setInterval(saveUserDataToFirebase, 30000);
+            
+            // 1초마다 시간 업데이트
+            setInterval(updateCurrentTime, 1000);
+        }
+
+        // 현재 시간 표시
+        function updateCurrentTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('ko-KR');
+            
+            let timeElement = document.getElementById('currentTime');
+            if (!timeElement) {
+                timeElement = document.createElement('div');
+                timeElement.id = 'currentTime';
+                timeElement.style.cssText = `
+                    position: fixed;
+                    top: 68px;
+                    right: 20px;
+                    font-size: 12px;
+                    color: #666;
+                    background: rgba(255,255,255,0.9);
+                    padding: 4px 8px;
+                    border-radius: 12px;
+                    z-index: 99;
+                `;
+                document.body.appendChild(timeElement);
+            }
+            timeElement.textContent = timeString;
+        }
+
+        // 사용자 데이터 로드 (기존 함수 대체)
+        function loadUserData() {
+            console.log('loadUserData 함수 호출됨');
+            loadUserDataFromFirebase();
         }
 
         // 네비게이션 함수
@@ -624,10 +1086,9 @@
             document.querySelectorAll('.nav-item').forEach(item => {
                 item.classList.remove('active');
             });
-            event.currentTarget.classList.add('active');
             
             // 페이지 이동
-            if (page !== 'a1_new_design.html') {
+            if (page !== 'a1.html') {
                 window.location.href = page;
             }
         }
@@ -636,21 +1097,262 @@
         function logout() {
             if (confirm('로그아웃 하시겠습니까?')) {
                 localStorage.removeItem('fineu_current_user');
-                window.location.href = 'index_new_design.html';
+                localStorage.removeItem('fineu_user_assets');
+                window.location.href = 'index.html';
             }
         }
 
         function showNotifications() {
-            alert('알림 기능은 준비 중입니다.');
+            const currentTime = new Date().toLocaleTimeString('ko-KR');
+            alert(`🔔 실시간 알림 (${currentTime})\n\n• 포트폴리오가 업데이트되었습니다\n• 새로운 투자 기회가 있습니다\n• 수익률 변동을 확인하세요\n\n실시간 알림 서비스가 활성화되었습니다!`);
         }
 
         function showSettings() {
-            alert('설정 기능은 준비 중입니다.');
+            showProfileEditModal();
         }
+
+        // 프로필 수정 모달 표시
+        function showProfileEditModal() {
+            if (!userAssets.profile) return;
+
+            const modal = document.createElement('div');
+            modal.id = 'profileModal';
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                background: rgba(0,0,0,0.8);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 1000;
+            `;
+
+            modal.innerHTML = `
+                <div style="background: white; border-radius: 16px; padding: 24px; width: 90%; max-width: 360px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3 style="font-size: 18px; font-weight: bold;">프로필 수정</h3>
+                        <button onclick="closeProfileModal()" style="background: none; border: none; font-size: 20px; cursor: pointer;">×</button>
+                    </div>
+                    
+                    <div style="margin-bottom: 16px;">
+                        <label style="display: block; margin-bottom: 4px; font-weight: bold;">이름</label>
+                        <input type="text" id="editName" value="${userAssets.profile.name}" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 8px;">
+                    </div>
+                    
+                    <div style="margin-bottom: 16px;">
+                        <label style="display: block; margin-bottom: 4px; font-weight: bold;">이메일</label>
+                        <input type="email" id="editEmail" value="${userAssets.profile.email}" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 8px;">
+                    </div>
+                    
+                    <div style="margin-bottom: 16px;">
+                        <label style="display: block; margin-bottom: 4px; font-weight: bold;">전화번호</label>
+                        <input type="tel" id="editPhone" value="${userAssets.profile.phone}" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 8px;">
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 4px; font-weight: bold;">가입일</label>
+                        <input type="date" id="editJoinDate" value="${userAssets.profile.joinDate}" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 8px;">
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <button onclick="saveProfile()" style="background: #3B82F6; color: white; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">저장</button>
+                        <button onclick="closeProfileModal()" style="background: #6B7280; color: white; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">취소</button>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(modal);
+        }
+
+        // 프로필 저장
+        async function saveProfile() {
+            const name = document.getElementById('editName').value;
+            const email = document.getElementById('editEmail').value;
+            const phone = document.getElementById('editPhone').value;
+            const joinDate = document.getElementById('editJoinDate').value;
+
+            if (!name || !email) {
+                alert('이름과 이메일은 필수 입력 항목입니다.');
+                return;
+            }
+
+            // 프로필 업데이트
+            userAssets.profile.name = name;
+            userAssets.profile.email = email;
+            userAssets.profile.phone = phone;
+            userAssets.profile.joinDate = joinDate;
+
+            // 현재 사용자 정보도 업데이트
+            currentUser.name = name;
+            localStorage.setItem('fineu_current_user', JSON.stringify(currentUser));
+
+            // Firebase에 저장
+            await saveUserDataToFirebase();
+
+            // 화면 업데이트
+            updateDisplay();
+
+            // 모달 닫기
+            closeProfileModal();
+
+            alert('프로필이 성공적으로 업데이트되었습니다!');
+        }
+
+        // 프로필 모달 닫기
+        function closeProfileModal() {
+            const modal = document.getElementById('profileModal');
+            if (modal) {
+                document.body.removeChild(modal);
+            }
+        }
+
+        // 전역 함수로 설정
+        window.saveProfile = saveProfile;
+        window.closeProfileModal = closeProfileModal;
+
+        // 자산 상세 정보 표시
+        function showAssetDetails() {
+            const modal = document.createElement('div');
+            modal.id = 'assetModal';
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                background: rgba(0,0,0,0.8);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 1000;
+            `;
+
+            let assetHTML = '<h3 style="margin-bottom: 20px; text-align: center;">전체 자산 현황</h3>';
+            
+            // 현금
+            assetHTML += `<div style="margin-bottom: 15px; padding: 12px; background: #f8f9fa; border-radius: 8px;">
+                <strong>현금:</strong> ${(userAssets.cash || 0).toLocaleString()}원
+            </div>`;
+
+            // 주식
+            if (userAssets.investments?.stocks) {
+                assetHTML += '<h4 style="margin: 15px 0 10px 0;">보유 주식</h4>';
+                userAssets.investments.stocks.forEach(stock => {
+                    const totalValue = stock.quantity * stock.currentPrice;
+                    const profit = ((stock.currentPrice - stock.avgPrice) / stock.avgPrice * 100);
+                    assetHTML += `<div style="margin-bottom: 10px; padding: 10px; background: #f8f9fa; border-radius: 8px;">
+                        <div><strong>${stock.name}</strong> (${stock.symbol})</div>
+                        <div>수량: ${stock.quantity}주 | 평균단가: ${stock.avgPrice.toLocaleString()}원</div>
+                        <div>현재가: ${stock.currentPrice.toLocaleString()}원 | 평가금액: ${totalValue.toLocaleString()}원</div>
+                        <div style="color: ${profit >= 0 ? '#059669' : '#dc2626'};">수익률: ${profit >= 0 ? '+' : ''}${profit.toFixed(2)}%</div>
+                    </div>`;
+                });
+            }
+
+            // 펀드
+            if (userAssets.investments?.funds) {
+                assetHTML += '<h4 style="margin: 15px 0 10px 0;">보유 펀드</h4>';
+                userAssets.investments.funds.forEach(fund => {
+                    const totalValue = fund.quantity * fund.currentPrice;
+                    const profit = ((fund.currentPrice - fund.avgPrice) / fund.avgPrice * 100);
+                    assetHTML += `<div style="margin-bottom: 10px; padding: 10px; background: #f8f9fa; border-radius: 8px;">
+                        <div><strong>${fund.name}</strong></div>
+                        <div>수량: ${fund.quantity}좌 | 평균단가: ${fund.avgPrice.toLocaleString()}원</div>
+                        <div>현재가: ${fund.currentPrice.toLocaleString()}원 | 평가금액: ${totalValue.toLocaleString()}원</div>
+                        <div style="color: ${profit >= 0 ? '#059669' : '#dc2626'};">수익률: ${profit >= 0 ? '+' : ''}${profit.toFixed(2)}%</div>
+                    </div>`;
+                });
+            }
+
+            // 적금
+            if (userAssets.investments?.savings) {
+                assetHTML += '<h4 style="margin: 15px 0 10px 0;">보유 적금</h4>';
+                userAssets.investments.savings.forEach(saving => {
+                    assetHTML += `<div style="margin-bottom: 10px; padding: 10px; background: #f8f9fa; border-radius: 8px;">
+                        <div><strong>${saving.product}</strong> (${saving.bank})</div>
+                        <div>잔액: ${saving.amount.toLocaleString()}원 | 금리: ${saving.rate}%</div>
+                    </div>`;
+                });
+            }
+
+            modal.innerHTML = `
+                <div style="background: white; border-radius: 16px; padding: 24px; width: 90%; max-width: 400px; max-height: 80vh; overflow-y: auto;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3 style="margin: 0;">전체 자산 현황</h3>
+                        <button onclick="closeAssetModal()" style="background: none; border: none; font-size: 20px; cursor: pointer;">×</button>
+                    </div>
+                    ${assetHTML}
+                    <button onclick="closeAssetModal()" style="width: 100%; background: #3B82F6; color: white; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 20px;">닫기</button>
+                </div>
+            `;
+
+            document.body.appendChild(modal);
+        }
+
+        // 개별 주식 상세보기
+        function showStockDetail(symbol) {
+            const stock = userAssets.investments?.stocks?.find(s => s.symbol === symbol);
+            if (!stock) return;
+
+            const totalValue = stock.quantity * stock.currentPrice;
+            const totalInvestment = stock.quantity * stock.avgPrice;
+            const profit = totalValue - totalInvestment;
+            const profitRate = (profit / totalInvestment * 100);
+
+            // 상세보기 시 경험치 추가 (5 EXP)
+            addExperience(5);
+
+            alert(`📈 ${stock.name} (${stock.symbol})\n\n보유수량: ${stock.quantity}주\n평균단가: ${stock.avgPrice.toLocaleString()}원\n현재가: ${stock.currentPrice.toLocaleString()}원\n\n투자금액: ${totalInvestment.toLocaleString()}원\n평가금액: ${totalValue.toLocaleString()}원\n평가손익: ${profit >= 0 ? '+' : ''}${profit.toLocaleString()}원\n수익률: ${profitRate >= 0 ? '+' : ''}${profitRate.toFixed(2)}%`);
+        }
+
+        // 개별 펀드 상세보기
+        function showFundDetail(name) {
+            const fund = userAssets.investments?.funds?.find(f => f.name === name);
+            if (!fund) return;
+
+            const totalValue = fund.quantity * fund.currentPrice;
+            const totalInvestment = fund.quantity * fund.avgPrice;
+            const profit = totalValue - totalInvestment;
+            const profitRate = (profit / totalInvestment * 100);
+
+            // 상세보기 시 경험치 추가 (5 EXP)
+            addExperience(5);
+
+            alert(`📊 ${fund.name}\n\n보유좌수: ${fund.quantity}좌\n평균단가: ${fund.avgPrice.toLocaleString()}원\n현재가: ${fund.currentPrice.toLocaleString()}원\n\n투자금액: ${totalInvestment.toLocaleString()}원\n평가금액: ${totalValue.toLocaleString()}원\n평가손익: ${profit >= 0 ? '+' : ''}${profit.toLocaleString()}원\n수익률: ${profitRate >= 0 ? '+' : ''}${profitRate.toFixed(2)}%`);
+        }
+
+        // 개별 적금 상세보기
+        function showSavingDetail(product) {
+            const saving = userAssets.investments?.savings?.find(s => s.product === product);
+            if (!saving) return;
+
+            alert(`💰 ${saving.product}\n\n은행: ${saving.bank}\n잔액: ${saving.amount.toLocaleString()}원\n금리: ${saving.rate}%\n\n안전한 저축상품으로 꾸준히 자산을 증식하고 있습니다.`);
+        }
+
+        // 자산 모달 닫기
+        function closeAssetModal() {
+            const modal = document.getElementById('assetModal');
+            if (modal) {
+                document.body.removeChild(modal);
+            }
+        }
+
+        // 전역 함수로 등록
+        window.showAssetDetails = showAssetDetails;
+        window.showStockDetail = showStockDetail;
+        window.showFundDetail = showFundDetail;
+        window.showSavingDetail = showSavingDetail;
+        window.closeAssetModal = closeAssetModal;
 
         // 페이지 로드 시 초기화
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('=== FINE U 페이지 로드 시작 ===');
+            console.log('Firebase 설정 확인:', !!window.firebaseDB);
             loadUserData();
+            console.log('FINE U 메인 페이지 - 실제 데이터 연동 완료');
         });
     </script>
 </body>

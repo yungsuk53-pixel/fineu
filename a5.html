@@ -7,6 +7,33 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
     
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
+        import { getDatabase, ref, get, set, update } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyApKJHvNXftrzXAZsH41FxqVj0_Byh_V28",
+            authDomain: "invest-97aa7.firebaseapp.com",
+            databaseURL: "https://invest-97aa7-default-rtdb.firebaseio.com",
+            projectId: "invest-97aa7",
+            storageBucket: "invest-97aa7.firebasestorage.app",
+            messagingSenderId: "136719207030",
+            appId: "1:136719207030:web:391bd46b7b79800c0fed57",
+            measurementId: "G-78K35WTPGQ"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        console.log('🔥 A5 Firebase 초기화 완료');
+        
+        window.firebaseDB = database;
+        window.firebaseRef = ref;
+        window.firebaseGet = get;
+        window.firebaseSet = set;
+        window.firebaseUpdate = update;
+    </script>
+    
     <style>
         * {
             margin: 0;
@@ -96,7 +123,7 @@
         }
 
         .section-title {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
             color: #333;
             margin-bottom: 15px;
@@ -454,6 +481,21 @@
         function showNotifications() {
             alert('알림 기능은 준비 중입니다.');
         }
+
+        // 페이지 로드 시 로그인 확인
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('⚙️ A5 설정 페이지 로드됨');
+            
+            const savedUser = localStorage.getItem('fineu_current_user');
+            if (!savedUser) {
+                console.log('❌ 로그인 정보 없음 - index.html로 이동');
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            const currentUser = JSON.parse(savedUser);
+            console.log('✅ A5 로그인 사용자:', currentUser.id);
+        });
     </script>
 </body>
 </html>
