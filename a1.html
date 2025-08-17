@@ -3,22 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    
-    <!-- 캐시 무력화 메타태그 -->
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    <meta name="cache-buster" content="v5.0.0-main-page">
-    
-    <title>FINE U - 메인페이지</title>
+    <title>FINE U - 메인</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <!-- Firebase SDK - Realtime Database -->
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     
     <style>
         * {
@@ -29,347 +17,406 @@
 
         body {
             font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: #F5F5F5;
+            background-color: #f5f5f5;
             overflow-x: hidden;
             margin: 0;
             padding: 0;
-            -webkit-text-size-adjust: 100%;
-            -ms-text-size-adjust: 100%;
-            width: 100vw;
-            height: 100vh;
+            min-height: 100vh;
+        }
+
+        /* 공통 헤더 */
+        .header {
             position: fixed;
             top: 0;
             left: 0;
-        }
-
-        /* 메인 화면 - 레이어 배경 모바일 최적화 */
-        #mainScreen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            overflow: hidden;
-            background: #FFFFFF;
-            z-index: 1000;
-            box-sizing: border-box;
-        }
-
-        /* 스크롤바 커스터마이징 */
-        .responsive-container::-webkit-scrollbar {
-            width: 4px;
-        }
-
-        .responsive-container::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .responsive-container::-webkit-scrollbar-thumb {
-            background: rgba(0,0,0,0.2);
-            border-radius: 2px;
-        }
-
-        .responsive-container::-webkit-scrollbar-thumb:hover {
-            background: rgba(0,0,0,0.4);
-        }
-        
-        /* 반응형 테이블 컨테이너 */
-        .responsive-container {
-            width: 100vw;
-            height: 100vh;
-            overflow-x: hidden;
-            overflow-y: auto;
-            background-color: #FFFFFF;
+            right: 0;
+            height: 60px;
+            background: white;
             display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            position: relative;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
-        /* 기본 테이블 설정 */
-        .main-table {
-            width: 1125px;
-            height: 2436px;
-            background-color: #FFFFFF;
-            position: relative;
-            border: 0;
-            border-collapse: collapse;
-            border-spacing: 0;
-            min-width: 1125px;
-        }
-
-        /* 데스크톱 화면 (기본) */
-        @media (min-width: 1126px) {
-            .main-table {
-                width: 1125px;
-                height: 2436px;
-            }
-            
-            .responsive-container {
-                height: 100vh;
-                overflow-y: hidden;
-            }
-        }
-
-        /* 태블릿 화면 */
-        @media (max-width: 1125px) and (min-width: 769px) {
-            .responsive-container {
-                height: calc(100vh);
-                padding: 0;
-            }
-            
-            .main-table {
-                width: 1125px;
-                height: 2436px;
-                transform: scale(0.65);
-                transform-origin: top center;
-                min-width: 1125px;
-            }
-        }
-
-        /* 모바일 화면 - 큰 화면 */
-        @media (max-width: 768px) and (min-width: 481px) {
-            .responsive-container {
-                height: calc(100vh);
-                padding: 0;
-            }
-            
-            .main-table {
-                width: 1125px;
-                height: 2436px;
-                transform: scale(0.42);
-                transform-origin: top center;
-                min-width: 1125px;
-            }
-        }
-
-        /* 모바일 화면 - 중간 화면 */
-        @media (max-width: 480px) and (min-width: 376px) {
-            .responsive-container {
-                height: calc(100vh);
-                padding: 0;
-            }
-            
-            .main-table {
-                width: 1125px;
-                height: 2436px;
-                transform: scale(0.35);
-                transform-origin: top center;
-                min-width: 1125px;
-            }
-        }
-
-        /* 모바일 화면 - 작은 화면 */
-        @media (max-width: 375px) and (min-width: 321px) {
-            .responsive-container {
-                height: calc(100vh);
-                padding: 0;
-            }
-            
-            .main-table {
-                width: 1125px;
-                height: 2436px;
-                transform: scale(0.33);
-                transform-origin: top center;
-                min-width: 1125px;
-            }
-        }
-
-        /* 모바일 화면 - 매우 작은 화면 */
-        @media (max-width: 320px) {
-            .responsive-container {
-                height: calc(100vh);
-                padding: 0;
-            }
-            
-            .main-table {
-                width: 1125px;
-                height: 2436px;
-                transform: scale(0.28);
-                transform-origin: top center;
-                min-width: 1125px;
-            }
-        }
-
-        /* 클릭 가능한 요소들 */
-        img[onclick], div[onclick] {
+        .power-icon {
+            width: 24px;
+            height: 24px;
+            color: #ff6b9d;
+            font-size: 24px;
             cursor: pointer;
-            transition: all 0.2s ease;
         }
 
-        img[onclick]:hover, div[onclick]:hover {
-            transform: scale(1.05);
-            opacity: 0.9;
+        .fine-u-logo {
+            display: flex;
+            align-items: center;
+            font-size: 28px;
+            font-weight: bold;
         }
 
-        img[onclick]:active, div[onclick]:active {
-            transform: scale(0.95);
-            opacity: 0.8;
+        .logo-image {
+            height: 40px;
+            width: auto;
+            object-fit: contain;
         }
 
-        /* 모바일에서 터치 반응 최적화 */
-        @media (max-width: 768px) {
-            img[onclick], div[onclick] {
-                -webkit-tap-highlight-color: rgba(0,0,0,0.1);
-                tap-highlight-color: rgba(0,0,0,0.1);
-            }
-            
-            img[onclick]:active, div[onclick]:active {
-                transform: scale(0.98);
-                opacity: 0.7;
-            }
+        .fine-text {
+            color: #7cb9e8;
         }
 
-        /* 텍스트 요소들 모바일 최적화 */
-        .dynamic-text {
-            font-size: clamp(12px, 3vw, 24px);
-        }
-        
-        /* 차트 컨테이너 반응형 */
-        #portfolioChart {
-            max-width: 100%;
-            max-height: 100%;
+        .u-text {
+            color: #ffd700;
         }
 
-        /* 완전 반응형 글자 크기 최적화 */
-        
-        /* 매우 큰 화면 (1200px+) */
-        @media (min-width: 1200px) {
-            #cashAmount {
-                font-size: 80px !important;
-            }
-            
-            #investmentList {
-                font-size: 60px !important;
-            }
-        }
-        
-        /* 데스크톱 화면 (992px - 1199px) */
-        @media (min-width: 992px) and (max-width: 1199px) {
-            #cashAmount {
-                font-size: clamp(60px, 6vw, 75px) !important;
-            }
-            
-            #investmentList {
-                font-size: clamp(45px, 4.5vw, 55px) !important;
-            }
-        }
-        
-        /* 태블릿 화면 (768px - 991px) */
-        @media (min-width: 768px) and (max-width: 991px) {
-            #cashAmount {
-                font-size: clamp(35px, 8vw, 65px) !important;
-            }
-            
-            #investmentList {
-                font-size: clamp(28px, 6vw, 50px) !important;
-            }
-            
-            #investmentList div {
-                padding: 8px 0 !important;
-                line-height: 1.2 !important;
-            }
+        .notification-icon {
+            width: 24px;
+            height: 24px;
+            color: #ffd700;
+            font-size: 20px;
+            cursor: pointer;
         }
 
-        /* 모바일 대형 화면 (481px - 767px) */
-        @media (min-width: 481px) and (max-width: 767px) {
-            #cashAmount {
-                font-size: clamp(32px, 9vw, 55px) !important;
-            }
-            
-            #investmentList {
-                font-size: clamp(24px, 7vw, 45px) !important;
-            }
-            
-            #investmentList div {
-                padding: 10px 0 !important;
-                line-height: 1.1 !important;
-            }
+        /* 메인 콘텐츠 */
+        .main-content {
+            padding: 70px 20px 80px;
+            max-width: 400px;
+            margin: 0 auto;
         }
 
-        /* 모바일 중형 화면 (376px - 480px) */
-        @media (min-width: 376px) and (max-width: 480px) {
-            #cashAmount {
-                font-size: clamp(28px, 10vw, 45px) !important;
-            }
-            
-            #investmentList {
-                font-size: clamp(20px, 8vw, 38px) !important;
-            }
-            
-            #investmentList div {
-                padding: 12px 0 !important;
-                line-height: 1.0 !important;
-            }
+        /* 프로필 섹션 */
+        .profile-section {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: relative;
         }
 
-        /* 모바일 소형 화면 (320px - 375px) */
-        @media (max-width: 375px) {
-            #cashAmount {
-                font-size: clamp(24px, 11vw, 40px) !important;
-            }
-            
-            #investmentList {
-                font-size: clamp(18px, 9vw, 32px) !important;
-            }
-            
-            #investmentList div {
-                padding: 14px 0 !important;
-                line-height: 0.9 !important;
-            }
+        .profile-header-text,
+        .assets-header,
+        .portfolio-header {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 20px 0 10px 0;
+            color: #333;
+            padding-left: 5px;
         }
 
-        /* 동적 텍스트 스타일 */
-        .dynamic-text {
+        .profile-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .profile-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            background: #e3f2fd;
+            border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: "Jalnan2", "Malgun Gothic", sans-serif;
+            margin-right: 15px;
+            font-size: 40px;
+            position: relative;
+            background-image: url('images/PROFILE.png');
+            background-size: cover;
+            background-position: center;
+        }
+
+        .level-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #333;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
             font-weight: bold;
-            color: #333;
-            text-align: center;
         }
 
-        /* 메시지 컨테이너 */
-        .message-container {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 100;
-            width: 90%;
-            max-width: 400px;
+        .profile-details h3 {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
         }
 
-        .message {
-            padding: 12px 16px;
-            border-radius: 8px;
-            margin-bottom: 8px;
+        .nim-text {
+            color: #666;
             font-size: 14px;
-            font-weight: 500;
-            animation: slideDown 0.3s ease-out;
+            font-weight: normal;
+            margin-left: 2px;
         }
 
-        .message.success {
-            background: #DCFCE7;
-            border: 1px solid #86EFAC;
-            color: #166534;
+        .user-grade {
+            margin-bottom: 8px;
         }
 
-        .message.error {
-            background: #FEE2E2;
-            border: 1px solid #FCA5A5;
-            color: #DC2626;
+        .grade-image {
+            height: 20px;
+            width: auto;
+            object-fit: contain;
         }
 
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
+        .profile-details p {
+            color: #333;
+            font-size: 12px;
+        }
+
+        .days-number {
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .settings-icon {
+            color: #666;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        /* 자산 섹션 */
+        .assets-section {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .assets-header {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 20px 0 10px 0;
+            color: #333;
+            padding-left: 5px;
+        }
+
+        .total-assets {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .star-icon {
+            color: #ffd700;
+            margin-right: 10px;
+            font-size: 20px;
+        }
+
+        .asset-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .asset-item:last-child {
+            border-bottom: none;
+        }
+
+        .asset-name {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .asset-details {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .asset-change {
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .asset-change.positive {
+            color: #ff6b6b;
+        }
+
+        .asset-change.negative {
+            color: #4ecdc4;
+        }
+
+        /* 포트폴리오 섹션 */
+        .portfolio-section {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .portfolio-header {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 20px 0 10px 0;
+            color: #333;
+            padding-left: 5px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 200px;
+            margin-bottom: 20px;
+        }
+
+        .chart-legend {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+
+        .legend-dot.stock {
+            background: #ffb3ba;
+        }
+
+        .legend-dot.cash {
+            background: #bae1ff;
+        }
+
+        .legend-dot.savings {
+            background: #ffffba;
+        }
+
+        .legend-dot.other {
+            background: #baffc9;
+        }
+
+        /* 하단 네비게이션 */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 70px;
+    background: white;
+    background-image: url('images/배경.png');
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+    z-index: 100;
+}
+
+/* 중앙 반원 돌출 부분 추가 */
+.bottom-nav::before {
+    content: '';
+    position: absolute;
+    top: -32px; /* 원의 일부가 네비게이션 바에 가려지도록 */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 65px; /* 원의 지름 */
+    height: 65px; /* 원의 지름 */
+    background: white;
+    background-image: url('images/배경.png');
+    background-size: cover;
+    background-position: center;
+    border-radius: 50%; /* 완전한 원 */
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+    z-index: -1;
+}
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 8px;
+        }
+
+        .nav-item.active {
+            color: #7cb9e8;
+        }
+
+        .nav-icon {
+            font-size: 18px;
+            margin-bottom: 4px;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-icon img {
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
+        }
+
+        .nav-label {
+            font-size: 10px;
+        }
+
+        .black-button {
+            width: 55px;
+            height: 55px;
+            background: #333;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            top: -35px;
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .black-button:hover {
+            transform: scale(1.1);
+        }
+
+        /* 반응형 */
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 70px 15px 80px;
             }
-            to {
-                opacity: 1;
-                transform: translateY(0);
+            
+            .total-assets {
+                font-size: 20px;
+            }
+            
+            .profile-avatar {
+                width: 70px;
+                height: 70px;
+                font-size: 35px;
             }
         }
 
@@ -379,7 +426,7 @@
             width: 20px;
             height: 20px;
             border: 3px solid #f3f3f3;
-            border-top: 3px solid #3498db;
+            border-top: 3px solid #7cb9e8;
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -388,961 +435,223 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-
-        .firebase-status {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 10px;
-            font-weight: bold;
-            color: white;
-            z-index: 1000;
-        }
-
-        .firebase-connected {
-            background-color: #10B981;
-        }
-
-        .firebase-error {
-            background-color: #EF4444;
-        }
-
-        .firebase-loading {
-            background-color: #F59E0B;
-        }
-
-        .debug-info {
-            position: fixed;
-            bottom: 10px;
-            left: 10px;
-            background: rgba(0,0,0,0.8);
-            color: white;
-            padding: 8px;
-            border-radius: 8px;
-            font-size: 10px;
-            max-width: 250px;
-            z-index: 1000;
-        }
-
-        /* 레벨 시스템 스타일 */
-        .level-yellow { background: linear-gradient(135deg, #FCD34D, #F59E0B); }
-        .level-orange { background: linear-gradient(135deg, #FB923C, #EA580C); }
-        .level-green { background: linear-gradient(135deg, #34D399, #059669); }
-        .level-blue { background: linear-gradient(135deg, #60A5FA, #2563EB); }
-        .level-brown { background: linear-gradient(135deg, #A16207, #92400E); }
-        .level-black { background: linear-gradient(135deg, #374151, #111827); }
-        .level-red { background: linear-gradient(135deg, #EF4444, #DC2626); }
-
-        /* 모달 스타일 */
-        .modal {
-            backdrop-filter: blur(10px);
-        }
-
-        .profile-image {
-            width: 80px;
-            height: 80px;
-            border-radius: 16px;
-            object-fit: cover;
-            border: 3px solid #e5e7eb;
-        }
-
-        /* 숨김 클래스 */
-        .hidden {
-            display: none !important;
-        }
     </style>
 </head>
 <body>
-
-<!-- Firebase 연결 상태 -->
-<div id="firebaseStatus" class="firebase-status firebase-loading">
-    <i class="fas fa-database"></i> 초기화 중...
-</div>
-
-<!-- 디버그 정보 -->
-<div id="debugInfo" class="debug-info">
-    Firebase Realtime Database 초기화 대기 중...
-</div>
-
-<!-- 메인 화면 - 레이어 배경 모바일 최적화 -->
-<div id="mainScreen">
-    <!-- 반응형 컨테이너로 개선 -->
-    <div class="responsive-container">
-        <!-- 반응형 테이블 구조 -->
-        <table class="main-table" border="0" cellpadding="0" cellspacing="0">
-            <!-- 테이블 내부에 모든 요소를 절대 위치로 배치 -->
-            <tr>
-                <td style="position: relative; width: 100%; height: 2436px; background: #f8f9fa;">
-                    
-                    <!-- 레이어 배경 이미지 (배경 바로 위에 씌우는 레이어) -->
-                    <img src="images/레이어.png" style="position: absolute; top: 3px; left: 3px; width: 100%; height: 100%; object-fit: cover; z-index: 970;" alt="레이어" loading="eager">
-                    
-                    <!-- 상단 아이콘들 -->
-                    <!-- 똑부리 프로필 아이콘 (크기 증가) -->
-                    <img src="images/똑부리.png" style="position: absolute; left: 5.8%; top: 7.9%; width: 12.5%; height: 5.8%; z-index: 990; cursor: pointer;" alt="똑부리" onclick="openProfileMenu()" loading="eager">
-                    
-                    <!-- 빛 반사 효과 -->
-                    <img src="images/빛 반사.png" style="position: absolute; left: 29.5%; top: 7.8%; width: 41.5%; height: 6.3%; z-index: 989;" alt="빛 반사" loading="eager">
-                    
-                    <!-- 알림 -->
-                    <img src="images/알림.png" style="position: absolute; left: 85.6%; top: 8.6%; width: 8.5%; height: 4.7%; z-index: 988; cursor: pointer;" alt="알림" onclick="showNotifications()" loading="eager">
-                    
-                    <!-- 프로필 섹션 -->
-                    <!-- PROFILE 이미지 -->
-                    <img src="images/PROFILE.png" style="position: absolute; left: 6.8%; top: 18.9%; width: 59.6%; height: 16.2%; z-index: 987;" alt="PROFILE" loading="eager">
-                    
-                    <!-- 프로필 배경 -->
-                    <img src="images/사각형.png" style="position: absolute; left: 6.5%; top: 23.3%; width: 87.8%; height: 14.2%; z-index: 984;" alt="프로필 배경" loading="eager">
-                    
-                    <!-- 프로필 이미지 (레이어 1) -->
-                    <img src="images/레이어 1.png" style="position: absolute; left: 11.6%; top: 25.0%; width: 22.8%; height: 10.6%; z-index: 986; cursor: pointer;" alt="프로필 이미지" onclick="openProfileSettings()" loading="eager">
-                    
-                    <!-- 환경설정 -->
-                    <img src="images/환경설정.png" style="position: absolute; left: 84.5%; top: 25.2%; width: 5.2%; height: 2.5%; z-index: 985; cursor: pointer;" alt="환경설정" onclick="showSettings()" loading="eager">
-                    
-                    <!-- 자산 섹션 -->
-                    <!-- ASSETS 이미지 -->
-                    <img src="images/ASSETS.png" style="position: absolute; left: 6.6%; top: 40.1%; width: 18.0%; height: 9.8%; z-index: 983;" alt="ASSETS" loading="eager">
-                    
-                    <!-- 자산 배경 (동적으로 높이 조정) -->
-                    <img id="assetBackground" src="images/사각형.png" style="position: absolute; left: 6.8%; top: 44.6%; width: 87.8%; height: 14.2%; z-index: 979;" alt="자산 배경" loading="eager">
-                    
-                    <!-- 현금 보유량 (실제 데이터) - 대폭 증가된 반응형 글자 크기 -->
-                    <div style="position: absolute; left: 22.2%; top: 47.0%; width: 33.3%; height: 2.1%; z-index: 982; font-size: clamp(28px, 7vw, 80px); font-family: 'Jalnan2', 'Malgun Gothic', sans-serif; color: #333333; text-align: left; line-height: 1.2; white-space: pre-wrap; display: flex; align-items: center; font-weight: 900;">
-                        <span id="cashAmount">₩10,000,000</span>
-                    </div>
-                    
-                    <!-- 투자 자산 리스트 (동적으로 생성) - 위치 조정, 대폭 증가된 반응형 글자 크기 -->
-                    <div id="investmentList" style="position: absolute; left: 11.6%; top: 52.5%; width: 77.7%; z-index: 981; font-size: clamp(22px, 5.5vw, 60px); font-family: 'Jalnan2', 'Malgun Gothic', sans-serif; color: #333333;">
-                        <!-- 동적으로 생성되는 투자 자산 목록 -->
-                    </div>
-                    
-                    <!-- 포트폴리오 섹션 -->
-                    <!-- 포트폴리오 제목 이미지 -->
-                    <img src="images/PORTFOLIO.png" style="position: absolute; left: 6.9%; top: 61.5%; width: 26.3%; height: 1.9%; z-index: 988;" alt="포트폴리오" loading="eager">
-                    
-                    <!-- 포트폴리오 배경 -->
-                    <img src="images/사각형.png" style="position: absolute; left: 7.4%; top: 66.0%; width: 87.7%; height: 20.2%; z-index: 976;" alt="포트폴리오 배경" loading="eager">
-                    
-                    <!-- 포트폴리오 차트 -->
-                    <div style="position: absolute; left: 33.2%; top: 67.6%; width: 36.3%; height: 16.8%; z-index: 978;">
-                        <canvas id="portfolioChart" style="width: 100%; height: 100%;"></canvas>
-                    </div>
-                    
-                    <!-- BLACK 원형 요소 -->
-                    <img src="images/BLACK.png" style="position: absolute; left: 42.3%; top: 86.1%; width: 16.0%; height: 7.4%; z-index: 975;" alt="BLACK" loading="eager">
-                    
-                    <!-- 하단 네비게이션 (메페.html과 동일한 위치) -->
-                    <!-- 집 -->
-                    <img src="images/집.png" style="position: absolute; left: 8.9%; top: 91.5%; width: 8.4%; height: 3.9%; z-index: 974; cursor: pointer;" alt="홈" onclick="goHome()" loading="eager">
-                    
-                    <!-- 문서 -->
-                    <img src="images/문서.png" style="position: absolute; left: 28.0%; top: 91.5%; width: 6.8%; height: 3.9%; z-index: 973; cursor: pointer;" alt="문서" onclick="showDocuments()" loading="eager">
-                    
-                    <!-- 채팅 -->
-                    <img src="images/채팅.png" style="position: absolute; left: 64.7%; top: 91.7%; width: 8.3%; height: 3.8%; z-index: 972; cursor: pointer;" alt="채팅" onclick="openChat()" loading="eager">
-                    
-                    <!-- 더보기 -->
-                    <img src="images/더보기.png" style="position: absolute; left: 84.5%; top: 93.4%; width: 5.3%; height: 0.5%; z-index: 971; cursor: pointer;" alt="더보기" onclick="showMoreMenu()" loading="eager">
-                    
-                </td>
-            </tr>
-        </table>
+    <!-- 헤더 -->
+    <div class="header">
+        <i class="fas fa-power-off power-icon" onclick="logout()"></i>
+        <div class="fine-u-logo">
+            <img src="images/레이어 1.png" alt="FINE U 로고" class="logo-image">
+        </div>
+        <i class="fas fa-bell notification-icon" onclick="showNotifications()"></i>
     </div>
-</div>
 
-<!-- 프로필 메뉴 모달 -->
-<div id="profileMenuModal" class="fixed inset-0 bg-black bg-opacity-50 modal hidden z-50">
-    <div class="flex items-center justify-center min-h-screen">
-        <div class="bg-white rounded-2xl w-full max-w-sm mx-4 p-6">
-            <div class="text-center mb-6">
-                <div class="relative inline-block mb-4">
-                    <img src="images/똑부리.png" alt="똑부리" class="w-20 h-20 mx-auto rounded-2xl">
+    <!-- 메인 콘텐츠 -->
+    <div class="main-content">
+        <!-- 프로필 제목 -->
+        <div class="profile-header-text">PROFILE</div>
+        
+        <!-- 프로필 섹션 -->
+        <div class="profile-section">
+            <div class="profile-header">
+                <div class="profile-info">
+                    <div class="profile-avatar">
+                    </div>
+                    <div class="profile-details">
+                        <div class="user-grade">
+                            <img src="images/BLACK.png" alt="등급" class="grade-image">
+                        </div>
+                        <h3><span id="userName">똑부리</span><span class="nim-text">님</span></h3>
+                        <p>FINE U와 함께한지 <span id="daysWithFineU" class="days-number">30</span>일</p>
+                    </div>
                 </div>
-                <h3 class="text-xl font-bold" id="profileMenuUserName">사용자</h3>
-                <p class="text-sm text-gray-500" id="profileMenuUserId">ID: user</p>
+                <i class="fas fa-cog settings-icon" onclick="showSettings()"></i>
             </div>
+        </div>
+
+        <!-- 자산 제목 -->
+        <div class="assets-header">ASSETS</div>
+        
+        <!-- 자산 섹션 -->
+        <div class="assets-section">
             
-            <div class="space-y-3">
-                <button onclick="openProfileSettings()" 
-                        class="w-full bg-blue-500 text-white py-3 rounded-xl font-semibold flex items-center justify-center">
-                    <i class="fas fa-user-edit mr-2"></i>
-                    프로필 설정
-                </button>
-                
-                <button onclick="showSettings()" 
-                        class="w-full bg-gray-500 text-white py-3 rounded-xl font-semibold flex items-center justify-center">
-                    <i class="fas fa-cog mr-2"></i>
-                    환경설정
-                </button>
-                
-                <button onclick="performLogout()" 
-                        class="w-full bg-red-500 text-white py-3 rounded-xl font-semibold flex items-center justify-center">
-                    <i class="fas fa-sign-out-alt mr-2"></i>
-                    로그아웃
-                </button>
+            <div class="total-assets">
+                <i class="fas fa-star star-icon"></i>
+                <span id="totalAssets">19,990,102</span>
             </div>
+
+            <div class="asset-item">
+                <div>
+                    <div class="asset-name">삼성전자</div>
+                    <div class="asset-details">(100주)</div>
+                </div>
+                <div class="asset-change positive">+1.8%</div>
+            </div>
+
+            <div class="asset-item">
+                <div>
+                    <div class="asset-name">현대의망적금</div>
+                    <div class="asset-details">(3.0%)</div>
+                </div>
+                <div class="asset-change positive">+1.8%</div>
+            </div>
+        </div>
+
+        <!-- 포트폴리오 제목 -->
+        <div class="portfolio-header">PORTFOLIO</div>
+        
+        <!-- 포트폴리오 섹션 -->
+        <div class="portfolio-section">
             
-            <div class="mt-6">
-                <button onclick="hideProfileMenu()" 
-                        class="w-full bg-gray-300 text-gray-700 py-3 rounded-xl font-semibold">
-                    취소
-                </button>
+            <div class="chart-container">
+                <canvas id="portfolioChart"></canvas>
+            </div>
+
+            <div class="chart-legend">
+                <div class="legend-item">
+                    <div class="legend-dot stock"></div>
+                    <span>주식</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot cash"></div>
+                    <span>현금</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot savings"></div>
+                    <span>적금</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot other"></div>
+                    <span>기타</span>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- 프로필 설정 모달 -->
-<div id="profileModal" class="fixed inset-0 bg-black bg-opacity-50 modal hidden z-50">
-    <div class="flex items-center justify-center min-h-screen">
-        <div class="bg-white rounded-2xl w-full max-w-sm mx-4 p-6">
-            <div class="text-center mb-6">
-                <h3 class="text-xl font-bold">프로필 설정</h3>
+    <!-- 하단 네비게이션 -->
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="goToPage('a1.html')">
+            <div class="nav-icon">
+                <img src="images/집.png" alt="홈">
             </div>
-            <div class="text-center mb-6">
-                <div class="relative inline-block">
-                    <img id="modalProfileImage" src="" alt="Profile" class="profile-image hidden mx-auto">
-                    <div id="modalProfilePlaceholder" class="w-20 h-20 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto">
-                        <i class="fas fa-user text-blue-400 text-2xl"></i>
-                    </div>
-                    <button onclick="uploadProfileImage()" class="absolute -bottom-1 -right-1 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
-                        <i class="fas fa-camera text-white text-xs"></i>
-                    </button>
-                </div>
-                <p class="mt-2 text-sm text-gray-500">프로필 사진을 변경하려면 카메라 버튼을 클릭하세요</p>
+        </div>
+        <div class="nav-item" onclick="goToPage('a2.html')">
+            <div class="nav-icon">
+                <img src="images/문서.png" alt="문서">
             </div>
-            <div class="space-y-4 mb-6">
-                <input type="text" id="modalUserName" placeholder="이름" 
-                       class="w-full px-4 py-3 border border-gray-300 rounded-lg">
+        </div>
+        <div class="black-button">BLACK</div>
+        <div class="nav-item" onclick="goToPage('a4.html')">
+            <div class="nav-icon">
+                <img src="images/채팅.png" alt="채팅">
             </div>
-            <div class="grid grid-cols-2 gap-4">
-                <button onclick="hideProfileModal()" 
-                        class="bg-gray-300 text-gray-700 py-3 rounded-xl font-semibold">
-                    취소
-                </button>
-                <button onclick="updateProfile()" 
-                        class="bg-blue-500 text-white py-3 rounded-xl font-semibold">
-                    저장
-                </button>
+        </div>
+        <div class="nav-item" onclick="goToPage('a5.html')">
+            <div class="nav-icon">
+                <img src="images/더보기.png" alt="더보기">
             </div>
         </div>
     </div>
-</div>
 
-<!-- 메시지 컨테이너 -->
-<div id="messageContainer" class="message-container"></div>
+    <script>
+        // 전역 변수
+        let currentUser = null;
+        let portfolioChart = null;
 
-<script>
-// Firebase 설정 - Realtime Database
-const firebaseConfig = {
-  apiKey: "AIzaSyApKJHvNXftrzXAZsH41FxqVj0_Byh_V28",
-  authDomain: "invest-97aa7.firebaseapp.com",
-  databaseURL: "https://invest-97aa7-default-rtdb.firebaseio.com",
-  projectId: "invest-97aa7",
-  storageBucket: "invest-97aa7.firebasestorage.app",
-  messagingSenderId: "136719207030",
-  appId: "1:136719207030:web:391bd46b7b79800c0fed57",
-  measurementId: "G-78K35WTPGQ"
-};
-
-// Firebase 초기화
-firebase.initializeApp(firebaseConfig);
-const database = firebase.database();
-const auth = firebase.auth();
-
-// 전역 변수
-var currentUser = null;
-var userAssets = {};
-var userLevel = 'yellow';
-var userExp = 0;
-var totalAssets = 10000000;
-var cash = 10000000;
-var portfolioChart = null;
-var firebaseConnected = false;
-var autoSaveInterval = null;
-var debugMode = false;
-
-// 레벨 시스템 설정
-var levelSystem = {
-    yellow: { 
-        name: 'YELLOW', 
-        exp: 0, 
-        max: 3000, 
-        class: 'level-yellow',
-        gradient: 'linear-gradient(135deg, #ff9800 0%, #f57c00 100%)',
-        color: '#ff9800'
-    },
-    orange: { 
-        name: 'ORANGE', 
-        exp: 3000, 
-        max: 6000, 
-        class: 'level-orange',
-        gradient: 'linear-gradient(135deg, #FF6B35 0%, #E55100 100%)',
-        color: '#FF6B35'
-    },
-    green: { 
-        name: 'GREEN', 
-        exp: 6000, 
-        max: 10000, 
-        class: 'level-green',
-        gradient: 'linear-gradient(135deg, #4CAF50 0%, #388E3C 100%)',
-        color: '#4CAF50'
-    },
-    blue: { 
-        name: 'BLUE', 
-        exp: 10000, 
-        max: 15000, 
-        class: 'level-blue',
-        gradient: 'linear-gradient(135deg, #2196F3 0%, #1565C0 100%)',
-        color: '#2196F3'
-    },
-    brown: { 
-        name: 'BROWN', 
-        exp: 15000, 
-        max: 25000, 
-        class: 'level-brown',
-        gradient: 'linear-gradient(135deg, #8D6E63 0%, #5D4037 100%)',
-        color: '#8D6E63'
-    },
-    black: { 
-        name: 'BLACK', 
-        exp: 25000, 
-        max: 50000, 
-        class: 'level-black',
-        gradient: 'linear-gradient(135deg, #424242 0%, #212121 100%)',
-        color: '#424242'
-    },
-    red: { 
-        name: 'RED', 
-        exp: 50000, 
-        max: 100000, 
-        class: 'level-red',
-        gradient: 'linear-gradient(135deg, #f44336 0%, #d32f2f 100%)',
-        color: '#f44336'
-    }
-};
-
-// 디버그 정보 업데이트
-function updateDebugInfo(message) {
-    if (debugMode) {
-        var debugInfo = document.getElementById('debugInfo');
-        var timestamp = new Date().toLocaleTimeString();
-        debugInfo.innerHTML = '[' + timestamp + '] ' + message;
-    }
-    console.log('[DEBUG]', message);
-}
-
-// 메시지 표시 함수
-function showMessage(message, type) {
-    var container = document.getElementById('messageContainer');
-    var messageDiv = document.createElement('div');
-    messageDiv.className = type === 'error' ? 'message error' : 'message success';
-    messageDiv.textContent = message;
-    
-    container.innerHTML = '';
-    container.appendChild(messageDiv);
-    
-    // 5초 후 메시지 제거
-    setTimeout(function() {
-        if (messageDiv.parentNode) {
-            messageDiv.parentNode.removeChild(messageDiv);
-        }
-    }, 5000);
-}
-
-// Firebase 연결 상태 업데이트
-function updateFirebaseStatus(status, message) {
-    var statusElement = document.getElementById('firebaseStatus');
-    
-    switch(status) {
-        case 'connected':
-            statusElement.className = 'firebase-status firebase-connected';
-            statusElement.innerHTML = '<i class="fas fa-database"></i> 연결됨';
-            firebaseConnected = true;
-            break;
-        case 'error':
-            statusElement.className = 'firebase-status firebase-error';
-            statusElement.innerHTML = '<i class="fas fa-database"></i> 오류';
-            firebaseConnected = false;
-            break;
-        case 'loading':
-            statusElement.className = 'firebase-status firebase-loading';
-            statusElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 로딩';
-            break;
-    }
-    
-    if (message) {
-        updateDebugInfo('Firebase: ' + message);
-    }
-}
-
-// Firebase Realtime Database 초기화
-async function initializeFirebase() {
-    try {
-        updateDebugInfo('Firebase Realtime Database 초기화 시작...');
-        updateFirebaseStatus('loading', 'Firebase 초기화 중...');
-        
-        // 연결 상태 확인
-        var connectedRef = database.ref('.info/connected');
-        connectedRef.on('value', function(snapshot) {
-            if (snapshot.val() === true) {
-                updateDebugInfo('Firebase Realtime Database 연결 성공');
-                updateFirebaseStatus('connected', 'Realtime Database 연결 성공');
-                firebaseConnected = true;
-            } else {
-                updateDebugInfo('Firebase Realtime Database 연결 끊어짐');
-                updateFirebaseStatus('error', 'Realtime Database 연결 끊어짐');
-                firebaseConnected = false;
-            }
-        });
-        
-        return true;
-        
-    } catch (error) {
-        updateDebugInfo('Firebase 초기화 실패: ' + error.message);
-        updateFirebaseStatus('error', 'Firebase 초기화 실패: ' + error.message);
-        firebaseConnected = false;
-        
-        return false;
-    }
-}
-
-// 사용자 데이터 로드
-function loadUserData() {
-    try {
-        var savedUser = localStorage.getItem('fineu_current_user');
-        if (savedUser) {
-            currentUser = JSON.parse(savedUser);
-            
-            userLevel = currentUser.level || 'yellow';
-            userExp = currentUser.exp || 0;
-            totalAssets = currentUser.totalAssets || 10000000;
-            cash = currentUser.cash || 10000000;
-            userAssets = currentUser.portfolio || {};
-            
-            updateDebugInfo('사용자 데이터 로드 완료: ' + currentUser.id);
-            updateDisplay();
-            
-            return true;
-        } else {
-            updateDebugInfo('저장된 사용자 데이터 없음');
-            // 로그인 페이지로 리다이렉트
-            window.location.href = 'index.html';
-            return false;
-        }
-    } catch (error) {
-        updateDebugInfo('사용자 데이터 로드 오류: ' + error.message);
-        window.location.href = 'index.html';
-        return false;
-    }
-}
-
-// 디스플레이 업데이트
-function updateDisplay() {
-    try {
-        // 현금 보유량 업데이트 (실제 데이터)
-        var cashAmountElement = document.getElementById('cashAmount');
-        if (cashAmountElement) {
-            cashAmountElement.textContent = '₩' + cash.toLocaleString();
-        }
-        
-        // 포트폴리오 차트 업데이트
-        updatePortfolioChart();
-        
-        // 투자 자산 리스트 업데이트 (실제 데이터 사용)
-        updateInvestmentList();
-        
-        // 자산 배경 크기 동적 조정
-        updateAssetBackground();
-        
-        updateDebugInfo('디스플레이 업데이트 완료 - 현금: ₩' + cash.toLocaleString());
-        
-    } catch (error) {
-        console.error('디스플레이 업데이트 오류:', error);
-        updateDebugInfo('디스플레이 업데이트 오류: ' + error.message);
-    }
-}
-
-// 투자 자산 리스트 업데이트 (Firebase 실제 데이터 사용)
-function updateInvestmentList() {
-    try {
-        var investmentListElement = document.getElementById('investmentList');
-        if (!investmentListElement) return;
-        
-        var html = '';
-        var yPosition = 0;
-        var itemSpacing = 75; // 간격을 75px로 증가 (글자 크기 증가에 맞춤)
-        
-        // Firebase에서 실제 투자 데이터 가져오기
-        if (currentUser && currentUser.investments && currentUser.investments.length > 0) {
-            currentUser.investments.forEach(function(investment, index) {
-                var changeColor = investment.change >= 0 ? '#28a745' : '#dc3545';
-                var changeSign = investment.change >= 0 ? '+' : '';
-                var profitValue = investment.change || investment.profit || 0;
-                
-                html += '<div style="position: absolute; top: ' + yPosition + 'px; left: 0; width: 100%; height: 60px; display: flex; align-items: center; justify-content: space-between; line-height: 1.2; padding: 10px 0;">';
-                html += '<span style="font-weight: 600; font-size: clamp(20px, 5vw, 55px);">' + investment.name;
-                if (investment.quantity) {
-                    html += ' (' + investment.quantity + '주)';
-                }
-                html += '</span>';
-                html += '<span style="color: ' + changeColor + '; font-weight: bold; font-size: clamp(22px, 5.5vw, 60px);">' + changeSign + profitValue + '%</span>';
-                html += '</div>';
-                
-                yPosition += itemSpacing;
-            });
-        } else if (currentUser && currentUser.stocks) {
-            // 다른 구조의 투자 데이터 확인
-            Object.keys(currentUser.stocks).forEach(function(stockName, index) {
-                var stock = currentUser.stocks[stockName];
-                var changeColor = stock.change >= 0 ? '#28a745' : '#dc3545';
-                var changeSign = stock.change >= 0 ? '+' : '';
-                
-                html += '<div style="position: absolute; top: ' + yPosition + 'px; left: 0; width: 100%; height: 60px; display: flex; align-items: center; justify-content: space-between; line-height: 1.2; padding: 10px 0;">';
-                html += '<span style="font-weight: 600; font-size: clamp(20px, 5vw, 55px);">' + stockName + ' (' + stock.quantity + '주)</span>';
-                html += '<span style="color: ' + changeColor + '; font-weight: bold; font-size: clamp(22px, 5.5vw, 60px);">' + changeSign + stock.change + '%</span>';
-                html += '</div>';
-                
-                yPosition += itemSpacing;
-            });
-        } else {
-            // Firebase에서 실제 데이터가 없는 경우 빈 상태로 유지
-            html += '<div style="position: absolute; top: 0px; left: 0; width: 100%; height: 60px; display: flex; align-items: center; justify-content: center; line-height: 1.2; padding: 10px 0; color: #999;">';
-            html += '<span style="font-style: italic; font-size: clamp(18px, 4.5vw, 45px);">투자 자산 정보를 불러오는 중...</span>';
-            html += '</div>';
-            yPosition = 60;
-        }
-        
-        investmentListElement.innerHTML = html;
-        investmentListElement.style.height = Math.max(60, yPosition) + 'px';
-        
-        updateDebugInfo('투자 자산 리스트 업데이트 완료 - 실제 데이터만 표시');
-        
-    } catch (error) {
-        console.error('투자 자산 리스트 업데이트 오류:', error);
-        updateDebugInfo('투자 자산 리스트 업데이트 오류: ' + error.message);
-    }
-}
-
-// 자산 배경 크기 동적 조정
-function updateAssetBackground() {
-    try {
-        var assetBackground = document.getElementById('assetBackground');
-        var investmentList = document.getElementById('investmentList');
-        
-        if (!assetBackground || !investmentList) return;
-        
-        // 투자 자산 개수에 따라 배경 높이 조정
-        var investmentCount = 2; // 기본값
-        if (currentUser && currentUser.investments && currentUser.investments.length > 0) {
-            investmentCount = Math.max(2, currentUser.investments.length);
-        } else if (currentUser && currentUser.stocks) {
-            investmentCount = Math.max(2, Object.keys(currentUser.stocks).length);
-        }
-        
-        // 기본 높이 + 투자 항목당 추가 높이 (글자 크기 증가에 따른 조정)
-        var baseHeight = 250; // 기본 높이 증가
-        var itemHeight = 70; // 아이템당 높이 증가 (글자 크기에 맞춰 조정)
-        var newHeight = baseHeight + (investmentCount * itemHeight);
-        
-        assetBackground.style.height = newHeight + 'px';
-        
-        updateDebugInfo('자산 배경 높이 조정: ' + newHeight + 'px (항목 수: ' + investmentCount + ')');
-        
-    } catch (error) {
-        console.error('자산 배경 조정 오류:', error);
-        updateDebugInfo('자산 배경 조정 오류: ' + error.message);
-    }
-}
-
-// 포트폴리오 차트 업데이트 (실제 데이터만 사용)
-function updatePortfolioChart() {
-    try {
-        var canvas = document.getElementById('portfolioChart');
-        if (!canvas) return;
-        
-        if (portfolioChart) {
-            portfolioChart.destroy();
-        }
-        
-        var ctx = canvas.getContext('2d');
-        
-        // 실제 Firebase 데이터만 사용
-        var data = [];
-        
-        // 현금은 항상 표시
-        if (cash > 0) {
-            data.push({ label: '현금', value: cash, color: '#6B7280' });
-        }
-        
-        // 실제 투자 데이터가 있는 경우만 추가
-        if (currentUser && currentUser.investments && currentUser.investments.length > 0) {
-            currentUser.investments.forEach(function(investment) {
-                if (investment.value && investment.value > 0) {
-                    data.push({ 
-                        label: investment.name, 
-                        value: investment.value, 
-                        color: investment.color || '#3B82F6' 
-                    });
-                }
-            });
-        } else if (currentUser && currentUser.stocks) {
-            Object.keys(currentUser.stocks).forEach(function(stockName) {
-                var stock = currentUser.stocks[stockName];
-                if (stock.value && stock.value > 0) {
-                    data.push({ 
-                        label: stockName, 
-                        value: stock.value, 
-                        color: stock.color || '#3B82F6' 
-                    });
-                }
-            });
-        }
-        
-        // 데이터가 현금만 있거나 없는 경우 차트를 그리지 않음
-        if (data.length <= 1) {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#999';
-            ctx.font = '16px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText('포트폴리오 데이터 없음', canvas.width / 2, canvas.height / 2);
-            return;
-        }
-        
-        portfolioChart = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: data.map(item => item.label),
-                datasets: [{
-                    data: data.map(item => item.value),
-                    backgroundColor: data.map(item => item.color),
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                },
-                cutout: '60%'
-            }
-        });
-        
-    } catch (error) {
-        updateDebugInfo('포트폴리오 차트 업데이트 오류: ' + error.message);
-    }
-}
-
-// 네비게이션 함수들
-function goToHome() {
-    updateDebugInfo('홈 버튼 클릭');
-    // 이미 메인 페이지이므로 아무것도 하지 않음
-}
-
-function goToDocuments() {
-    updateDebugInfo('문서 버튼 클릭');
-    window.location.href = 'a1_backup.html?v=' + Date.now(); // 투자 페이지
-}
-
-function showDocuments() {
-    updateDebugInfo('문서 버튼 클릭');
-    window.location.href = 'a1_backup.html?v=' + Date.now(); // 투자 페이지
-}
-
-function showCharts() {
-    updateDebugInfo('차트 버튼 클릭');
-    alert('차트 기능은 준비 중입니다.');
-}
-
-function openChat() {
-    updateDebugInfo('채팅 버튼 클릭');
-    alert('채팅 기능은 준비 중입니다.');
-}
-
-function showMoreMenu() {
-    updateDebugInfo('더보기 버튼 클릭');
-    alert('더보기 메뉴는 준비 중입니다.');
-}
-
-function showNotifications() {
-    updateDebugInfo('알림 버튼 클릭');
-    alert('알림 기능은 준비 중입니다.');
-}
-
-function showSettings() {
-    updateDebugInfo('환경설정 버튼 클릭');
-    alert('환경설정 기능은 준비 중입니다.');
-}
-
-function openProfileMenu() {
-    updateDebugInfo('똑부리 프로필 메뉴 클릭');
-    var modal = document.getElementById('profileMenuModal');
-    if (modal) {
-        modal.classList.remove('hidden');
-        
-        // 현재 사용자 정보 표시
-        var userNameElement = document.getElementById('profileMenuUserName');
-        var userIdElement = document.getElementById('profileMenuUserId');
-        
-        if (userNameElement && currentUser) {
-            userNameElement.textContent = currentUser.name || currentUser.id || '사용자';
-        }
-        
-        if (userIdElement && currentUser) {
-            userIdElement.textContent = 'ID: ' + (currentUser.id || 'user');
-        }
-    } else {
-        alert('프로필 메뉴 기능은 준비 중입니다.');
-    }
-}
-
-function hideProfileMenu() {
-    var modal = document.getElementById('profileMenuModal');
-    if (modal) {
-        modal.classList.add('hidden');
-    }
-}
-
-function openProfileSettings() {
-    updateDebugInfo('프로필 설정 클릭');
-    
-    // 프로필 메뉴 닫기
-    hideProfileMenu();
-    
-    var modal = document.getElementById('profileModal');
-    if (modal) {
-        modal.classList.remove('hidden');
-        
-        // 현재 사용자 정보로 모달 필드 채우기
-        var nameInput = document.getElementById('modalUserName');
-        if (nameInput && currentUser) {
-            nameInput.value = currentUser.name || currentUser.id || '';
-        }
-    } else {
-        alert('프로필 설정 기능은 준비 중입니다.');
-    }
-}
-
-function performLogout() {
-    updateDebugInfo('로그아웃 시도');
-    
-    if (confirm('정말 로그아웃 하시겠습니까?')) {
-        try {
-            // 로컬 저장소 정리
-            localStorage.removeItem('fineu_current_user');
-            
-            // 전역 변수 초기화
-            currentUser = null;
-            userAssets = {};
-            userLevel = 'yellow';
-            userExp = 0;
-            totalAssets = 10000000;
-            cash = 10000000;
-            
-            showMessage('로그아웃되었습니다.', 'success');
-            
-            updateDebugInfo('로그아웃 완료');
-            
-            // 1.5초 후 로그인 페이지로 이동
-            setTimeout(function() {
-                window.location.href = 'index.html';
-            }, 1500);
-            
-        } catch (error) {
-            updateDebugInfo('로그아웃 오류: ' + error.message);
-            showMessage('로그아웃 중 오류가 발생했습니다.', 'error');
-        }
-    }
-}
-
-function hideProfileModal() {
-    var modal = document.getElementById('profileModal');
-    if (modal) {
-        modal.classList.add('hidden');
-    }
-}
-
-function updateProfile() {
-    try {
-        var nameInput = document.getElementById('modalUserName');
-        if (nameInput && currentUser) {
-            var newName = nameInput.value.trim();
-            if (newName) {
-                currentUser.name = newName;
-                localStorage.setItem('fineu_current_user', JSON.stringify(currentUser));
-                updateDisplay();
-                hideProfileModal();
-                showMessage('프로필이 업데이트되었습니다.', 'success');
-            }
-        }
-    } catch (error) {
-        updateDebugInfo('프로필 업데이트 오류: ' + error.message);
-        showMessage('프로필 업데이트 중 오류가 발생했습니다.', 'error');
-    }
-}
-
-function uploadProfileImage() {
-    alert('프로필 이미지 업로드 기능은 준비 중입니다.');
-}
-
-// 스크롤 제한 함수
-function limitScroll() {
-    var container = document.querySelector('.responsive-container');
-    var table = document.querySelector('.main-table');
-    
-    if (container && table) {
-        container.addEventListener('scroll', function(e) {
-            var containerHeight = container.clientHeight;
-            var tableHeight = table.offsetHeight;
-            var currentScale = 1;
-            
-            // 현재 화면 크기에 따른 스케일 계산
-            var width = window.innerWidth;
-            if (width <= 320) {
-                currentScale = 0.28;
-            } else if (width <= 375) {
-                currentScale = 0.33;
-            } else if (width <= 480) {
-                currentScale = 0.35;
-            } else if (width <= 768) {
-                currentScale = 0.42;
-            } else if (width <= 1125) {
-                currentScale = 0.65;
-            }
-            
-            var scaledTableHeight = tableHeight * currentScale;
-            var maxScrollTop = Math.max(0, scaledTableHeight - containerHeight);
-            
-            // 스크롤 위치 제한
-            if (container.scrollTop > maxScrollTop) {
-                container.scrollTop = maxScrollTop;
-            }
-            
-            // 음수 스크롤 방지
-            if (container.scrollTop < 0) {
-                container.scrollTop = 0;
-            }
-        });
-        
-        // 터치 이벤트로 인한 과도한 스크롤 방지
-        var isScrolling = false;
-        container.addEventListener('touchstart', function() {
-            isScrolling = true;
-        });
-        
-        container.addEventListener('touchend', function() {
-            setTimeout(function() {
-                isScrolling = false;
-            }, 100);
-        });
-        
-        // 휠 이벤트 제한
-        container.addEventListener('wheel', function(e) {
-            var container = e.currentTarget;
-            var containerHeight = container.clientHeight;
-            var scrollHeight = container.scrollHeight;
-            var scrollTop = container.scrollTop;
-            
-            // 최하단에서 더 이상 아래로 스크롤 방지
-            if (scrollTop + containerHeight >= scrollHeight && e.deltaY > 0) {
-                e.preventDefault();
-            }
-            
-            // 최상단에서 더 이상 위로 스크롤 방지
-            if (scrollTop <= 0 && e.deltaY < 0) {
-                e.preventDefault();
-            }
-        }, { passive: false });
-    }
-}
-
-// 화면 크기 변경 시 스크롤 위치 재조정
-function handleResize() {
-    var container = document.querySelector('.responsive-container');
-    if (container) {
-        // 스크롤 위치를 안전한 범위로 재조정
-        setTimeout(function() {
-            var containerHeight = container.clientHeight;
-            var scrollHeight = container.scrollHeight;
-            var maxScrollTop = Math.max(0, scrollHeight - containerHeight);
-            
-            if (container.scrollTop > maxScrollTop) {
-                container.scrollTop = maxScrollTop;
-            }
-        }, 100);
-    }
-}
-
-// 페이지 로드 시 초기화
-document.addEventListener('DOMContentLoaded', function() {
-    try {
-        updateDebugInfo('메인 페이지 초기화 시작');
-        
-        // Firebase 초기화
-        initializeFirebase();
-        
         // 사용자 데이터 로드
-        if (loadUserData()) {
-            updateDebugInfo('메인 페이지 로드 완료');
+        function loadUserData() {
+            const savedUser = localStorage.getItem('fineu_current_user');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                document.getElementById('userName').textContent = currentUser.name || '똑부리';
+                updateDisplay();
+            } else {
+                window.location.href = 'index_new_design.html';
+            }
         }
-        
-        // 스크롤 제한 기능 초기화
-        setTimeout(function() {
-            limitScroll();
-        }, 500);
-        
-        // 화면 크기 변경 이벤트
-        window.addEventListener('resize', handleResize);
-        window.addEventListener('orientationchange', function() {
-            setTimeout(handleResize, 100);
+
+        // 디스플레이 업데이트
+        function updateDisplay() {
+            // 총 자산 업데이트 (예시 데이터)
+            document.getElementById('totalAssets').textContent = '19,990,102';
+            
+            // FINE U와 함께한 일수 계산 (예시: 로그인 날짜부터)
+            const joinDate = new Date('2024-07-18'); // 예시 가입일
+            const today = new Date();
+            const diffTime = Math.abs(today - joinDate);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            document.getElementById('daysWithFineU').textContent = diffDays;
+            
+            // 포트폴리오 차트 생성
+            createPortfolioChart();
+        }
+
+        // 포트폴리오 차트 생성
+        function createPortfolioChart() {
+            const ctx = document.getElementById('portfolioChart').getContext('2d');
+            
+            if (portfolioChart) {
+                portfolioChart.destroy();
+            }
+
+            portfolioChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['주식', '현금', '적금', '기타'],
+                    datasets: [{
+                        data: [45, 25, 20, 10],
+                        backgroundColor: ['#ffb3ba', '#bae1ff', '#ffffba', '#baffc9'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    cutout: '60%'
+                }
+            });
+        }
+
+        // 네비게이션 함수
+        function goToPage(page) {
+            // 네비게이션 활성 상태 업데이트
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+            
+            // 페이지 이동
+            if (page !== 'a1_new_design.html') {
+                window.location.href = page;
+            }
+        }
+
+        // 기타 함수들
+        function logout() {
+            if (confirm('로그아웃 하시겠습니까?')) {
+                localStorage.removeItem('fineu_current_user');
+                window.location.href = 'index_new_design.html';
+            }
+        }
+
+        function showNotifications() {
+            alert('알림 기능은 준비 중입니다.');
+        }
+
+        function showSettings() {
+            alert('설정 기능은 준비 중입니다.');
+        }
+
+        // 페이지 로드 시 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUserData();
         });
-        
-    } catch (error) {
-        console.error('초기화 오류:', error);
-        updateDebugInfo('초기화 오류: ' + error.message);
-        window.location.href = 'index.html';
-    }
-});
-
-// 모달 외부 클릭 이벤트
-document.addEventListener('click', function(e) {
-    var profileModal = document.getElementById('profileModal');
-    var profileMenuModal = document.getElementById('profileMenuModal');
-    
-    if (profileModal && e.target === profileModal) {
-        hideProfileModal();
-    }
-    
-    if (profileMenuModal && e.target === profileMenuModal) {
-        hideProfileMenu();
-    }
-});
-
-// 페이지 언로드 시 데이터 저장
-window.addEventListener('beforeunload', function() {
-    try {
-        if (currentUser) {
-            localStorage.setItem('fineu_current_user', JSON.stringify(currentUser));
-        }
-    } catch (error) {
-        updateDebugInfo('데이터 저장 오류: ' + error.message);
-    }
-});
-
-console.log('FINE U 메인 페이지 로드 완료');
-
-// Firebase 초기화 실행
-document.addEventListener('DOMContentLoaded', function() {
-    initializeFirebase();
-});
-
-</script>
-
+    </script>
 </body>
 </html>
