@@ -7,6 +7,9 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
     
+    <!-- Chart.js for price charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
     <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
@@ -206,22 +209,6 @@
             color: #666;
         }
 
-        /* 특별 카드 스타일 */
-        .basic-card {
-            background: white;
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        .basic-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 10px;
-        }
-
         /* 하단 네비게이션 */
         .bottom-nav {
             position: fixed;
@@ -302,12 +289,67 @@
             transition: all 0.3s ease;
             position: relative;
             top: -35px;
-            z-index: 10;
+            z-index: 150;
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .grade-button {
+            width: 55px;
+            height: 55px;
+            background: #fafaf8;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            top: -35px;
+            z-index: 150;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .grade-button:hover {
+            transform: scale(1.1);
+        }
+
+        .grade-button img {
+            width: 45px;
+            height: 45px;
+            object-fit: contain;
         }
 
         .black-button:hover {
             transform: scale(1.1);
+        }
+
+        /* 등급별 버튼 스타일 */
+        .yellow-button {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #333;
+        }
+        
+        .green-button {
+            background: linear-gradient(45deg, #32CD32, #228B22);
+            color: white;
+        }
+        
+        .blue-button {
+            background: linear-gradient(45deg, #1E90FF, #0066CC);
+            color: white;
+        }
+        
+        .red-button {
+            background: linear-gradient(45deg, #FF4444, #CC0000);
+            color: white;
+        }
+        
+        .black-button {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #333;
         }
 
         /* 반응형 */
@@ -332,9 +374,17 @@
     <div class="main-content">
         <div class="page-title">GRADE ZONE</div>
 
-        <!-- 기본 카드 -->
-        <div class="basic-card">
-            <div class="basic-title">가계부</div>
+        <!-- 가계부 -->
+        <div class="grade-card">
+            <div class="grade-header">
+                <div class="grade-title">가계부</div>
+            </div>
+        </div>
+        <div class="grade-info">
+            <div class="grade-info-left">
+                <div class="grade-badge yellow">YELLOW</div>
+                <div class="grade-description">기본 기능</div>
+            </div>
         </div>
 
         <!-- 예금 및 적금 -->
@@ -351,10 +401,10 @@
             </div>
         </div>
 
-        <!-- 주식 -->
+        <!-- 주식 투자 -->
         <div class="grade-card locked">
             <div class="grade-header">
-                <div class="grade-title">주식</div>
+                <div class="grade-title">주식 투자</div>
                 <i class="fas fa-lock lock-icon"></i>
             </div>
         </div>
@@ -379,10 +429,10 @@
             </div>
         </div>
 
-        <!-- ETF 및 펀드 -->
+        <!-- 펀드 -->
         <div class="grade-card locked">
             <div class="grade-header">
-                <div class="grade-title">ETF 및 펀드</div>
+                <div class="grade-title">펀드</div>
                 <i class="fas fa-lock lock-icon"></i>
             </div>
         </div>
@@ -406,7 +456,9 @@
                 <img src="images/문서.png" alt="문서">
             </div>
         </div>
-        <div class="black-button active">BLACK</div>
+        <div class="grade-button" id="gradeButton">
+            <img id="gradeButtonImage" src="images/YELLOW ㅇ.png" alt="YELLOW">
+        </div>
         <div class="nav-item" onclick="goToPage('a4.html')">
             <div class="nav-icon">
                 <img src="images/채팅.png" alt="채팅">
@@ -420,47 +472,2149 @@
     </div>
 
     <script>
-        // 등급 카드 클릭 처리
-        function handleGradeClick(grade, isLocked) {
-            if (isLocked) {
-                alert(`${grade} 등급 달성 후 이용 가능합니다.`);
-                return;
-            }
-            
-            // 해당 등급 콘텐츠로 이동
-            alert(`${grade} 콘텐츠로 이동합니다.`);
-        }
+        // 전역 변수
+        let currentUser = null;
+        let userAssets = {};
+        
+        // 등급별 잠금 해제 조건
+        const gradeRequirements = {
+            'yellow': 0,     // 기본 등급
+            'green': 5000,   // 5000 EXP
+            'blue': 15000,   // 15000 EXP
+            'red': 30000,    // 30000 EXP
+            'black': 50000   // 50000 EXP
+        };
 
-        // 등급 카드에 클릭 이벤트 추가
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('🎖️ A3 등급 페이지 로드됨');
-            
-            // 로그인 상태 확인
+        // 등급별 메뉴 접근 권한
+        const menuAccess = {
+            '가계부': 'yellow',
+            '예금 및 적금': 'green', 
+            '주식 투자': 'blue',
+            '대출': 'red',
+            '펀드': 'black'
+        };
+
+        // 로그인 확인 및 초기화
+        function checkLoginAndInit() {
             const savedUser = localStorage.getItem('fineu_current_user');
             if (!savedUser) {
                 console.log('❌ 로그인 정보 없음 - index.html로 이동');
                 window.location.href = 'index.html';
+                return false;
+            }
+            
+            currentUser = JSON.parse(savedUser);
+            console.log('✅ A3 로그인 사용자:', currentUser.id);
+            
+            return true;
+        }
+
+        // Firebase에서 사용자 데이터 가져오기 (a1과 동일)
+        async function loadUserDataFromFirebase() {
+            console.log('=== A3 데이터 로드 시작 ===');
+            
+            try {
+                // 1. Firebase 연결 확인
+                if (!window.firebaseDB) {
+                    console.log('A3 Firebase 연결 대기 중...');
+                    setTimeout(loadUserDataFromFirebase, 1000);
+                    return;
+                }
+                console.log('✅ A3 Firebase 연결 확인됨');
+
+                // 2. 로컬스토리지에서 사용자 ID 가져오기 또는 기본값 설정
+                const currentUser = JSON.parse(localStorage.getItem('fineu_current_user') || '{}');
+                const userId = currentUser.id || currentUser.username || 'Test';
+                console.log('👤 A3 사용자 ID:', userId);
+                
+                // 3. Firebase에서 데이터 가져오기
+                const userRef = window.firebaseRef(window.firebaseDB, `users/${userId}`);
+                const snapshot = await window.firebaseGet(userRef);
+                console.log('📊 A3 데이터 스냅샷 확인:', snapshot.exists());
+
+                if (snapshot.exists()) {
+                    // Firebase에서 데이터 로드 성공
+                    const firebaseData = snapshot.val();
+                    console.log('✅ A3 Firebase 데이터 로드 성공:', firebaseData);
+                    
+                    // userAssets에 데이터 설정
+                    userAssets = {
+                        id: firebaseData.id || userId,
+                        name: firebaseData.name || userId,
+                        cash: firebaseData.cash || 0,
+                        totalAssets: firebaseData.totalAssets || firebaseData.virtualBalance || firebaseData.cash || 0,
+                        virtualBalance: firebaseData.virtualBalance || firebaseData.cash || 0,
+                        level: firebaseData.level || 'yellow',
+                        exp: firebaseData.exp || firebaseData.experience || 0,
+                        experience: firebaseData.experience || firebaseData.exp || 0,
+                        portfolio: firebaseData.portfolio || {},
+                        joinDate: firebaseData.joinDate || new Date().toISOString().split('T')[0],
+                        lastUpdated: firebaseData.lastUpdated || new Date().toISOString(),
+                        studyProgress: firebaseData.studyProgress || {}
+                    };
+                    
+                    console.log('✅ A3 userAssets 설정 완료:', userAssets);
+                    
+                    // 등급 업데이트
+                    const currentLevel = calculateUserLevel(userAssets.exp || userAssets.experience || 0);
+                    userAssets.level = currentLevel.toLowerCase();
+                    updateGradeButton(userAssets.level);
+                    
+                    // 등급별 메뉴 업데이트
+                    updateMenuAccess();
+                    
+                } else {
+                    // Firebase에 데이터가 없으면 기본 데이터 설정 (가상 투자 금액 제거)
+                    console.log('❌ A3 Firebase에 데이터 없음 - 실제 데이터만 설정');
+                    userAssets = {
+                        id: userId,
+                        name: userId,
+                        cash: 0, // 가상 투자 금액 제거
+                        totalAssets: 0,
+                        virtualBalance: 0,
+                        level: 'yellow',
+                        exp: 0,
+                        experience: 0,
+                        portfolio: {},
+                        joinDate: new Date().toISOString().split('T')[0],
+                        lastUpdated: new Date().toISOString(),
+                        studyProgress: {}
+                    };
+                    updateGradeButton('yellow');
+                    updateMenuAccess();
+                }
+                
+                // 5. localStorage에 백업 저장
+                localStorage.setItem('fineu_user_assets', JSON.stringify(userAssets));
+                console.log('✅ A3 localStorage 백업 완료');
+
+            } catch (error) {
+                console.error('❌ A3 데이터 로드 오류:', error);
+                // 오류 발생 시 기본 데이터로 초기화 (가상 투자 금액 제거)
+                userAssets = {
+                    id: 'Test',
+                    name: 'Test',
+                    cash: 0, // 가상 투자 금액 제거
+                    level: 'yellow',
+                    exp: 0,
+                    experience: 0
+                };
+                updateGradeButton('yellow');
+                updateMenuAccess();
+            }
+        }
+
+        // 사용자 등급 로드 및 표시
+        async function loadUserGrade() {
+            try {
+                if (!window.firebaseDB || !currentUser) {
+                    console.log('🔥 Firebase 또는 사용자 정보 대기 중...');
+                    setTimeout(loadUserGrade, 500);
+                    return;
+                }
+                
+                const userRef = window.firebaseRef(window.firebaseDB, `users/${currentUser.id}`);
+                const snapshot = await window.firebaseGet(userRef);
+                
+                if (snapshot.exists()) {
+                    const userData = snapshot.val();
+                    const experience = userData.experience || 0;
+                    const grade = calculateUserGrade(experience);
+                    
+                    // 등급 버튼 업데이트
+                    updateGradeButton(grade);
+                    
+                    // userAssets 업데이트
+                    userAssets.exp = experience;
+                }
+            } catch (error) {
+                console.error('A3 등급 로드 실패:', error);
+            }
+        }
+
+        // 등급 버튼 업데이트 (a1과 동일한 로직)
+        function updateGradeButton(grade) {
+            const upperGrade = grade.toUpperCase();
+            const levelData = levelSystem[upperGrade];
+            
+            if (levelData) {
+                // 등급 버튼 이미지 업데이트
+                const gradeButtonImage = document.getElementById('gradeButtonImage');
+                if (gradeButtonImage && levelData.navImage) {
+                    gradeButtonImage.src = `images/${levelData.navImage}`;
+                    gradeButtonImage.alt = levelData.name;
+                    console.log('🎖️ A3 등급 버튼 업데이트:', upperGrade, levelData.navImage);
+                }
+            }
+        }
+
+        // 등급 시스템 설정 (a1과 동일)
+        const levelSystem = {
+            YELLOW: { name: 'YELLOW', exp: 0, max: 5000, image: 'YELLOW ㅁ.png', nav: 'YELLOW ㅇ', navImage: 'YELLOW ㅇ.png' },
+            GREEN: { name: 'GREEN', exp: 5000, max: 15000, image: 'GREEN ㅁ.png', nav: 'GREEN ㅇ', navImage: 'GREEN ㅇ.png' },
+            BLUE: { name: 'BLUE', exp: 15000, max: 30000, image: 'BLUE ㅁ.png', nav: 'BLUE ㅇ', navImage: 'BLUE ㅇ.png' },
+            RED: { name: 'RED', exp: 30000, max: 50000, image: 'RED ㅁ.png', nav: 'RED ㅇ', navImage: 'RED ㅇ.png' },
+            BLACK: { name: 'BLACK', exp: 50000, max: 999999, image: 'BLACK ㅁ.png', nav: 'BLACK ㅇ', navImage: 'BLACK ㅇ.png' }
+        };
+
+        // 사용자 등급 계산 (a1과 동일)
+        function calculateUserLevel(exp) {
+            for (const [level, data] of Object.entries(levelSystem)) {
+                if (exp >= data.exp && exp < data.max) {
+                    return level;
+                }
+            }
+            return 'BLACK'; // 최고 등급
+        }
+
+        // 등급별 색상 반환 (a1과 동일)
+        function getUserLevelColor(level) {
+            const colors = {
+                'YELLOW': '#FFE99E',
+                'GREEN': '#C1EDB3',
+                'BLUE': '#ADD9FA',
+                'RED': '#FAABAD',
+                'BLACK': '#333333'
+            };
+            return colors[level] || colors['YELLOW'];
+        }
+
+        // 등급별 메뉴 접근 권한 업데이트
+        function updateMenuAccess() {
+            const userExp = userAssets.exp || userAssets.experience || 0;
+            const userLevel = calculateUserLevel(userExp).toLowerCase();
+            
+            console.log('🔒 A3 메뉴 접근 권한 업데이트:', userLevel, userExp);
+            
+            // 각 메뉴 카드의 잠금 상태 업데이트
+            Object.entries(menuAccess).forEach(([menuName, requiredLevel]) => {
+                const requiredExp = gradeRequirements[requiredLevel];
+                const isUnlocked = userExp >= requiredExp;
+                
+                // 카드 찾기 (다양한 방법으로 시도)
+                let card = null;
+                // 제목으로 카드 찾기 (가계부 포함)
+                const cards = document.querySelectorAll('.grade-card');
+                cards.forEach(c => {
+                    const titleElement = c.querySelector('.grade-title') || c.querySelector('h3');
+                    if (titleElement && titleElement.textContent === menuName) {
+                        card = c;
+                    }
+                });
+                
+                if (card) {
+                    if (isUnlocked) {
+                        // 잠금 해제
+                        card.classList.remove('locked');
+                        const lockIcon = card.querySelector('.lock-icon');
+                        if (lockIcon) lockIcon.style.display = 'none';
+                        
+                        // 등급 배지 업데이트
+                        const badge = card.querySelector('.grade-badge');
+                        if (badge) {
+                            badge.className = `grade-badge ${requiredLevel}`;
+                            badge.textContent = requiredLevel.toUpperCase();
+                        }
+                        
+                        console.log(`✅ ${menuName} 잠금 해제 (${userExp} >= ${requiredExp})`);
+                    } else {
+                        // 잠금 상태 유지
+                        card.classList.add('locked');
+                        
+                        // 잠금 아이콘 추가/표시
+                        let lockIcon = card.querySelector('.lock-icon');
+                        if (!lockIcon) {
+                            lockIcon = document.createElement('div');
+                            lockIcon.className = 'lock-icon';
+                            lockIcon.innerHTML = '🔒';
+                            lockIcon.style.cssText = `
+                                position: absolute;
+                                top: 10px;
+                                right: 10px;
+                                font-size: 20px;
+                                background: rgba(255,255,255,0.9);
+                                border-radius: 50%;
+                                width: 35px;
+                                height: 35px;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+                            `;
+                            card.style.position = 'relative';
+                            card.appendChild(lockIcon);
+                        }
+                        lockIcon.style.display = 'flex';
+                        
+                        // 등급 배지 업데이트 (필요 등급 표시)
+                        const badge = card.querySelector('.grade-badge');
+                        if (badge) {
+                            badge.className = `grade-badge ${requiredLevel} locked`;
+                            badge.textContent = `${requiredLevel.toUpperCase()} 필요`;
+                            badge.style.opacity = '0.6';
+                        }
+                        
+                        console.log(`🔒 ${menuName} 잠금 상태 (${userExp} < ${requiredExp})`);
+                    }
+                }
+            });
+        }
+
+        // 사용자 등급 계산 (호환성)
+        function calculateUserGrade(exp) {
+            return calculateUserLevel(exp).toLowerCase();
+        }
+
+        // 메뉴 접근 권한 확인
+        function canAccessMenu(menuName) {
+            const userExp = userAssets.exp || 0;
+            const userGrade = calculateUserGrade(userExp);
+            const requiredGrade = menuAccess[menuName];
+            
+            const gradeOrder = ['yellow', 'green', 'blue', 'red', 'black'];
+            const userGradeIndex = gradeOrder.indexOf(userGrade);
+            const requiredGradeIndex = gradeOrder.indexOf(requiredGrade);
+            
+            return userGradeIndex >= requiredGradeIndex;
+        }
+
+        // 등급 카드 클릭 처리
+        function handleGradeClick(menuName) {
+            const userExp = userAssets.exp || userAssets.experience || 0;
+            const userLevel = calculateUserLevel(userExp).toLowerCase();
+            
+            // 가계부는 항상 접근 가능
+            if (menuName === '가계부') {
+                openMenuContent(menuName);
                 return;
             }
             
-            const currentUser = JSON.parse(savedUser);
-            console.log('✅ A3 로그인 사용자:', currentUser.id);
+            if (!canAccessMenu(menuName)) {
+                const requiredLevel = menuAccess[menuName];
+                const requiredExp = gradeRequirements[requiredLevel];
+                const remainingExp = requiredExp - userExp;
+                
+                // 더 친근한 메시지로 개선
+                const levelNames = {
+                    'green': 'GREEN 그린',
+                    'blue': 'BLUE 블루',
+                    'red': 'RED 레드',
+                    'black': 'BLACK 블랙'
+                };
+                
+                const message = `🔒 ${menuName} 기능 잠금됨\n\n` +
+                    `📊 현재 등급: ${userLevel.toUpperCase()} (${userExp.toLocaleString()} EXP)\n` +
+                    `🎯 필요 등급: ${levelNames[requiredLevel] || requiredLevel.toUpperCase()}\n` +
+                    `⭐ 필요 경험치: ${remainingExp.toLocaleString()} EXP 더 필요\n\n` +
+                    `💡 팁: 학습 활동과 투자 실습을 통해 경험치를 쌓아보세요!`;
+                
+                alert(message);
+                return;
+            }
             
-            const gradeCards = document.querySelectorAll('.grade-card');
-            
-            gradeCards.forEach(card => {
-                card.addEventListener('click', function() {
-                    const title = this.querySelector('.grade-title').textContent;
-                    const isLocked = this.classList.contains('locked');
-                    handleGradeClick(title, isLocked);
-                });
-            });
+            // 해당 메뉴 콘텐츠 열기
+            openMenuContent(menuName);
+        }
 
-            // 기본 카드 클릭 이벤트
-            document.querySelector('.basic-card').addEventListener('click', function() {
-                alert('가계부 기능으로 이동합니다.');
+        // 메뉴 콘텐츠 열기
+        function openMenuContent(menuName) {
+            const modal = createModal(menuName);
+            document.body.appendChild(modal);
+            
+            // 메뉴별 콘텐츠 로드
+            switch(menuName) {
+                case '가계부':
+                    loadAccountBook(modal);
+                    break;
+                case '예금 및 적금':
+                    loadSavingsProducts(modal);
+                    break;
+                case '주식 투자':
+                    loadStockMarket(modal);
+                    break;
+                case '대출':
+                    loadLoanProducts(modal);
+                    break;
+                case '펀드':
+                    loadETFAndFunds(modal);
+                    break;
+                default:
+                    const modalBody = modal.querySelector('.modal-body');
+                    modalBody.innerHTML = `
+                        <div class="item-card">
+                            <div class="item-desc">${menuName} 기능이 준비 중입니다.</div>
+                        </div>
+                    `;
+            }
+        }
+
+        // 모달 생성
+        function createModal(title) {
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>${title}</h2>
+                        <button class="close-btn" onclick="closeModal(this)">&times;</button>
+                    </div>
+                    <div class="modal-body" id="modal-body">
+                        <div class="loading">콘텐츠를 불러오는 중...</div>
+                    </div>
+                </div>
+            `;
+            
+            // 모달 스타일 추가
+            if (!document.getElementById('modal-styles')) {
+                const style = document.createElement('style');
+                style.id = 'modal-styles';
+                style.textContent = `
+                    .modal {
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        background: rgba(0,0,0,0.8);
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        z-index: 1000;
+                    }
+                    .modal-content {
+                        background: white;
+                        border-radius: 16px;
+                        width: 90%;
+                        max-width: 500px;
+                        max-height: 80%;
+                        overflow-y: auto;
+                    }
+                    .modal-header {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        padding: 20px;
+                        border-bottom: 1px solid #eee;
+                    }
+                    .modal-header h2 {
+                        margin: 0;
+                        font-size: 20px;
+                        color: #333;
+                    }
+                    .close-btn {
+                        background: none;
+                        border: none;
+                        font-size: 24px;
+                        cursor: pointer;
+                        color: #666;
+                    }
+                    .modal-body {
+                        padding: 20px;
+                        max-height: 60vh;
+                        overflow-y: auto;
+                    }
+                    .loading {
+                        text-align: center;
+                        padding: 40px;
+                        color: #666;
+                    }
+                    .item-card {
+                        background: #f8f9fa;
+                        border-radius: 12px;
+                        padding: 15px;
+                        margin-bottom: 10px;
+                        border: 1px solid #eee;
+                    }
+                    .item-header {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        margin-bottom: 8px;
+                    }
+                    .item-title {
+                        font-weight: bold;
+                        color: #333;
+                    }
+                    .item-price {
+                        font-weight: bold;
+                        color: #007bff;
+                    }
+                    .item-desc {
+                        font-size: 14px;
+                        color: #666;
+                        line-height: 1.4;
+                    }
+                    .btn-primary {
+                        background: #007bff;
+                        color: white;
+                        border: none;
+                        padding: 8px 16px;
+                        border-radius: 6px;
+                        cursor: pointer;
+                        font-size: 14px;
+                    }
+                    .btn-primary:hover {
+                        background: #0056b3;
+                    }
+                    .stock-card {
+                        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+                        border-radius: 12px;
+                        padding: 15px;
+                        margin-bottom: 10px;
+                        cursor: pointer;
+                    }
+                    .stock-card.positive {
+                        background: linear-gradient(135deg, #ffecee 0%, #ffd6d6 100%);
+                    }
+                    .stock-card.negative {
+                        background: linear-gradient(135deg, #e8f4fd 0%, #d6eaff 100%);
+                    }
+                    .stock-header {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: start;
+                        margin-bottom: 10px;
+                    }
+                    .stock-symbol {
+                        font-weight: bold;
+                        font-size: 16px;
+                    }
+                    .stock-price {
+                        font-size: 18px;
+                        font-weight: bold;
+                    }
+                    .stock-change {
+                        font-size: 14px;
+                        font-weight: 500;
+                    }
+                    .positive .stock-price,
+                    .positive .stock-change {
+                        color: #d32f2f;
+                    }
+                    .negative .stock-price,
+                    .negative .stock-change {
+                        color: #1976d2;
+                    }
+                    .account-input {
+                        width: 100%;
+                        padding: 10px;
+                        border: 1px solid #ddd;
+                        border-radius: 6px;
+                        margin-bottom: 10px;
+                    }
+                    .account-form {
+                        background: #f8f9fa;
+                        padding: 15px;
+                        border-radius: 10px;
+                        margin-bottom: 15px;
+                    }
+                    
+                    /* 차트 모달 스타일 */
+                    .chart-modal {
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        background: rgba(0,0,0,0.9);
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        z-index: 2000;
+                    }
+                    .chart-content {
+                        background: white;
+                        border-radius: 20px;
+                        width: 95%;
+                        max-width: 600px;
+                        max-height: 90%;
+                        overflow-y: auto;
+                    }
+                    .chart-header {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        padding: 20px;
+                        border-bottom: 2px solid #f0f0f0;
+                    }
+                    .asset-info {
+                        display: flex;
+                        flex-direction: column;
+                    }
+                    .asset-name {
+                        font-size: 22px;
+                        font-weight: bold;
+                        color: #333;
+                    }
+                    .asset-symbol {
+                        font-size: 14px;
+                        color: #666;
+                        margin-top: 2px;
+                    }
+                    .current-price {
+                        font-size: 24px;
+                        font-weight: bold;
+                        text-align: right;
+                    }
+                    .price-change {
+                        font-size: 16px;
+                        text-align: right;
+                        margin-top: 4px;
+                    }
+                    .chart-body {
+                        padding: 20px;
+                    }
+                    .chart-container {
+                        position: relative;
+                        height: 300px;
+                        margin-bottom: 20px;
+                    }
+                    .trading-buttons {
+                        display: flex;
+                        gap: 10px;
+                        margin-top: 20px;
+                    }
+                    .buy-btn {
+                        flex: 1;
+                        background: #dc3545;
+                        color: white;
+                        border: none;
+                        padding: 15px;
+                        border-radius: 10px;
+                        font-size: 16px;
+                        font-weight: bold;
+                        cursor: pointer;
+                    }
+                    .sell-btn {
+                        flex: 1;
+                        background: #007bff;
+                        color: white;
+                        border: none;
+                        padding: 15px;
+                        border-radius: 10px;
+                        font-size: 16px;
+                        font-weight: bold;
+                        cursor: pointer;
+                    }
+                    .holdings-info {
+                        background: #f8f9fa;
+                        padding: 15px;
+                        border-radius: 10px;
+                        margin-top: 15px;
+                    }
+                    .holdings-title {
+                        font-weight: bold;
+                        margin-bottom: 10px;
+                        color: #333;
+                    }
+                    .holdings-details {
+                        display: flex;
+                        justify-content: space-between;
+                        margin-bottom: 5px;
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+            
+            return modal;
+        }
+
+        // 모달 닫기
+        function closeModal(btn) {
+            const modal = btn.closest('.modal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        // ===== 투자 자산 관리 시스템 =====
+        
+        // Firebase에 사용자 포트폴리오 저장
+        async function saveUserPortfolio() {
+            try {
+                console.log('💾 포트폴리오 저장 시작');
+                console.log('🔍 Firebase DB:', !!window.firebaseDB);
+                console.log('👤 User ID:', userAssets.id);
+                console.log('📊 Portfolio Data:', userAssets.portfolio);
+                
+                if (!window.firebaseDB) {
+                    console.error('❌ Firebase DB가 초기화되지 않았습니다');
+                    alert('데이터베이스 연결에 문제가 있습니다. 페이지를 새로고침해주세요.');
+                    return;
+                }
+                
+                if (!userAssets.id) {
+                    console.error('❌ 사용자 ID가 없습니다');
+                    alert('사용자 정보를 찾을 수 없습니다. 다시 로그인해주세요.');
+                    return;
+                }
+                
+                const updateData = {
+                    portfolio: userAssets.portfolio || {},
+                    cash: userAssets.cash || 0,
+                    totalAssets: userAssets.totalAssets || 0,
+                    lastUpdated: new Date().toISOString()
+                };
+                
+                console.log('📝 업데이트할 데이터:', updateData);
+                
+                const userRef = window.firebaseRef(window.firebaseDB, `users/${userAssets.id}`);
+                await window.firebaseUpdate(userRef, updateData);
+                
+                console.log('✅ 포트폴리오 Firebase 저장 완료');
+                
+                // localStorage에도 백업 저장
+                localStorage.setItem('fineu_user_assets', JSON.stringify(userAssets));
+                console.log('✅ 포트폴리오 localStorage 백업 완료');
+                
+            } catch (error) {
+                console.error('❌ 포트폴리오 저장 실패:', error);
+                alert('투자 데이터 저장에 실패했습니다: ' + error.message);
+                
+                // 실패시 localStorage에라도 저장
+                try {
+                    localStorage.setItem('fineu_user_assets', JSON.stringify(userAssets));
+                    console.log('⚠️ Firebase 실패, localStorage에만 저장됨');
+                } catch (localError) {
+                    console.error('❌ localStorage 저장도 실패:', localError);
+                }
+            }
+        }
+
+        // 투자 자산 구매/판매 처리
+        async function processTransaction(symbol, name, price, quantity, type, assetType = 'stock', currency = 'KRW') {
+            try {
+                console.log('💰 거래 처리 시작:', {symbol, name, price, quantity, type, assetType, currency});
+                
+                const totalAmount = price * Math.abs(quantity);
+                const isUSD = currency === 'USD';
+                
+                if (!userAssets.portfolio) {
+                    userAssets.portfolio = {};
+                }
+                
+                if (!userAssets.portfolio[symbol]) {
+                    userAssets.portfolio[symbol] = {
+                        name: name,
+                        symbol: symbol,
+                        type: assetType,
+                        currency: currency,
+                        quantity: 0,
+                        avgPrice: 0,
+                        totalInvested: 0
+                    };
+                }
+                
+                const holding = userAssets.portfolio[symbol];
+                
+                // 통화 정보 업데이트
+                holding.currency = currency;
+                
+                if (type === 'buy') {
+                    // 매수 처리
+                    if (userAssets.cash < totalAmount) {
+                        alert('보유 현금이 부족합니다.');
+                        return false;
+                    }
+                    
+                    const newTotalQuantity = holding.quantity + quantity;
+                    const newTotalInvested = holding.totalInvested + totalAmount;
+                    
+                    holding.avgPrice = newTotalInvested / newTotalQuantity;
+                    holding.quantity = newTotalQuantity;
+                    holding.totalInvested = newTotalInvested;
+                    
+                    userAssets.cash -= totalAmount;
+                    
+                    const amountDisplay = formatPrice(totalAmount, currency, isUSD ? 2 : 0);
+                    console.log('✅ 매수 완료:', {symbol, quantity, totalAmount});
+                    alert(`${name} ${quantity}주를 ${amountDisplay}에 매수했습니다.`);
+                    
+                } else if (type === 'sell') {
+                    // 매도 처리
+                    if (holding.quantity < quantity) {
+                        alert('보유 수량이 부족합니다.');
+                        return false;
+                    }
+                    
+                    holding.quantity -= quantity;
+                    holding.totalInvested -= (holding.avgPrice * quantity);
+                    userAssets.cash += totalAmount;
+                    
+                    // 모든 주식을 매도한 경우 포트폴리오에서 제거
+                    if (holding.quantity === 0) {
+                        delete userAssets.portfolio[symbol];
+                    }
+                    
+                    const amountDisplay = formatPrice(totalAmount, currency, isUSD ? 2 : 0);
+                    console.log('✅ 매도 완료:', {symbol, quantity, totalAmount});
+                    alert(`${name} ${quantity}주를 ${amountDisplay}에 매도했습니다.`);
+                }
+                
+                console.log('💾 Firebase 저장 시도...');
+                // 전체 자산 재계산
+                updateTotalAssets();
+                
+                // Firebase에 저장
+                await saveUserPortfolio();
+                
+                console.log('🎯 거래 처리 완전 완료');
+                return true;
+                
+            } catch (error) {
+                console.error('❌ 거래 처리 실패:', error);
+                alert('거래 처리 중 오류가 발생했습니다: ' + error.message);
+                return false;
+            }
+        }
+
+        // 전체 자산 재계산
+        function updateTotalAssets() {
+            try {
+                let totalPortfolioValue = 0;
+                
+                if (userAssets.portfolio) {
+                    Object.values(userAssets.portfolio).forEach(holding => {
+                        totalPortfolioValue += holding.quantity * holding.avgPrice;
+                    });
+                }
+                
+                userAssets.totalAssets = userAssets.cash + totalPortfolioValue;
+                userAssets.virtualBalance = userAssets.totalAssets; // 가상 잔고도 업데이트
+                
+                console.log('📊 전체 자산 업데이트:', {
+                    cash: userAssets.cash,
+                    portfolioValue: totalPortfolioValue,
+                    totalAssets: userAssets.totalAssets
+                });
+            } catch (error) {
+                console.error('전체 자산 계산 오류:', error);
+            }
+        }
+
+        // 동적 가격 생성 (실시간 변동)
+        function generateDynamicPrice(basePrice, volatility = 0.02) {
+            const change = (Math.random() - 0.5) * 2 * volatility;
+            return Math.round(basePrice * (1 + change));
+        }
+
+        // 차트 데이터 생성 (30일간의 가격 변동)
+        function generateChartData(currentPrice, days = 30) {
+            const data = [];
+            const labels = [];
+            let price = currentPrice * 0.9; // 시작가를 현재가의 90%로 설정
+            
+            for (let i = days - 1; i >= 0; i--) {
+                const date = new Date();
+                date.setDate(date.getDate() - i);
+                labels.push(date.toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' }));
+                
+                // 랜덤한 가격 변동 생성
+                const change = (Math.random() - 0.5) * 0.04; // ±2% 변동
+                price = Math.max(price * (1 + change), currentPrice * 0.7); // 최소 70%
+                data.push(Math.round(price));
+            }
+            
+            // 마지막 가격을 현재가로 조정
+            data[data.length - 1] = currentPrice;
+            
+            return { labels, data };
+        }
+
+        // 차트 모달 생성 및 표시 (실제 API 가격 사용)
+        async function showAssetChart(symbol, name, passedPrice, assetType = 'stock', currency = 'KRW') {
+            console.log(`📊 ${name} 차트 모달 열기 - 전달받은 가격: ${passedPrice}`);
+            
+            // 실제 최신 가격 다시 조회 (정확성을 위해)
+            let currentPrice = passedPrice;
+            try {
+                let yahooSymbol = symbol;
+                if (!yahooSymbol.includes('.')) {
+                    yahooSymbol += '.KS';
+                }
+                
+                const latestData = await getYahooStockPrice(yahooSymbol);
+                if (latestData && latestData.price) {
+                    currentPrice = latestData.price;
+                    currency = latestData.currency || currency;
+                    console.log(`✅ ${name} 최신 가격 업데이트: ${currentPrice} ${currency}`);
+                } else {
+                    console.log(`⚠️ ${name} 최신 가격 조회 실패, 전달받은 가격 사용: ${currentPrice}`);
+                }
+            } catch (error) {
+                console.log(`❌ ${name} 최신 가격 조회 실패: ${error.message}`);
+            }
+            
+            const chartModal = document.createElement('div');
+            chartModal.className = 'chart-modal';
+            
+            const { labels, data } = generateChartData(currentPrice);
+            const previousPrice = data[data.length - 2];
+            const priceChange = currentPrice - previousPrice;
+            const priceChangePercent = (priceChange / previousPrice * 100).toFixed(2);
+            const isPositive = priceChange >= 0;
+            
+            // 통화별 가격 표시
+            const isUSD = currency === 'USD';
+            const priceDisplay = isUSD ? formatPrice(currentPrice, 'USD') : formatPrice(currentPrice, 'KRW', 0);
+            const changeDisplay = isUSD ? formatPrice(Math.abs(priceChange), 'USD') : formatPrice(Math.abs(priceChange), 'KRW', 0);
+            
+            // 보유 수량 확인
+            const holding = userAssets.portfolio && userAssets.portfolio[symbol] 
+                ? userAssets.portfolio[symbol] 
+                : { quantity: 0, avgPrice: 0, totalInvested: 0, currency: currency };
+            
+            chartModal.innerHTML = `
+                <div class="chart-content">
+                    <div class="chart-header">
+                        <div class="asset-info">
+                            <div class="asset-name">${name}</div>
+                            <div class="asset-symbol">${symbol}</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div class="current-price" style="color: ${isPositive ? '#dc3545' : '#007bff'}">
+                                ${priceDisplay}
+                            </div>
+                            <div class="price-change" style="color: ${isPositive ? '#dc3545' : '#007bff'}">
+                                ${isPositive ? '+' : ''}${changeDisplay} (${isPositive ? '+' : ''}${priceChangePercent}%)
+                            </div>
+                        </div>
+                        <button class="close-btn" onclick="this.closest('.chart-modal').remove()" style="margin-left: 15px;">&times;</button>
+                    </div>
+                    <div class="chart-body">
+                        <div class="chart-container">
+                            <canvas id="priceChart"></canvas>
+                        </div>
+                        
+                        ${holding.quantity > 0 ? `
+                        <div class="holdings-info">
+                            <div class="holdings-title">보유 현황</div>
+                            <div class="holdings-details">
+                                <span>보유수량:</span>
+                                <span>${holding.quantity.toLocaleString()}주</span>
+                            </div>
+                            <div class="holdings-details">
+                                <span>평균단가:</span>
+                                <span>${formatPrice(holding.avgPrice, currency, isUSD ? 2 : 0)}</span>
+                            </div>
+                            <div class="holdings-details">
+                                <span>투자금액:</span>
+                                <span>${formatPrice(holding.totalInvested, currency, isUSD ? 2 : 0)}</span>
+                            </div>
+                            <div class="holdings-details">
+                                <span>평가금액:</span>
+                                <span>${formatPrice(holding.quantity * currentPrice, currency, isUSD ? 2 : 0)}</span>
+                            </div>
+                            <div class="holdings-details">
+                                <span>손익:</span>
+                                <span style="color: ${(holding.quantity * currentPrice - holding.totalInvested) >= 0 ? '#dc3545' : '#007bff'}">
+                                    ${formatPrice((holding.quantity * currentPrice - holding.totalInvested), currency, isUSD ? 2 : 0)}
+                                    (${(((holding.quantity * currentPrice - holding.totalInvested) / holding.totalInvested * 100)).toFixed(2)}%)
+                                </span>
+                            </div>
+                        </div>
+                        ` : ''}
+                        
+                        <div class="trading-buttons">
+                            <button class="buy-btn" onclick="showTradeModal('${symbol}', '${name}', ${currentPrice}, 'buy', '${assetType}', '${currency}')">
+                                매수
+                            </button>
+                            <button class="sell-btn" onclick="showTradeModal('${symbol}', '${name}', ${currentPrice}, 'sell', '${assetType}', '${currency}')" 
+                                    ${holding.quantity === 0 ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
+                                매도
+                            </button>
+                        </div>
+                        
+                        <div style="margin-top: 15px; padding: 10px; background: #f8f9fa; border-radius: 8px; font-size: 14px; color: #666;">
+                            💰 보유 현금: ${userAssets.cash.toLocaleString()}원
+                            ${isUSD ? `<br>💵 약 ${formatPrice(convertCurrency(userAssets.cash, 'KRW', 'USD'), 'USD')}` : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(chartModal);
+            
+            // 차트 생성
+            const ctx = document.getElementById('priceChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '가격',
+                        data: data,
+                        borderColor: isPositive ? '#dc3545' : '#007bff',
+                        backgroundColor: isPositive ? 'rgba(220, 53, 69, 0.1)' : 'rgba(0, 123, 255, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toLocaleString() + '원';
+                                }
+                            }
+                        }
+                    }
+                }
             });
-        });
+        }
+
+        // 거래 모달 표시
+        function showTradeModal(symbol, name, price, type, assetType = 'stock', currency = 'KRW') {
+            const isBuy = type === 'buy';
+            const isUSD = currency === 'USD';
+            const holding = userAssets.portfolio && userAssets.portfolio[symbol] 
+                ? userAssets.portfolio[symbol] 
+                : { quantity: 0 };
+            
+            const maxQuantity = isBuy 
+                ? Math.floor(userAssets.cash / price)
+                : holding.quantity;
+            
+            if (maxQuantity === 0) {
+                alert(isBuy ? '보유 현금이 부족합니다.' : '보유 수량이 없습니다.');
+                return;
+            }
+            
+            const priceDisplay = formatPrice(price, currency, isUSD ? 2 : 0);
+            const cashDisplay = userAssets.cash.toLocaleString() + '원';
+            const usdCashDisplay = isUSD ? ` (약 ${formatPrice(convertCurrency(userAssets.cash, 'KRW', 'USD'), 'USD')})` : '';
+            
+            const quantity = prompt(
+                `${name} ${isBuy ? '매수' : '매도'}\n` +
+                `현재가: ${priceDisplay}\n` +
+                `${isBuy ? '보유 현금' : '보유 수량'}: ${isBuy ? cashDisplay + usdCashDisplay : holding.quantity + '주'}\n` +
+                `최대 ${isBuy ? '매수' : '매도'} 가능: ${maxQuantity}${isBuy ? '주' : '주'}\n\n` +
+                `${isBuy ? '매수' : '매도'}할 수량을 입력하세요:`
+            );
+            
+            if (quantity && parseInt(quantity) > 0 && parseInt(quantity) <= maxQuantity) {
+                processTransaction(symbol, name, price, parseInt(quantity), type, assetType, currency);
+                
+                // 차트 모달 닫기 및 다시 열기 (업데이트된 정보 표시)
+                const chartModal = document.querySelector('.chart-modal');
+                if (chartModal) {
+                    chartModal.remove();
+                    setTimeout(() => {
+                        showAssetChart(symbol, name, price, assetType, currency);
+                    }, 100);
+                }
+            } else if (quantity) {
+                alert('올바른 수량을 입력해주세요.');
+            }
+        }
+
+        // 1. 가계부 기능
+        async function loadAccountBook(modal) {
+            const modalBody = modal.querySelector('.modal-body');
+            
+            // 가계부 데이터 로드
+            let accountData = {};
+            try {
+                if (window.firebaseDB && currentUser) {
+                    const accountRef = window.firebaseRef(window.firebaseDB, `users/${currentUser.id}/accountBook`);
+                    const snapshot = await window.firebaseGet(accountRef);
+                    if (snapshot.exists()) {
+                        accountData = snapshot.val();
+                    }
+                }
+            } catch (error) {
+                console.error('가계부 데이터 로드 실패:', error);
+            }
+            
+            const today = new Date().toISOString().split('T')[0];
+            const todayData = accountData[today] || { income: [], expense: [] };
+            
+            modalBody.innerHTML = `
+                <div class="account-form">
+                    <h3>수입 추가</h3>
+                    <input type="text" id="incomeDesc" placeholder="수입 내용" class="account-input">
+                    <input type="number" id="incomeAmount" placeholder="금액" class="account-input">
+                    <button class="btn-primary" onclick="addAccountItem('income')">수입 추가</button>
+                </div>
+                
+                <div class="account-form">
+                    <h3>지출 추가</h3>
+                    <input type="text" id="expenseDesc" placeholder="지출 내용" class="account-input">
+                    <input type="number" id="expenseAmount" placeholder="금액" class="account-input">
+                    <button class="btn-primary" onclick="addAccountItem('expense')">지출 추가</button>
+                </div>
+                
+                <div class="account-summary">
+                    <h3>오늘의 가계부</h3>
+                    <div id="account-list">
+                        ${generateAccountList(todayData)}
+                    </div>
+                </div>
+            `;
+        }
+
+        function generateAccountList(data) {
+            let html = '';
+            const totalIncome = data.income.reduce((sum, item) => sum + item.amount, 0);
+            const totalExpense = data.expense.reduce((sum, item) => sum + item.amount, 0);
+            
+            html += `<div class="item-card">
+                <div class="item-header">
+                    <span class="item-title">총 수입</span>
+                    <span class="item-price" style="color: #28a745;">+${totalIncome.toLocaleString()}원</span>
+                </div>
+            </div>`;
+            
+            html += `<div class="item-card">
+                <div class="item-header">
+                    <span class="item-title">총 지출</span>
+                    <span class="item-price" style="color: #dc3545;">-${totalExpense.toLocaleString()}원</span>
+                </div>
+            </div>`;
+            
+            html += `<div class="item-card">
+                <div class="item-header">
+                    <span class="item-title">잔액</span>
+                    <span class="item-price">${(totalIncome - totalExpense).toLocaleString()}원</span>
+                </div>
+            </div>`;
+            
+            data.income.forEach(item => {
+                html += `<div class="item-card">
+                    <div class="item-header">
+                        <span class="item-title">${item.description}</span>
+                        <span class="item-price" style="color: #28a745;">+${item.amount.toLocaleString()}원</span>
+                    </div>
+                </div>`;
+            });
+            
+            data.expense.forEach(item => {
+                html += `<div class="item-card">
+                    <div class="item-header">
+                        <span class="item-title">${item.description}</span>
+                        <span class="item-price" style="color: #dc3545;">-${item.amount.toLocaleString()}원</span>
+                    </div>
+                </div>`;
+            });
+            
+            return html;
+        }
+
+        async function addAccountItem(type) {
+            const desc = document.getElementById(`${type}Desc`).value;
+            const amount = parseInt(document.getElementById(`${type}Amount`).value);
+            
+            if (!desc || !amount) {
+                alert('내용과 금액을 모두 입력해주세요.');
+                return;
+            }
+            
+            const today = new Date().toISOString().split('T')[0];
+            const item = {
+                description: desc,
+                amount: amount,
+                timestamp: new Date().toISOString()
+            };
+            
+            try {
+                if (window.firebaseDB && currentUser) {
+                    const accountRef = window.firebaseRef(window.firebaseDB, `users/${currentUser.id}/accountBook/${today}/${type}`);
+                    const snapshot = await window.firebaseGet(accountRef);
+                    const currentData = snapshot.exists() ? snapshot.val() : [];
+                    currentData.push(item);
+                    
+                    await window.firebaseSet(accountRef, currentData);
+                    
+                    // 가계부 다시 로드
+                    const modal = document.querySelector('.modal');
+                    loadAccountBook(modal);
+                }
+            } catch (error) {
+                console.error('가계부 저장 실패:', error);
+                alert('저장에 실패했습니다.');
+            }
+        }
+
+        // 2. 예적금 상품 기능
+        async function loadSavingsProducts(modal) {
+            const modalBody = modal.querySelector('.modal-body');
+            
+            // 실제 예적금 상품 데이터 (은행별)
+            const savingsProducts = [
+                {
+                    bank: 'KB국민은행',
+                    name: 'KB Star 정기예금',
+                    rate: '3.50%',
+                    term: '12개월',
+                    minAmount: 1000000,
+                    description: '우대금리 조건 시 최대 3.50%'
+                },
+                {
+                    bank: '신한은행',
+                    name: '쏠 정기예금',
+                    rate: '3.40%',
+                    term: '12개월',
+                    minAmount: 500000,
+                    description: '신규고객 우대금리 적용'
+                },
+                {
+                    bank: '하나은행',
+                    name: '하나 원큐 정기예금',
+                    rate: '3.30%',
+                    term: '12개월',
+                    minAmount: 1000000,
+                    description: '온라인 전용 특별금리'
+                },
+                {
+                    bank: 'IBK기업은행',
+                    name: 'i-ONE 정기예금',
+                    rate: '3.25%',
+                    term: '6개월',
+                    minAmount: 300000,
+                    description: '6개월 단기 고금리 상품'
+                },
+                {
+                    bank: '우리은행',
+                    name: 'WON 정기예금',
+                    rate: '3.45%',
+                    term: '24개월',
+                    minAmount: 2000000,
+                    description: '장기 투자 우대금리'
+                }
+            ];
+            
+            let html = '';
+            savingsProducts.forEach(product => {
+                html += `
+                    <div class="item-card">
+                        <div class="item-header">
+                            <span class="item-title">${product.bank}</span>
+                            <span class="item-price">${product.rate}</span>
+                        </div>
+                        <div class="item-desc">
+                            <strong>${product.name}</strong><br>
+                            기간: ${product.term} | 최소금액: ${product.minAmount.toLocaleString()}원<br>
+                            ${product.description}
+                        </div>
+                        <button class="btn-primary" onclick="subscribeSavings('${product.name}', '${product.rate}', ${product.minAmount})">
+                            가입하기
+                        </button>
+                    </div>
+                `;
+            });
+            
+            modalBody.innerHTML = html;
+        }
+
+        function subscribeSavings(productName, rate, minAmount) {
+            const amount = prompt(`${productName} 가입\n최소 가입금액: ${minAmount.toLocaleString()}원\n가입 금액을 입력하세요:`);
+            if (amount && parseInt(amount) >= minAmount) {
+                alert(`${productName}에 ${parseInt(amount).toLocaleString()}원으로 가입되었습니다.\n연이율: ${rate}`);
+            } else if (amount) {
+                alert(`최소 가입금액은 ${minAmount.toLocaleString()}원입니다.`);
+            }
+        }
+
+        // 3. 주식 시장 기능
+        async function loadStockMarket(modal) {
+            const modalBody = modal.querySelector('.modal-body');
+            
+            try {
+                // 검색 기능 포함한 주식 인터페이스
+                let html = `
+                    <div style="margin-bottom: 20px;">
+                        <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                            <input type="text" id="stockSearch" placeholder="주식명 또는 종목코드 검색 (예: 삼성전자, 005930)" 
+                                   style="flex: 1; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px;"
+                                   onkeypress="if(event.key==='Enter') searchStocks()">
+                            <button onclick="searchStocks()" style="padding: 12px 20px; background: #007bff; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px;">검색</button>
+                        </div>
+                        <div style="font-size: 12px; color: #666; margin-bottom: 15px;">
+                            💡 팁: 종목명(삼성전자) 또는 종목코드(005930)로 검색 가능합니다
+                        </div>
+                    </div>
+                    
+                    <div id="stockResults">
+                        <div style="text-align: center; padding: 20px; color: #666;">
+                            위에서 주식을 검색해보세요
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee;">
+                        <h4 style="margin-bottom: 15px; color: #333;">인기 종목</h4>
+                        <div id="popularStocks">
+                            <div style="text-align: center; color: #666;">인기 종목을 불러오는 중...</div>
+                        </div>
+                    </div>
+                `;
+                
+                modalBody.innerHTML = html;
+                
+                // 인기 종목 로드
+                loadPopularStocks();
+                
+            } catch (error) {
+                console.error('주식 데이터 로드 실패:', error);
+                modalBody.innerHTML = `
+                    <div class="item-card">
+                        <div class="item-desc">주식 데이터를 불러올 수 없습니다.</div>
+                    </div>
+                `;
+            }
+        }
+
+        // 주식 검색 함수
+        async function searchStocks() {
+            const searchInput = document.getElementById('stockSearch');
+            const resultsDiv = document.getElementById('stockResults');
+            const query = searchInput.value.trim();
+            
+            if (!query) {
+                alert('검색어를 입력해주세요.');
+                return;
+            }
+            
+            resultsDiv.innerHTML = '<div style="text-align: center; padding: 20px; color: #666;">실시간 주식 정보를 검색 중...</div>';
+            
+            try {
+                // 한국 주식 검색 (Yahoo Finance 사용)
+                let stocks = await searchKoreanStocks(query);
+                
+                // 미국 주식도 검색하려면 .KS/.KQ 없이 검색
+                if (stocks.length === 0) {
+                    stocks = await searchGlobalStocks(query);
+                }
+                
+                displaySearchResults(stocks, resultsDiv);
+            } catch (error) {
+                console.error('주식 검색 실패:', error);
+                resultsDiv.innerHTML = '<div style="text-align: center; padding: 20px; color: red;">검색에 실패했습니다. 다시 시도해주세요.</div>';
+            }
+        }
+
+        // 한국 주식 검색
+        // 한국 주식 검색 - Yahoo Finance API 사용
+        async function searchKoreanStocks(query) {
+            try {
+                console.log('🔍 실제 Yahoo Finance API로 검색 시작:', query);
+                
+                // 1차: 직접 로컬 데이터베이스에서 매칭하여 실제 API 호출
+                const directResult = await searchFromLocalDatabase(query);
+                if (directResult && directResult.length > 0) {
+                    console.log('✅ 로컬 데이터베이스 매칭 + 실제 API 성공:', directResult.length, '개');
+                    return directResult;
+                }
+                
+                // 2차: Yahoo Finance 검색 API 사용
+                const searchUrl = `https://query1.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(query)}&quotesCount=20&newsCount=0&enableFuzzyQuery=false&quotesQueryId=tss_match_phrase_query&multiQuoteQueryId=multi_quote_single_token_query&enableCb=true&enableNavLinks=false&enableEnhancedTrivialQuery=true&region=KR&lang=ko`;
+                
+                // CORS 우회를 위한 프록시 사용
+                const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(searchUrl)}`;
+                
+                const response = await fetch(proxyUrl);
+                const data = await response.json();
+                const searchData = JSON.parse(data.contents);
+                
+                const stocksWithPrices = [];
+                
+                if (searchData.quotes && searchData.quotes.length > 0) {
+                    console.log('🌐 Yahoo Finance 검색 결과:', searchData.quotes.length, '개');
+                    
+                    // 한국 주식만 필터링 (.KS, .KQ로 끝나는 것)
+                    const koreanStocks = searchData.quotes.filter(quote => 
+                        quote.symbol && (quote.symbol.endsWith('.KS') || quote.symbol.endsWith('.KQ'))
+                    );
+                    
+                    console.log('🇰🇷 한국 주식 필터링 결과:', koreanStocks.length, '개');
+                    
+                    // 각 주식의 실시간 가격 정보 가져오기
+                    for (const stock of koreanStocks.slice(0, 10)) { // 최대 10개
+                        try {
+                            const priceData = await getYahooStockPrice(stock.symbol);
+                            if (priceData) {
+                                stocksWithPrices.push({
+                                    symbol: stock.symbol.replace('.KS', '').replace('.KQ', ''),
+                                    name: stock.longname || stock.shortname || stock.symbol,
+                                    sector: stock.typeDisp || stock.quoteType || '주식',
+                                    currency: 'KRW',
+                                    isUSD: false,
+                                    ...priceData
+                                });
+                            }
+                        } catch (error) {
+                            console.log(`${stock.symbol} 가격 로드 실패`);
+                        }
+                    }
+                }
+                
+                console.log('✅ Yahoo Finance API 검색 완료:', stocksWithPrices.length, '개');
+                return stocksWithPrices;
+                
+            } catch (error) {
+                console.error('Yahoo Finance 검색 실패:', error);
+                console.log('⚠️ API 실패로 로컬 데이터베이스 사용');
+                // 실패 시 로컬 데이터베이스 사용 (이제 실제 API 시도함)
+                return await searchFromLocalDatabase(query);
+            }
+        }
+
+        // Yahoo Finance에서 실시간 주가 가져오기
+        async function getYahooStockPrice(symbol) {
+            // 타임아웃 기능이 있는 fetch 함수
+            const fetchWithTimeout = async (url, timeout = 5000) => {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), timeout);
+                
+                try {
+                    const response = await fetch(url, { signal: controller.signal });
+                    clearTimeout(timeoutId);
+                    return response;
+                } catch (error) {
+                    clearTimeout(timeoutId);
+                    throw error;
+                }
+            };
+
+            // 여러 프록시 서버 목록 (순서대로 시도)
+            const proxyServers = [
+                { url: 'https://cors-anywhere.herokuapp.com/', type: 'direct' },
+                { url: 'https://api.allorigins.win/get?url=', type: 'allorigins' },
+                { url: 'https://corsproxy.io/?', type: 'direct' }
+            ];
+            
+            const yahooUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}`;
+            
+            for (let i = 0; i < proxyServers.length; i++) {
+                try {
+                    console.log(`🔄 ${symbol} 프록시 ${i + 1} 시도`);
+                    
+                    let response;
+                    let chartData;
+                    
+                    if (proxyServers[i].type === 'allorigins') {
+                        // AllOrigins 방식
+                        const proxyUrl = `${proxyServers[i].url}${encodeURIComponent(yahooUrl)}`;
+                        response = await fetchWithTimeout(proxyUrl, 3000);
+                        
+                        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                        
+                        const data = await response.json();
+                        if (!data.contents) throw new Error('No contents in response');
+                        
+                        chartData = JSON.parse(data.contents);
+                    } else {
+                        // 직접 프록시 방식
+                        const proxyUrl = `${proxyServers[i].url}${yahooUrl}`;
+                        response = await fetchWithTimeout(proxyUrl, 3000);
+                        
+                        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                        
+                        chartData = await response.json();
+                    }
+                    
+                    // 데이터 파싱
+                    if (chartData.chart && chartData.chart.result && chartData.chart.result[0]) {
+                        const result = chartData.chart.result[0];
+                        const meta = result.meta;
+                        const quote = result.indicators.quote[0];
+                        
+                        const currentPrice = meta.regularMarketPrice || quote.close[quote.close.length - 1];
+                        const previousClose = meta.previousClose || meta.chartPreviousClose;
+                        const change = currentPrice - previousClose;
+                        const changePercent = (change / previousClose) * 100;
+                        
+                        const currency = meta.currency || 'KRW';
+                        const isUSD = currency === 'USD';
+                        
+                        console.log(`✅ ${symbol} 실제 데이터 로드 성공:`, currentPrice, currency);
+                        
+                        return {
+                            price: isUSD ? parseFloat(currentPrice.toFixed(2)) : Math.round(currentPrice),
+                            change: change,
+                            changePercent: changePercent,
+                            volume: quote.volume ? quote.volume[quote.volume.length - 1] : 0,
+                            high: meta.regularMarketDayHigh,
+                            low: meta.regularMarketDayLow,
+                            currency: currency,
+                            source: 'yahoo_api'
+                        };
+                    }
+                    
+                } catch (error) {
+                    // 마지막 프록시가 아닌 경우에만 간단한 로그
+                    if (i === proxyServers.length - 1) {
+                        console.log(`❌ ${symbol} 모든 프록시 실패`);
+                        throw new Error(`모든 프록시 서버 실패: ${error.message}`);
+                    }
+                    continue;
+                }
+            }
+        }
+
+        // 로컬 데이터베이스에서 검색 (폴백) - 실제 API 우선 사용
+        async function searchFromLocalDatabase(query) {
+            // 기존 koreanStocks 배열 사용
+            const koreanStocks = [
+                { symbol: '005930', name: '삼성전자', sector: '반도체' },
+                { symbol: '000660', name: 'SK하이닉스', sector: '반도체' },
+                { symbol: '035420', name: 'NAVER', sector: '인터넷' },
+                { symbol: '005380', name: '현대차', sector: '자동차' },
+                { symbol: '051910', name: 'LG화학', sector: '화학' },
+                { symbol: '035720', name: '카카오', sector: '인터넷' },
+                { symbol: '207940', name: '삼성바이오로직스', sector: '바이오' },
+                { symbol: '068270', name: '셀트리온', sector: '바이오' },
+                { symbol: '373220', name: 'LG에너지솔루션', sector: '배터리' },
+                { symbol: '000270', name: '기아', sector: '자동차' },
+                { symbol: '006400', name: '삼성SDI', sector: '배터리' },
+                { symbol: '105560', name: 'KB금융', sector: '금융' },
+                { symbol: '055550', name: '신한지주', sector: '금융' },
+                { symbol: '086790', name: '하나금융지주', sector: '금융' },
+                { symbol: '066570', name: 'LG전자', sector: '전자' },
+                { symbol: '003550', name: 'LG', sector: '화학' },
+                { symbol: '096770', name: 'SK이노베이션', sector: '화학' },
+                { symbol: '017670', name: 'SK텔레콤', sector: '통신' },
+                { symbol: '030200', name: 'KT', sector: '통신' },
+                { symbol: '032830', name: '삼성생명', sector: '보험' },
+                { symbol: '009150', name: '삼성전기', sector: '전자부품' },
+                { symbol: '018260', name: '삼성에스디에스', sector: 'IT서비스' },
+                { symbol: '012330', name: '현대모비스', sector: '자동차부품' },
+                { symbol: '028260', name: '삼성물산', sector: '건설' },
+                { symbol: '010950', name: 'S-Oil', sector: '정유' },
+                { symbol: '267250', name: '현대중공업', sector: '조선' },
+                { symbol: '009540', name: 'HD한국조선해양', sector: '조선' },
+                { symbol: '034730', name: 'SK', sector: '지주회사' },
+                { symbol: '323410', name: '카카오뱅크', sector: '은행' },
+                { symbol: '352820', name: '하이브', sector: '엔터테인먼트' },
+                { symbol: '034020', name: '두산에너빌리티', sector: '발전설비' },
+                { symbol: '003490', name: '대한항공', sector: '항공' },
+                { symbol: '011170', name: '롯데케미칼', sector: '화학' },
+                { symbol: '047050', name: '포스코인터내셔널', sector: '무역' },
+                { symbol: '001570', name: '금양', sector: '건설' },
+                { symbol: '028050', name: '삼성엔지니어링', sector: '건설' },
+                { symbol: '036570', name: '엔씨소프트', sector: '게임' },
+                { symbol: '251270', name: '넷마블', sector: '게임' },
+                { symbol: '112040', name: '위메이드', sector: '게임' },
+                { symbol: '259960', name: '크래프톤', sector: '게임' }
+            ];
+            
+            let matchedStocks = koreanStocks.filter(stock => 
+                stock.name.includes(query) || 
+                stock.symbol.includes(query) ||
+                stock.sector.includes(query)
+            );
+            
+            // 실제 Yahoo Finance API로 가격 정보 가져오기 (안정성 향상)
+            const stocksWithRealPrices = [];
+            const maxConcurrentRequests = 3; // 동시 요청 수 제한
+            
+            for (let i = 0; i < matchedStocks.slice(0, 10).length; i += maxConcurrentRequests) {
+                const batch = matchedStocks.slice(i, i + maxConcurrentRequests);
+                const batchPromises = batch.map(async stock => {
+                    try {
+                        console.log(`🔍 ${stock.name} (${stock.symbol}) 가격 조회 시도`);
+                        
+                        // 한국 주식은 .KS 또는 .KQ 접미사 시도
+                        let priceData = null;
+                        
+                        // 1차: .KS (코스피) 시도
+                        try {
+                            priceData = await getYahooStockPrice(stock.symbol + '.KS');
+                        } catch (error) {
+                            console.log(`${stock.symbol}.KS 실패, .KQ 시도`);
+                        }
+                        
+                        // 2차: .KQ (코스닥) 시도
+                        if (!priceData) {
+                            try {
+                                priceData = await getYahooStockPrice(stock.symbol + '.KQ');
+                            } catch (error) {
+                                console.log(`${stock.symbol}.KQ도 실패`);
+                            }
+                        }
+                        
+                        if (priceData && priceData.price) {
+                            console.log(`✅ ${stock.name} 실제 API 데이터 사용: ${priceData.price}원`);
+                            return {
+                                symbol: stock.symbol,
+                                name: stock.name,
+                                sector: stock.sector,
+                                price: priceData.price,
+                                change: priceData.change || 0,
+                                changePercent: priceData.changePercent || 0,
+                                volume: priceData.volume || 0,
+                                currency: 'KRW',
+                                source: 'yahoo_api'
+                            };
+                        } else {
+                            // API 실패 시 현실적인 가격 생성
+                            console.log(`📊 ${stock.name} 현실적 가격 생성`);
+                            return generateRealisticPrice(stock);
+                        }
+                        
+                    } catch (error) {
+                        console.log(`⚠️ ${stock.name} 처리 실패: ${error.message}`);
+                        return generateRealisticPrice(stock);
+                    }
+                });
+                
+                // 배치 처리 완료 대기
+                const batchResults = await Promise.allSettled(batchPromises);
+                batchResults.forEach(result => {
+                    if (result.status === 'fulfilled' && result.value) {
+                        stocksWithRealPrices.push(result.value);
+                    }
+                });
+                
+                // 서버 과부하 방지를 위한 딜레이
+                if (i + maxConcurrentRequests < matchedStocks.length) {
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                }
+            }
+            
+            console.log(`🎯 ${query} 검색 완료: ${stocksWithRealPrices.length}개 종목`);
+            return stocksWithRealPrices;
+        }
+        
+        // 현실적인 주식 가격 생성
+        function generateRealisticPrice(stock) {
+            // 주요 종목별 현실적인 가격대
+            const realisticPrices = {
+                '005930': { base: 75000, volatility: 0.03 },   // 삼성전자
+                '000660': { base: 85000, volatility: 0.04 },   // SK하이닉스
+                '035420': { base: 200000, volatility: 0.03 },  // NAVER
+                '005380': { base: 185000, volatility: 0.04 },  // 현대차
+                '051910': { base: 420000, volatility: 0.03 },  // LG화학
+                '207940': { base: 155000, volatility: 0.05 },  // 삼성바이오로직스
+                '035720': { base: 95000, volatility: 0.06 },   // 카카오
+                '068270': { base: 180000, volatility: 0.05 }   // 셀트리온
+            };
+            
+            const priceInfo = realisticPrices[stock.symbol] || { base: 50000, volatility: 0.04 };
+            
+            // 기준가에서 ±volatility 범위의 변동
+            const variation = (Math.random() - 0.5) * 2 * priceInfo.volatility;
+            const currentPrice = Math.round(priceInfo.base * (1 + variation));
+            
+            // 전일 대비 변동 계산
+            const changePercent = variation * 100; // volatility를 그대로 변동률로 사용
+            const change = Math.round(currentPrice * (changePercent / 100));
+            
+            return {
+                symbol: stock.symbol,
+                name: stock.name,
+                sector: stock.sector,
+                price: currentPrice,
+                change: change,
+                changePercent: changePercent,
+                volume: Math.floor(Math.random() * 1000000) + 100000,
+                currency: 'KRW',
+                source: 'realistic_simulation'
+            };
+        }
+
+        // 글로벌 주식 검색 (미국, 일본 등)
+        async function searchGlobalStocks(query) {
+            try {
+                const searchUrl = `https://query1.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(query)}&quotesCount=10&newsCount=0`;
+                const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(searchUrl)}`;
+                
+                const response = await fetch(proxyUrl);
+                const data = await response.json();
+                const searchData = JSON.parse(data.contents);
+                
+                const stocksWithPrices = [];
+                
+                if (searchData.quotes) {
+                    for (const stock of searchData.quotes.slice(0, 5)) {
+                        const priceData = await getYahooStockPrice(stock.symbol);
+                        if (priceData) {
+                            stocksWithPrices.push({
+                                symbol: stock.symbol,
+                                name: stock.longname || stock.shortname,
+                                sector: stock.exchange || '해외주식',
+                                ...priceData
+                            });
+                        }
+                    }
+                }
+                
+                return stocksWithPrices;
+            } catch (error) {
+                console.error('글로벌 주식 검색 실패:', error);
+                return [];
+            }
+        }
+
+        // 환율 계산 함수
+        function getExchangeRate() {
+            // 실제로는 API에서 가져와야 하지만, 시뮬레이션용 고정 환율 사용
+            return 1320; // 1달러 = 1320원 (예시)
+        }
+
+        function convertCurrency(amount, fromCurrency, toCurrency) {
+            const exchangeRate = getExchangeRate();
+            
+            if (fromCurrency === 'USD' && toCurrency === 'KRW') {
+                return amount * exchangeRate;
+            } else if (fromCurrency === 'KRW' && toCurrency === 'USD') {
+                return amount / exchangeRate;
+            }
+            return amount;
+        }
+
+        function formatPrice(price, currency, decimals = 2) {
+            if (currency === 'USD') {
+                return '$' + price.toFixed(decimals);
+            } else {
+                return price.toLocaleString() + '원';
+            }
+        }
+
+        // 주식 가격 생성 (실제 API 대신 현실적인 랜덤 데이터)
+        function generateStockPrice(symbol) {
+            // 종목별 기본 가격 설정
+            const basePrices = {
+                '005930': 70000,  // 삼성전자
+                '000660': 120000, // SK하이닉스
+                '035420': 180000, // NAVER
+                '005380': 45000,  // 현대차
+                '051910': 85000,  // LG화학
+                '035720': 55000,  // 카카오
+                '207940': 850000, // 삼성바이오로직스
+                '068270': 180000, // 셀트리온
+                '373220': 420000, // LG에너지솔루션
+                '000270': 85000   // 기아
+            };
+            
+            const basePrice = basePrices[symbol] || (Math.floor(Math.random() * 50000) + 10000);
+            const variation = (Math.random() - 0.5) * 0.1; // ±10% 변동
+            const price = Math.floor(basePrice * (1 + variation));
+            const change = (Math.random() - 0.5) * 10; // ±5% 변동률
+            
+            return {
+                price: price,
+                change: change,
+                changePercent: change
+            };
+        }
+
+        // 검색 결과 표시
+        function displaySearchResults(stocks, container) {
+            if (stocks.length === 0) {
+                container.innerHTML = '<div style="text-align: center; padding: 20px; color: #666;">검색 결과가 없습니다.</div>';
+                return;
+            }
+            
+            let html = '';
+            stocks.forEach(stock => {
+                const isPositive = stock.changePercent >= 0;
+                const changeClass = isPositive ? 'positive' : 'negative';
+                const changeSymbol = isPositive ? '+' : '';
+                
+                // 통화에 따른 가격 표시
+                const currencySymbol = stock.isUSD ? '$' : '';
+                const currencyUnit = stock.isUSD ? '' : '원';
+                const priceDisplay = stock.isUSD ? 
+                    currencySymbol + stock.price.toLocaleString() : 
+                    stock.price.toLocaleString() + currencyUnit;
+                
+                html += '<div class="stock-card ' + changeClass + '" onclick="buyStock(\'' + stock.symbol + '\', \'' + stock.name + '\', ' + stock.price + ', \'' + (stock.currency || 'KRW') + '\')" style="cursor: pointer; margin-bottom: 10px;">' +
+                        '<div class="stock-header">' +
+                        '<div>' +
+                        '<div class="stock-symbol">' + stock.symbol + '</div>' +
+                        '<div style="font-size: 14px; color: #666;">' + stock.name + '</div>' +
+                        '<div style="font-size: 12px; color: #999;">' + stock.sector + '</div>' +
+                        '</div>' +
+                        '<div style="text-align: right;">' +
+                        '<div class="stock-price">' + priceDisplay + '</div>' +
+                        '<div class="stock-change">' + changeSymbol + stock.changePercent.toFixed(2) + '%</div>' +
+                        '</div>' +
+                        '</div>' +
+                        '</div>';
+            });
+            
+            container.innerHTML = html;
+        }
+
+        // 인기 종목 로드
+        async function loadPopularStocks() {
+            const popularDiv = document.getElementById('popularStocks');
+            if (!popularDiv) return;
+            
+            try {
+                console.log('📈 인기 종목 실제 데이터 로드 시작');
+                
+                // 인기 종목 심볼들 (실제 거래량 기준)
+                const popularSymbols = ['삼성전자', 'SK하이닉스', 'NAVER', '현대차', 'LG화학'];
+                const popularStocks = [];
+                
+                for (const stockName of popularSymbols) {
+                    try {
+                        const results = await searchFromLocalDatabase(stockName);
+                        if (results && results.length > 0) {
+                            popularStocks.push(results[0]); // 첫 번째 결과만
+                        }
+                    } catch (error) {
+                        console.log(`${stockName} 로드 실패`);
+                    }
+                }
+                
+                console.log('✅ 인기 종목 로드 완료:', popularStocks.length, '개');
+                displaySearchResults(popularStocks, popularDiv);
+            } catch (error) {
+                console.error('인기 종목 로드 실패:', error);
+                popularDiv.innerHTML = '<div style="text-align: center; color: #666;">인기 종목을 불러올 수 없습니다.</div>';
+            }
+        }
+
+        function buyStock(symbol, name, price, currency = 'KRW') {
+            // 실제 가격으로 차트 모달 표시 (가상 가격 생성 제거)
+            console.log(`🎯 ${name} 매수/매도 모달 열기 - 실제 가격: ${price} ${currency}`);
+            showAssetChart(symbol, name, price, 'stock', currency);
+        }
+
+        // 4. 대출 상품 기능
+        async function loadLoanProducts(modal) {
+            const modalBody = modal.querySelector('.modal-body');
+            const userExp = userAssets.exp || 0;
+            const userGrade = calculateUserGrade(userExp);
+            
+            // 등급별 대출 조건
+            const loanProducts = [
+                {
+                    grade: 'red',
+                    name: '신용대출',
+                    maxAmount: 30000000,
+                    rate: '4.5%',
+                    term: '60개월',
+                    description: '무담보 개인신용대출'
+                },
+                {
+                    grade: 'black',
+                    name: '주택담보대출',
+                    maxAmount: 500000000,
+                    rate: '3.2%',
+                    term: '360개월',
+                    description: '주택담보 장기대출'
+                },
+                {
+                    grade: 'black',
+                    name: '사업자대출',
+                    maxAmount: 100000000,
+                    rate: '3.8%',
+                    term: '120개월',
+                    description: '사업자금 전용대출'
+                }
+            ];
+            
+            let html = '';
+            loanProducts.forEach(product => {
+                const canAccess = userGrade === product.grade || 
+                    (product.grade === 'red' && ['red', 'black'].includes(userGrade)) ||
+                    (product.grade === 'black' && userGrade === 'black');
+                
+                html += '<div class="item-card ' + (canAccess ? '' : 'locked') + '">' +
+                        '<div class="item-header">' +
+                        '<span class="item-title">' + product.name + '</span>' +
+                        '<span class="item-price">' + product.rate + '</span>' +
+                        '</div>' +
+                        '<div class="item-desc">' +
+                        '최대한도: ' + product.maxAmount.toLocaleString() + '원<br>' +
+                        '대출기간: ' + product.term + '<br>' +
+                        product.description +
+                        '</div>' +
+                        (canAccess ? 
+                            '<button class="btn-primary" onclick="applyLoan(\'' + product.name + '\', ' + product.maxAmount + ', \'' + product.rate + '\')">신청하기</button>' :
+                            '<div style="color: #999; font-size: 14px;">' + product.grade.toUpperCase() + ' 등급 필요</div>'
+                        ) +
+                        '</div>';
+            });
+            
+            modalBody.innerHTML = html;
+        }
+
+        function applyLoan(productName, maxAmount, rate) {
+            const amount = prompt(productName + ' 신청\n최대한도: ' + maxAmount.toLocaleString() + '원\n대출 금액을 입력하세요:');
+            if (amount && parseInt(amount) <= maxAmount && parseInt(amount) > 0) {
+                alert(productName + ' ' + parseInt(amount).toLocaleString() + '원이 신청되었습니다.\n금리: ' + rate);
+            } else if (amount) {
+                alert('대출 가능 금액을 초과했습니다.\n최대: ' + maxAmount.toLocaleString() + '원');
+            }
+        }
+
+        // 5. ETF 및 펀드 기능
+        async function loadETFAndFunds(modal) {
+            const modalBody = modal.querySelector('.modal-body');
+            
+            try {
+                // 검색 기능 포함한 ETF/펀드 인터페이스
+                let html = '<div style="margin-bottom: 20px;">' +
+                          '<div style="display: flex; gap: 10px; margin-bottom: 15px;">' +
+                          '<input type="text" id="fundSearch" placeholder="ETF/펀드명 검색 (예: KODEX, 삼성)" ' +
+                          'style="flex: 1; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px;" ' +
+                          'onkeypress="if(event.key===\'Enter\') searchFunds()">' +
+                          '<button onclick="searchFunds()" style="padding: 12px 20px; background: #28a745; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px;">검색</button>' +
+                          '</div>' +
+                          '<div style="font-size: 12px; color: #666; margin-bottom: 15px;">' +
+                          '💡 팁: ETF명(KODEX 200) 또는 펀드사명(삼성자산운용)으로 검색 가능합니다' +
+                          '</div>' +
+                          '</div>' +
+                          '<div id="fundResults">' +
+                          '<div style="text-align: center; padding: 20px; color: #666;">' +
+                          '위에서 ETF/펀드를 검색해보세요' +
+                          '</div>' +
+                          '</div>' +
+                          '<div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee;">' +
+                          '<h4 style="margin-bottom: 15px; color: #333;">인기 상품</h4>' +
+                          '<div id="popularFunds">' +
+                          '<div style="text-align: center; color: #666;">인기 상품을 불러오는 중...</div>' +
+                          '</div>' +
+                          '</div>';
+                
+                modalBody.innerHTML = html;
+                
+                // 인기 상품 로드
+                loadPopularFunds();
+                
+            } catch (error) {
+                console.error('ETF/펀드 데이터 로드 실패:', error);
+                modalBody.innerHTML = '<div class="item-card">' +
+                                    '<div class="item-desc">ETF 및 펀드 데이터를 불러올 수 없습니다.</div>' +
+                                    '</div>';
+            }
+        }
+
+        // ETF/펀드 검색 함수
+        async function searchFunds() {
+            const searchInput = document.getElementById('fundSearch');
+            const resultsDiv = document.getElementById('fundResults');
+            const query = searchInput.value.trim();
+            
+            if (!query) {
+                alert('검색어를 입력해주세요.');
+                return;
+            }
+            
+            resultsDiv.innerHTML = '<div style="text-align: center; padding: 20px; color: #666;">검색 중...</div>';
+            
+            try {
+                const funds = await searchKoreanFunds(query);
+                displayFundResults(funds, resultsDiv);
+            } catch (error) {
+                console.error('ETF/펀드 검색 실패:', error);
+                resultsDiv.innerHTML = '<div style="text-align: center; padding: 20px; color: red;">검색에 실패했습니다. 다시 시도해주세요.</div>';
+            }
+        }
+
+        // 한국 ETF/펀드 검색
+        async function searchKoreanFunds(query) {
+            // 한국 주요 ETF/펀드 데이터베이스
+            const koreanFunds = [
+                { name: 'KODEX 200', type: 'ETF', description: 'KOSPI 200 지수 추종', company: '삼성자산운용', category: '국내주식' },
+                { name: 'TIGER 200', type: 'ETF', description: 'KOSPI 200 지수 추종', company: '미래에셋자산운용', category: '국내주식' },
+                { name: 'KODEX 코스닥150', type: 'ETF', description: 'KOSDAQ 150 지수 추종', company: '삼성자산운용', category: '국내주식' },
+                { name: 'TIGER 나스닥100', type: 'ETF', description: '나스닥 100 지수 추종', company: '미래에셋자산운용', category: '해외주식' },
+                { name: 'KODEX 미국S&P500', type: 'ETF', description: 'S&P 500 지수 추종', company: '삼성자산운용', category: '해외주식' },
+                { name: 'TIGER 차이나전기차SOLACTIVE', type: 'ETF', description: '중국 전기차 테마', company: '미래에셋자산운용', category: '테마' },
+                { name: 'KODEX 2차전지산업', type: 'ETF', description: '2차전지 관련 기업', company: '삼성자산운용', category: '테마' },
+                { name: 'TIGER 반도체', type: 'ETF', description: '반도체 관련 기업', company: '미래에셋자산운용', category: '섹터' },
+                { name: '삼성 글로벌펀드', type: '펀드', description: '글로벌 주식형 펀드', company: '삼성자산운용', category: '해외주식' },
+                { name: 'KB 성장동력펀드', type: '펀드', description: '국내 성장주 투자', company: 'KB자산운용', category: '국내주식' },
+                { name: '미래에셋 아시아퍼시픽', type: '펀드', description: '아시아 태평양 지역 투자', company: '미래에셋자산운용', category: '해외주식' },
+                { name: '한국투자 AI 테마펀드', type: '펀드', description: 'AI 관련 기업 투자', company: '한국투자신탁운용', category: '테마' },
+                { name: 'NH-Amundi 글로벌헬스케어', type: '펀드', description: '글로벌 헬스케어 섹터', company: 'NH-Amundi자산운용', category: '섹터' },
+                { name: '교보악사 ESG펀드', type: '펀드', description: 'ESG 기준 투자', company: '교보악사자산운용', category: 'ESG' },
+                { name: 'KODEX 골드선물', type: 'ETF', description: '금 선물 추종', company: '삼성자산운용', category: '원자재' },
+                { name: 'TIGER 원유선물Enhanced', type: 'ETF', description: '원유 선물 추종', company: '미래에셋자산운용', category: '원자재' },
+                { name: 'KODEX 인버스', type: 'ETF', description: 'KOSPI 200 인버스', company: '삼성자산운용', category: '인버스' },
+                { name: 'TIGER 미국채10년선물', type: 'ETF', description: '미국 국채 10년 추종', company: '미래에셋자산운용', category: '채권' },
+                { name: '신한 BNPP 유럽펀드', type: '펀드', description: '유럽 주식 투자', company: '신한BNPP자산운용', category: '해외주식' },
+                { name: '대신 밸런스펀드', type: '펀드', description: '주식+채권 혼합형', company: '대신자산운용', category: '혼합' }
+            ];
+            
+            // 검색어와 매칭되는 상품들 찾기
+            let matchedFunds = [];
+            if (query) {
+                matchedFunds = koreanFunds.filter(fund => 
+                    fund.name.includes(query) || 
+                    fund.company.includes(query) ||
+                    fund.category.includes(query) ||
+                    fund.description.includes(query)
+                );
+            } else {
+                // 검색어가 없으면 인기 상품 반환
+                const popularNames = ['KODEX 200', 'TIGER 나스닥100', 'KODEX 코스닥150', '삼성 글로벌펀드', 'TIGER 반도체'];
+                matchedFunds = koreanFunds.filter(fund => 
+                    popularNames.includes(fund.name)
+                );
+            }
+            
+            // 가격과 수익률 데이터 추가 (최대 10개)
+            const fundsWithPrices = [];
+            const maxResults = Math.min(matchedFunds.length, 10);
+            
+            for (let i = 0; i < maxResults; i++) {
+                const fund = matchedFunds[i];
+                const priceData = generateFundPrice(fund.name, fund.type);
+                fundsWithPrices.push({
+                    ...fund,
+                    price: priceData.price,
+                    returnRate: priceData.returnRate
+                });
+            }
+            
+            return fundsWithPrices;
+        }
+
+        // ETF/펀드 가격 생성
+        function generateFundPrice(name, type) {
+            // ETF는 일반적으로 1만원~5만원, 펀드는 1천원~2만원
+            const basePrice = type === 'ETF' ? 
+                Math.floor(Math.random() * 40000) + 10000 : 
+                Math.floor(Math.random() * 19000) + 1000;
+            
+            const variation = (Math.random() - 0.5) * 0.1; // ±10% 변동
+            const price = Math.floor(basePrice * (1 + variation));
+            const returnRate = (Math.random() - 0.3) * 20; // -6% ~ +14% 범위
+            
+            return {
+                price: price,
+                returnRate: returnRate
+            };
+        }
+
+        // ETF/펀드 검색 결과 표시
+        function displayFundResults(funds, container) {
+            if (funds.length === 0) {
+                container.innerHTML = '<div style="text-align: center; padding: 20px; color: #666;">검색 결과가 없습니다.</div>';
+                return;
+            }
+            
+            let html = '';
+            funds.forEach(fund => {
+                const isPositive = fund.returnRate >= 0;
+                const returnClass = isPositive ? 'positive' : 'negative';
+                const returnSymbol = isPositive ? '+' : '';
+                
+                html += '<div class="item-card" onclick="investFund(\'' + fund.name + '\', ' + fund.price + ')" style="cursor: pointer; margin-bottom: 10px;">' +
+                        '<div class="item-header">' +
+                        '<span class="item-title">' + fund.name + '</span>' +
+                        '<span class="item-price ' + returnClass + '">' + returnSymbol + fund.returnRate.toFixed(2) + '%</span>' +
+                        '</div>' +
+                        '<div class="item-desc">' +
+                        fund.description + '<br>' +
+                        '기준가: ' + fund.price.toLocaleString() + '원<br>' +
+                        '운용사: ' + fund.company + ' | 유형: ' + fund.type + ' | 분류: ' + fund.category +
+                        '</div>' +
+                        '</div>';
+            });
+            
+            container.innerHTML = html;
+        }
+
+        // 인기 ETF/펀드 로드
+        async function loadPopularFunds() {
+            const popularDiv = document.getElementById('popularFunds');
+            if (!popularDiv) return;
+            
+            try {
+                const popularFunds = await searchKoreanFunds('');
+                displayFundResults(popularFunds, popularDiv);
+            } catch (error) {
+                popularDiv.innerHTML = '<div style="text-align: center; color: #666;">인기 상품을 불러올 수 없습니다.</div>';
+            }
+        }
+
+        async function fetchETFAndFunds() {
+            // ETF 및 펀드 상품 데이터
+            const products = [
+                {
+                    name: 'KODEX 200',
+                    price: 42850,
+                    return: 2.34,
+                    description: 'KOSPI 200 지수를 추종하는 ETF',
+                    company: '삼성자산운용'
+                },
+                {
+                    name: 'TIGER 나스닥100',
+                    price: 18420,
+                    return: -1.23,
+                    description: '나스닥 100 지수 추종 ETF',
+                    company: '미래에셋자산운용'
+                },
+                {
+                    name: '삼성 글로벌펀드',
+                    price: 15670,
+                    return: 4.56,
+                    description: '글로벌 주식형 펀드',
+                    company: '삼성자산운용'
+                },
+                {
+                    name: 'KB 성장동력펀드',
+                    price: 12340,
+                    return: 1.89,
+                    description: '국내 성장주 투자 펀드',
+                    company: 'KB자산운용'
+                },
+                {
+                    name: 'KODEX 골드선물',
+                    price: 8950,
+                    return: 0.78,
+                    description: '금 선물 추종 ETF',
+                    company: '삼성자산운용'
+                }
+            ];
+            
+            // 랜덤한 수익률 변동 시뮬레이션
+            products.forEach(product => {
+                product.return += (Math.random() - 0.5) * 2;
+            });
+            
+            return products;
+        }
+
+        function investFund(productName, price) {
+            // ETF/펀드도 차트 모달로 대체 - 기호는 상품명으로 설정
+            const symbol = productName.replace(/\s+/g, '_'); // 공백을 언더스코어로 변환
+            const dynamicPrice = generateDynamicPrice(price, 0.015); // 주식보다 낮은 변동성
+            showAssetChart(symbol, productName, dynamicPrice, 'fund');
+        }
+
+        // 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🎖️ A3 등급 페이지 로드됨');
+            
+            if (!checkLoginAndInit()) {
+                return;
+            }
+            
+            // Firebase 데이터 로드
+            setTimeout(() => {
+                loadUserDataFromFirebase();
+            }, 1000);
+            
+            // 등급 카드에 클릭 이벤트 추가
+            const gradeCards = document.querySelectorAll('.grade-card');
+            gradeCards.forEach(card => {
+                const titleElement = card.querySelector('.grade-title') || card.querySelector('h3');
+                if (titleElement) {
+                    const title = titleElement.textContent;
+                    card.addEventListener('click', () => {
+                        handleGradeClick(title);
+                    });
+                }
+            });
+        }); // DOMContentLoaded 닫기
 
         // 네비게이션 함수
         function goToPage(page) {
@@ -468,13 +2622,15 @@
             document.querySelectorAll('.nav-item').forEach(item => {
                 item.classList.remove('active');
             });
-            document.querySelector('.black-button').classList.remove('active');
+            
+            // grade-button은 활성화 상태가 없으므로 제거
+            // const gradeButton = document.querySelector('.grade-button');
+            // if (gradeButton) gradeButton.classList.remove('active');
             
             if (page !== 'a3.html') {
                 window.location.href = page;
-            } else {
-                document.querySelector('.black-button').classList.add('active');
             }
+            // a3.html은 등급 페이지이므로 특별한 활성화 상태 없음
         }
 
         // 기타 함수들

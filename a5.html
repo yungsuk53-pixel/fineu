@@ -133,6 +133,7 @@
             background: white;
             border-radius: 16px;
             padding: 20px;
+            margin-bottom: 15px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             cursor: pointer;
             transition: all 0.3s ease;
@@ -305,12 +306,67 @@
             transition: all 0.3s ease;
             position: relative;
             top: -35px;
-            z-index: 10;
+            z-index: 150;
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .grade-button {
+            width: 55px;
+            height: 55px;
+            background: #fafaf8;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            top: -35px;
+            z-index: 150;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .grade-button:hover {
+            transform: scale(1.1);
+        }
+
+        .grade-button img {
+            width: 45px;
+            height: 45px;
+            object-fit: contain;
         }
 
         .black-button:hover {
             transform: scale(1.1);
+        }
+
+        /* 등급별 버튼 스타일 */
+        .yellow-button {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #333;
+        }
+        
+        .green-button {
+            background: linear-gradient(45deg, #32CD32, #228B22);
+            color: white;
+        }
+        
+        .blue-button {
+            background: linear-gradient(45deg, #1E90FF, #0066CC);
+            color: white;
+        }
+        
+        .red-button {
+            background: linear-gradient(45deg, #FF4444, #CC0000);
+            color: white;
+        }
+        
+        .black-button {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #333;
         }
 
         /* 반응형 */
@@ -412,7 +468,9 @@
                 <img src="images/문서.png" alt="문서">
             </div>
         </div>
-        <div class="black-button">BLACK</div>
+        <div class="grade-button" id="gradeButton" onclick="goToPage('a3.html')">
+            <img id="gradeButtonImage" src="images/YELLOW ㅇ.png" alt="YELLOW">
+        </div>
         <div class="nav-item" onclick="goToPage('a4.html')">
             <div class="nav-icon">
                 <img src="images/채팅.png" alt="채팅">
@@ -426,6 +484,190 @@
     </div>
 
     <script>
+        let currentUser = null;
+        let userAssets = {};
+
+        // 등급 시스템 설정 (a1과 동일)
+        const levelSystem = {
+            YELLOW: { name: 'YELLOW', exp: 0, max: 5000, image: 'YELLOW ㅁ.png', nav: 'YELLOW ㅇ', navImage: 'YELLOW ㅇ.png' },
+            GREEN: { name: 'GREEN', exp: 5000, max: 15000, image: 'GREEN ㅁ.png', nav: 'GREEN ㅇ', navImage: 'GREEN ㅇ.png' },
+            BLUE: { name: 'BLUE', exp: 15000, max: 30000, image: 'BLUE ㅁ.png', nav: 'BLUE ㅇ', navImage: 'BLUE ㅇ.png' },
+            RED: { name: 'RED', exp: 30000, max: 50000, image: 'RED ㅁ.png', nav: 'RED ㅇ', navImage: 'RED ㅇ.png' },
+            BLACK: { name: 'BLACK', exp: 50000, max: 999999, image: 'BLACK ㅁ.png', nav: 'BLACK ㅇ', navImage: 'BLACK ㅇ.png' }
+        };
+
+        // Firebase에서 사용자 데이터 가져오기 (a1과 동일)
+        async function loadUserDataFromFirebase() {
+            console.log('=== A5 데이터 로드 시작 ===');
+            
+            try {
+                // 1. Firebase 연결 확인
+                if (!window.firebaseDB) {
+                    console.log('A5 Firebase 연결 대기 중...');
+                    setTimeout(loadUserDataFromFirebase, 1000);
+                    return;
+                }
+                console.log('✅ A5 Firebase 연결 확인됨');
+
+                // 2. 로컬스토리지에서 사용자 ID 가져오기 또는 기본값 설정
+                const currentUser = JSON.parse(localStorage.getItem('fineu_current_user') || '{}');
+                const userId = currentUser.id || currentUser.username || 'Test';
+                console.log('👤 A5 사용자 ID:', userId);
+                
+                // 3. Firebase에서 데이터 가져오기
+                const userRef = window.firebaseRef(window.firebaseDB, `users/${userId}`);
+                const snapshot = await window.firebaseGet(userRef);
+                console.log('📊 A5 데이터 스냅샷 확인:', snapshot.exists());
+
+                if (snapshot.exists()) {
+                    // Firebase에서 데이터 로드 성공
+                    const firebaseData = snapshot.val();
+                    console.log('✅ A5 Firebase 데이터 로드 성공:', firebaseData);
+                    
+                    // userAssets에 데이터 설정
+                    userAssets = {
+                        id: firebaseData.id || userId,
+                        name: firebaseData.name || userId,
+                        cash: firebaseData.cash || 0,
+                        totalAssets: firebaseData.totalAssets || firebaseData.virtualBalance || firebaseData.cash || 0,
+                        virtualBalance: firebaseData.virtualBalance || firebaseData.cash || 0,
+                        level: firebaseData.level || 'yellow',
+                        exp: firebaseData.exp || firebaseData.experience || 0,
+                        experience: firebaseData.experience || firebaseData.exp || 0,
+                        portfolio: firebaseData.portfolio || {},
+                        joinDate: firebaseData.joinDate || new Date().toISOString().split('T')[0],
+                        lastUpdated: firebaseData.lastUpdated || new Date().toISOString(),
+                        studyProgress: firebaseData.studyProgress || {}
+                    };
+                    
+                    console.log('✅ A5 userAssets 설정 완료:', userAssets);
+                    
+                    // 등급 업데이트
+                    const currentLevel = calculateUserLevel(userAssets.exp || userAssets.experience || 0);
+                    userAssets.level = currentLevel.toLowerCase();
+                    updateGradeButton(userAssets.level);
+                    
+                } else {
+                    // Firebase에 데이터가 없으면 기본 데이터 설정
+                    console.log('❌ A5 Firebase에 데이터 없음 - 기본 데이터 설정');
+                    userAssets = {
+                        id: userId,
+                        name: userId,
+                        cash: 10000000,
+                        totalAssets: 10000000,
+                        virtualBalance: 10000000,
+                        level: 'yellow',
+                        exp: 0,
+                        experience: 0,
+                        portfolio: {},
+                        joinDate: new Date().toISOString().split('T')[0],
+                        lastUpdated: new Date().toISOString(),
+                        studyProgress: {}
+                    };
+                    updateGradeButton('yellow');
+                }
+                
+                // 5. localStorage에 백업 저장
+                localStorage.setItem('fineu_user_assets', JSON.stringify(userAssets));
+                console.log('✅ A5 localStorage 백업 완료');
+
+            } catch (error) {
+                console.error('❌ A5 데이터 로드 오류:', error);
+                // 오류 발생 시 기본 데이터로 초기화
+                userAssets = {
+                    id: 'Test',
+                    name: 'Test',
+                    cash: 10000000,
+                    level: 'yellow',
+                    exp: 0,
+                    experience: 0
+                };
+                updateGradeButton('yellow');
+            }
+        }
+
+        // 사용자 등급 계산 (a1과 동일)
+        function calculateUserLevel(exp) {
+            for (const [level, data] of Object.entries(levelSystem)) {
+                if (exp >= data.exp && exp < data.max) {
+                    return level;
+                }
+            }
+            return 'BLACK'; // 최고 등급
+        }
+
+        // 등급별 색상 반환 (a1과 동일)
+        function getUserLevelColor(level) {
+            const colors = {
+                'YELLOW': '#FFE99E',
+                'GREEN': '#C1EDB3',
+                'BLUE': '#ADD9FA',
+                'RED': '#FAABAD',
+                'BLACK': '#333333'
+            };
+            return colors[level] || colors['YELLOW'];
+        }
+
+        // 등급 계산 함수
+        function calculateUserGrade(exp) {
+            return calculateUserLevel(exp).toLowerCase();
+        }
+
+        // 로그인 확인 및 초기화
+        function checkLoginAndInit() {
+            const savedUser = localStorage.getItem('fineu_current_user');
+            if (!savedUser) {
+                console.log('❌ 로그인 정보 없음 - index.html로 이동');
+                window.location.href = 'index.html';
+                return false;
+            }
+            
+            currentUser = JSON.parse(savedUser);
+            console.log('✅ A5 로그인 사용자:', currentUser.id);
+            return true;
+        }
+
+        // 사용자 등급 로드 및 표시
+        async function loadUserGrade() {
+            try {
+                if (!window.firebaseDB || !currentUser) {
+                    console.log('🔥 Firebase 또는 사용자 정보 대기 중...');
+                    setTimeout(loadUserGrade, 500);
+                    return;
+                }
+                
+                const userRef = window.firebaseRef(window.firebaseDB, `users/${currentUser.id}`);
+                const snapshot = await window.firebaseGet(userRef);
+                
+                if (snapshot.exists()) {
+                    const userData = snapshot.val();
+                    const experience = userData.experience || 0;
+                    const grade = calculateUserGrade(experience);
+                    
+                    // 등급 버튼 업데이트
+                    updateGradeButton(grade);
+                }
+            } catch (error) {
+                console.error('A5 등급 로드 실패:', error);
+            }
+        }
+
+        // 등급 버튼 업데이트 (a1과 동일한 로직)
+        function updateGradeButton(grade) {
+            const upperGrade = grade.toUpperCase();
+            const levelData = levelSystem[upperGrade];
+            
+            if (levelData) {
+                // 등급 버튼 이미지 업데이트
+                const gradeButtonImage = document.getElementById('gradeButtonImage');
+                if (gradeButtonImage && levelData.navImage) {
+                    gradeButtonImage.src = `images/${levelData.navImage}`;
+                    gradeButtonImage.alt = levelData.name;
+                    console.log('🎖️ A5 등급 버튼 업데이트:', upperGrade, levelData.navImage);
+                }
+            }
+        }
+
         // 소셜 링크 열기
         function openSocial(platform) {
             const links = {
@@ -459,14 +701,21 @@
 
         // 네비게이션 함수
         function goToPage(page) {
+            console.log('🔄 A5에서 페이지 이동:', page);
+            
             // 네비게이션 활성 상태 업데이트
             document.querySelectorAll('.nav-item').forEach(item => {
                 item.classList.remove('active');
             });
-            event.currentTarget.classList.add('active');
             
             if (page !== 'a5.html') {
                 window.location.href = page;
+            } else {
+                // 현재 페이지면 활성 상태 유지
+                const currentNavItem = document.querySelector('.nav-item[onclick*="a5.html"]');
+                if (currentNavItem) {
+                    currentNavItem.classList.add('active');
+                }
             }
         }
 
@@ -486,15 +735,14 @@
         document.addEventListener('DOMContentLoaded', function() {
             console.log('⚙️ A5 설정 페이지 로드됨');
             
-            const savedUser = localStorage.getItem('fineu_current_user');
-            if (!savedUser) {
-                console.log('❌ 로그인 정보 없음 - index.html로 이동');
-                window.location.href = 'index.html';
+            if (!checkLoginAndInit()) {
                 return;
             }
             
-            const currentUser = JSON.parse(savedUser);
-            console.log('✅ A5 로그인 사용자:', currentUser.id);
+            // Firebase 데이터 로드
+            setTimeout(() => {
+                loadUserDataFromFirebase();
+            }, 1000);
         });
     </script>
 </body>
