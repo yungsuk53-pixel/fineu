@@ -6,6 +6,33 @@
     <title>FINE U - 금융 퀴즈</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
+        import { getDatabase, ref, get, set, update } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyApKJHvNXftrzXAZsH41FxqVj0_Byh_V28",
+            authDomain: "invest-97aa7.firebaseapp.com",
+            databaseURL: "https://invest-97aa7-default-rtdb.firebaseio.com",
+            projectId: "invest-97aa7",
+            storageBucket: "invest-97aa7.firebasestorage.app",
+            messagingSenderId: "136719207030",
+            appId: "1:136719207030:web:391bd46b7b79800c0fed57",
+            measurementId: "G-78K35WTPGQ"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        
+        window.firebaseDB = database;
+        window.firebaseRef = ref;
+        window.firebaseGet = get;
+        window.firebaseSet = set;
+        window.firebaseUpdate = update;
+    </script>
+    
     <style>
         * {
             margin: 0;
@@ -94,7 +121,7 @@
         }
         
         .star-icon.completed {
-            color: #d0d0d0;
+            color: #4CAF50;
         }
         
         .lock-icon {
@@ -173,8 +200,8 @@
             width: 56px;
             height: 56px;
             border-radius: 50%;
-            background: #2c2c2c;
-            color: white;
+            background: #FFE99E;
+            color: #333;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -269,6 +296,49 @@
             font-weight: 600;
             cursor: pointer;
         }
+        
+        .explanation-box {
+            background: #f0f8ff;
+            border-left: 4px solid #2196f3;
+            padding: 12px;
+            margin-top: 12px;
+            border-radius: 4px;
+        }
+        
+        .reward-animation {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #333;
+            padding: 20px 30px;
+            border-radius: 16px;
+            font-size: 18px;
+            font-weight: bold;
+            z-index: 2000;
+            box-shadow: 0 8px 24px rgba(255, 215, 0, 0.4);
+            animation: rewardPop 2s ease-in-out forwards;
+        }
+        
+        @keyframes rewardPop {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.5);
+            }
+            20% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1.1);
+            }
+            80% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.8);
+            }
+        }
     </style>
 </head>
 <body>
@@ -278,7 +348,7 @@
         <i class="fas fa-arrow-left"></i>
     </button>
     <div class="header-title">금융 퀴즈</div>
-    <button class="calendar-btn">
+    <button class="calendar-btn" onclick="showCalendar()">
         <i class="fas fa-calendar-alt"></i>
     </button>
 </div>
@@ -301,28 +371,28 @@
         <i class="fas fa-lock lock-icon"></i>
         <div class="quiz-title">고급</div>
         <div class="quiz-desc">전문가 수준의 금융 지식을 테스트합니다</div>
-        <span class="badge-tag badge-blue">BLUE 등급 달성 시 열람 가능</span>
+        <span class="badge-tag badge-blue">BLACK 등급 달성 시 열람 가능</span>
     </div>
 </div>
 
 <div class="bottom-navigation">
     <div class="nav-container">
-        <button class="nav-item" onclick="location.href='index.html'">
+        <button class="nav-item" onclick="location.href='a1.html'">
             <i class="fas fa-home"></i>
             <span>홈</span>
         </button>
-        <button class="nav-item active">
+        <button class="nav-item active" onclick="location.href='a2.html'">
             <i class="fas fa-file-alt"></i>
-            <span>뉴스</span>
+            <span>학습</span>
         </button>
         <button class="nav-item" style="position: relative;">
-            <div class="level-badge">BLACK</div>
+            <div class="level-badge" id="levelBadge">YELLOW</div>
         </button>
-        <button class="nav-item">
+        <button class="nav-item" onclick="location.href='a4.html'">
             <i class="fas fa-comment-dots"></i>
             <span>채팅</span>
         </button>
-        <button class="nav-item">
+        <button class="nav-item" onclick="location.href='a5.html'">
             <i class="fas fa-ellipsis-h"></i>
             <span>더보기</span>
         </button>
@@ -351,7 +421,12 @@
             </div>
         </div>
         
-        <button class="submit-btn" onclick="submitAnswer()">답변 제출</button>
+        <div id="explanationBox" class="explanation-box" style="display: none;">
+            <strong>💡 설명:</strong>
+            <div id="explanationText"></div>
+        </div>
+        
+        <button class="submit-btn" id="submitBtn" onclick="submitAnswer()">답변 제출</button>
     </div>
 </div>
 
@@ -361,6 +436,94 @@ let currentLevel = '';
 let currentIndex = 0;
 let selectedIndex = -1;
 let score = 0;
+let userAssets = {};
+let isAnswered = false;
+
+function getTodayDate() {
+    const now = new Date();
+    const koreaTime = new Date(now.toLocaleString("en-US", {timeZone: "Asia/Seoul"}));
+    const year = koreaTime.getFullYear();
+    const month = String(koreaTime.getMonth() + 1).padStart(2, '0');
+    const day = String(koreaTime.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+async function loadUserData() {
+    const savedUser = localStorage.getItem('fineu_current_user');
+    if (!savedUser) {
+        location.href = 'index.html';
+        return;
+    }
+    
+    const currentUser = JSON.parse(savedUser);
+    const userId = currentUser.id || currentUser.username || 'Test';
+    
+    try {
+        if (window.firebaseDB) {
+            const userRef = window.firebaseRef(window.firebaseDB, `users/${userId}`);
+            const snapshot = await window.firebaseGet(userRef);
+            
+            if (snapshot.exists()) {
+                userAssets = snapshot.val();
+            } else {
+                userAssets = JSON.parse(localStorage.getItem('fineu_user_assets') || '{}');
+            }
+        } else {
+            userAssets = JSON.parse(localStorage.getItem('fineu_user_assets') || '{}');
+        }
+        
+        updateLevelBadge();
+        checkQuizAccess();
+    } catch (error) {
+        console.error('사용자 데이터 로드 실패:', error);
+        userAssets = JSON.parse(localStorage.getItem('fineu_user_assets') || '{}');
+    }
+}
+
+function updateLevelBadge() {
+    const level = (userAssets.level || 'yellow').toUpperCase();
+    const badge = document.getElementById('levelBadge');
+    if (badge) {
+        badge.textContent = level;
+        
+        const colors = {
+            'YELLOW': '#FFE99E',
+            'GREEN': '#C1EDB3',
+            'BLUE': '#ADD9FA',
+            'RED': '#FAABAD',
+            'BLACK': '#333333'
+        };
+        badge.style.background = colors[level] || colors['YELLOW'];
+        badge.style.color = level === 'BLACK' ? 'white' : '#333';
+    }
+}
+
+function checkQuizAccess() {
+    const level = (userAssets.level || 'yellow').toUpperCase();
+    const exp = userAssets.exp || 0;
+    
+    // RED 등급 이상이면 중급 잠금 해제
+    if (exp >= 30000) {
+        const intermediateCard = document.getElementById('intermediateQuiz');
+        intermediateCard.classList.remove('locked');
+        intermediateCard.innerHTML = `
+            <i class="fas fa-star star-icon" id="intermediateStar"></i>
+            <div class="quiz-title">중급</div>
+            <div class="quiz-desc">심화된 금융 지식을 테스트합니다</div>
+        `;
+    }
+    
+    // BLACK 등급이면 고급 잠금 해제
+    if (exp >= 50000) {
+        const advancedCard = document.getElementById('advancedQuiz');
+        advancedCard.classList.remove('locked');
+        advancedCard.innerHTML = `
+            <i class="fas fa-star star-icon" id="advancedStar"></i>
+            <div class="quiz-title">고급</div>
+            <div class="quiz-desc">전문가 수준의 금융 지식을 테스트합니다</div>
+        `;
+    }
+}
 
 function loadQuizData() {
     const savedData = localStorage.getItem('todayFinancialData');
@@ -372,22 +535,116 @@ function loadQuizData() {
     const data = JSON.parse(savedData);
     quizData = data.quizzes;
     
+    // 중급, 고급 퀴즈가 없으면 생성
+    if (!quizData.intermediate) {
+        quizData.intermediate = generateIntermediateQuiz();
+    }
+    if (!quizData.advanced) {
+        quizData.advanced = generateAdvancedQuiz();
+    }
+    
     checkCompletionStatus();
 }
 
+function generateIntermediateQuiz() {
+    return [
+        {
+            question: "PER(주가수익비율)이 10인 주식의 의미는?",
+            options: ["주가가 10원", "투자금 회수에 10년", "수익률이 10%", "배당금이 10원"],
+            correct: 1,
+            explanation: "PER 10은 현재 주가 수준에서 투자금을 회수하는데 10년이 걸린다는 의미입니다."
+        },
+        {
+            question: "채권 가격과 금리의 관계는?",
+            options: ["비례 관계", "반비례 관계", "무관계", "불규칙"],
+            correct: 1,
+            explanation: "금리가 오르면 채권 가격은 하락하고, 금리가 내리면 채권 가격은 상승합니다."
+        },
+        {
+            question: "환헤지의 목적은?",
+            options: ["환차익 극대화", "환율 변동 위험 제거", "수수료 절감", "세금 절약"],
+            correct: 1,
+            explanation: "환헤지는 환율 변동으로 인한 손실 위험을 줄이기 위한 전략입니다."
+        },
+        {
+            question: "ROE(자기자본수익률)가 높은 기업의 특징은?",
+            options: ["부채가 많음", "자본 효율성이 높음", "주가가 높음", "배당금이 많음"],
+            correct: 1,
+            explanation: "ROE가 높다는 것은 자기자본을 효율적으로 활용해 수익을 창출한다는 의미입니다."
+        },
+        {
+            question: "달러 코스트 평균법의 장점은?",
+            options: ["최고 수익률 보장", "평균 매입단가 하락", "거래 수수료 면제", "원금 보장"],
+            correct: 1,
+            explanation: "정기적으로 일정 금액을 투자하여 평균 매입단가를 낮추는 효과가 있습니다."
+        }
+    ];
+}
+
+function generateAdvancedQuiz() {
+    return [
+        {
+            question: "샤프지수(Sharpe Ratio)가 측정하는 것은?",
+            options: ["절대 수익률", "위험 대비 수익률", "변동성", "최대 손실"],
+            correct: 1,
+            explanation: "샤프지수는 위험 한 단위당 초과수익률을 측정하는 지표입니다."
+        },
+        {
+            question: "옵션의 내재가치와 시간가치의 관계는?",
+            options: ["옵션 가격 = 내재가치 + 시간가치", "옵션 가격 = 내재가치 - 시간가치", "옵션 가격 = 내재가치 × 시간가치", "옵션 가격 = 내재가치 ÷ 시간가치"],
+            correct: 0,
+            explanation: "옵션 프리미엄은 내재가치와 시간가치의 합으로 구성됩니다."
+        },
+        {
+            question: "베타(Beta) 값이 1.5인 주식의 특징은?",
+            options: ["시장보다 안정적", "시장과 동일한 변동성", "시장보다 1.5배 변동성", "변동성 없음"],
+            correct: 2,
+            explanation: "베타 1.5는 시장이 1% 움직일 때 해당 주식은 1.5% 움직인다는 의미입니다."
+        },
+        {
+            question: "듀레이션(Duration)이 긴 채권의 특징은?",
+            options: ["금리 민감도가 낮음", "금리 민감도가 높음", "만기가 짧음", "신용등급이 높음"],
+            correct: 1,
+            explanation: "듀레이션이 길수록 금리 변동에 대한 채권 가격의 민감도가 높습니다."
+        },
+        {
+            question: "VaR(Value at Risk)의 의미는?",
+            options: ["최대 수익 가능성", "평균 수익률", "최대 손실 가능성", "변동성 지표"],
+            correct: 2,
+            explanation: "VaR는 특정 신뢰수준에서 일정 기간 동안 발생할 수 있는 최대 손실을 나타냅니다."
+        }
+    ];
+}
+
 function checkCompletionStatus() {
-    const today = new Date().toLocaleDateString('ko-KR');
-    const completedQuizzes = JSON.parse(localStorage.getItem('completedQuizzes') || '{}');
-    const todayCompleted = completedQuizzes[today] || {};
+    const today = getTodayDate();
+    const studyProgress = userAssets.studyProgress || {};
+    const todayProgress = studyProgress[today] || {};
     
-    if (todayCompleted.beginner) {
+    if (todayProgress.financialQuiz) {
         document.getElementById('beginnerStar').classList.add('completed');
+    }
+    if (todayProgress.intermediateQuiz) {
+        const star = document.getElementById('intermediateStar');
+        if (star) star.classList.add('completed');
+    }
+    if (todayProgress.advancedQuiz) {
+        const star = document.getElementById('advancedStar');
+        if (star) star.classList.add('completed');
     }
 }
 
 function startQuiz(level) {
-    if (level !== 'beginner') {
-        alert(`${level === 'intermediate' ? 'RED' : 'BLUE'} 등급 달성 시 플레이 가능합니다.`);
+    const userLevel = (userAssets.level || 'yellow').toUpperCase();
+    const exp = userAssets.exp || 0;
+    
+    if (level === 'intermediate' && exp < 30000) {
+        alert('RED 등급(30,000 EXP) 달성 시 플레이 가능합니다.');
+        return;
+    }
+    
+    if (level === 'advanced' && exp < 50000) {
+        alert('BLACK 등급(50,000 EXP) 달성 시 플레이 가능합니다.');
         return;
     }
     
@@ -395,13 +652,20 @@ function startQuiz(level) {
     currentIndex = 0;
     score = 0;
     selectedIndex = -1;
+    isAnswered = false;
     
     loadQuestion();
     document.getElementById('quizModal').classList.add('show');
 }
 
 function loadQuestion() {
-    const question = quizData[currentLevel][currentIndex];
+    const questions = quizData[currentLevel];
+    if (!questions || currentIndex >= questions.length) {
+        completeQuiz();
+        return;
+    }
+    
+    const question = questions[currentIndex];
     
     document.getElementById('currentQ').textContent = currentIndex + 1;
     document.getElementById('questionText').textContent = question.question;
@@ -412,9 +676,14 @@ function loadQuestion() {
     });
     
     selectedIndex = -1;
+    isAnswered = false;
+    document.getElementById('explanationBox').style.display = 'none';
+    document.getElementById('submitBtn').textContent = '답변 제출';
 }
 
 function selectOption(index) {
+    if (isAnswered) return;
+    
     document.querySelectorAll('.option').forEach(opt => {
         opt.classList.remove('selected');
     });
@@ -423,6 +692,12 @@ function selectOption(index) {
 }
 
 function submitAnswer() {
+    if (isAnswered) {
+        currentIndex++;
+        loadQuestion();
+        return;
+    }
+    
     if (selectedIndex === -1) {
         alert('답을 선택해주세요.');
         return;
@@ -438,38 +713,85 @@ function submitAnswer() {
     
     if (isCorrect) score++;
     
-    setTimeout(() => {
-        currentIndex++;
-        if (currentIndex < 5) {
-            loadQuestion();
-        } else {
-            completeQuiz();
-        }
-    }, 1500);
+    // 설명 표시
+    document.getElementById('explanationText').textContent = question.explanation;
+    document.getElementById('explanationBox').style.display = 'block';
+    
+    isAnswered = true;
+    document.getElementById('submitBtn').textContent = currentIndex < 4 ? '다음 문제' : '퀴즈 완료';
 }
 
-function completeQuiz() {
-    const today = new Date().toLocaleDateString('ko-KR');
-    const completedQuizzes = JSON.parse(localStorage.getItem('completedQuizzes') || '{}');
+async function completeQuiz() {
+    const today = getTodayDate();
     
-    if (!completedQuizzes[today]) {
-        completedQuizzes[today] = {};
+    if (!userAssets.studyProgress) {
+        userAssets.studyProgress = {};
     }
-    completedQuizzes[today][currentLevel] = true;
-    localStorage.setItem('completedQuizzes', JSON.stringify(completedQuizzes));
+    if (!userAssets.studyProgress[today]) {
+        userAssets.studyProgress[today] = {};
+    }
     
-    const exp = 50 + (score * 10);
-    let userExp = parseInt(localStorage.getItem('userExp') || 0);
-    userExp += exp;
-    localStorage.setItem('userExp', userExp);
+    const quizKey = currentLevel === 'beginner' ? 'financialQuiz' : 
+                    currentLevel === 'intermediate' ? 'intermediateQuiz' : 'advancedQuiz';
     
-    alert(`퀴즈 완료!\n정답: ${score}/5\n획득 경험치: +${exp} EXP`);
+    if (!userAssets.studyProgress[today][quizKey]) {
+        userAssets.studyProgress[today][quizKey] = true;
+        
+        const baseReward = currentLevel === 'beginner' ? 50000 : 
+                          currentLevel === 'intermediate' ? 75000 : 100000;
+        const baseExp = currentLevel === 'beginner' ? 100 : 
+                       currentLevel === 'intermediate' ? 150 : 200;
+        
+        const cashReward = Math.floor(baseReward * (score / 5));
+        const expReward = Math.floor(baseExp * (score / 5));
+        
+        userAssets.cash = (userAssets.cash || 0) + cashReward;
+        userAssets.totalAssets = (userAssets.totalAssets || 0) + cashReward;
+        userAssets.virtualBalance = (userAssets.virtualBalance || 0) + cashReward;
+        userAssets.exp = (userAssets.exp || 0) + expReward;
+        
+        try {
+            const savedUser = JSON.parse(localStorage.getItem('fineu_current_user'));
+            const userId = savedUser.id || savedUser.username || 'Test';
+            
+            if (window.firebaseDB) {
+                const userRef = window.firebaseRef(window.firebaseDB, `users/${userId}`);
+                await window.firebaseSet(userRef, userAssets);
+            }
+            
+            localStorage.setItem('fineu_user_assets', JSON.stringify(userAssets));
+            
+            showRewardAnimation(cashReward, expReward);
+            
+        } catch (error) {
+            console.error('데이터 저장 실패:', error);
+        }
+    } else {
+        alert(`퀴즈 완료!\n정답: ${score}/5\n이미 오늘 완료한 퀴즈입니다.`);
+    }
     
     document.getElementById('quizModal').classList.remove('show');
     checkCompletionStatus();
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+function showRewardAnimation(cash, exp) {
+    const rewardDiv = document.createElement('div');
+    rewardDiv.className = 'reward-animation';
+    rewardDiv.innerHTML = `🎉 퀴즈 완료!<br>정답: ${score}/5<br>💰 ${cash.toLocaleString()}원<br>⭐ ${exp} EXP`;
+    document.body.appendChild(rewardDiv);
+    
+    setTimeout(() => {
+        document.body.removeChild(rewardDiv);
+    }, 2000);
+}
+
+function showCalendar() {
+    const today = getTodayDate();
+    alert(`📅 오늘 날짜: ${today}\n\n매일 새로운 퀴즈가 업데이트됩니다!`);
+}
+
+document.addEventListener('DOMContentLoaded', async function() {
+    await loadUserData();
     loadQuizData();
 });
 </script>
