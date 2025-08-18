@@ -129,6 +129,16 @@
             transform: translateY(0);
         }
 
+        .study-card.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .study-card.disabled:hover {
+            transform: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
         .study-title {
             font-size: 16px;
             font-weight: 600;
@@ -168,11 +178,18 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .scrap-section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
 
         .scrap-content {
             text-align: center;
-            color: #333333;
+            color: #666;
             font-size: 16px;
             font-weight: 600;
         }
@@ -321,17 +338,17 @@
     <div class="main-content">
         <div class="page-title">STUDY ZONE</div>
 
-        <div class="study-card fade-in" id="card-financial-terms" onclick="goToTermsPage()" style="animation-delay: 0.1s">
+        <div class="study-card fade-in" id="card-financial-terms" style="animation-delay: 0.1s">
             <div class="study-title">금융 용어</div>
             <i class="fas fa-star star-icon" id="star-financial-terms"></i>
         </div>
 
-        <div class="study-card fade-in" id="card-financial-news" onclick="goToNewsPage()" style="animation-delay: 0.2s">
+        <div class="study-card fade-in" id="card-financial-news" style="animation-delay: 0.2s">
             <div class="study-title">금융 뉴스</div>
             <i class="fas fa-star star-icon" id="star-financial-news"></i>
         </div>
 
-        <div class="study-card fade-in" id="card-financial-quiz" onclick="goToQuizPage()" style="animation-delay: 0.3s">
+        <div class="study-card fade-in" id="card-financial-quiz" style="animation-delay: 0.3s">
             <div class="study-title">금융 퀴즈</div>
             <i class="fas fa-star star-icon" id="star-financial-quiz"></i>
         </div>
@@ -339,10 +356,10 @@
         <div class="divider"></div>
 
         <div class="scrap-section fade-in" style="animation-delay: 0.4s" onclick="goToScrapPage()">
-    <div class="scrap-content">
-        스크랩
-    </div>
-</div>
+            <div class="scrap-content">
+                스크랩
+            </div>
+        </div>
     </div>
 
     <div class="bottom-nav">
@@ -375,9 +392,8 @@
         const GEMINI_API_KEY = 'AIzaSyBJhMtNOYyCfl6NRCQQz_CkTUHWP2TNweI';
         
         let currentUser = null;
-let userAssets = {};
-let isTodayDataReady = false;  // 데이터 준비 상태 추가
-
+        let userAssets = {};
+        let isTodayDataReady = false;
         
         const levelSystem = {
             YELLOW: { name: 'YELLOW', exp: 0, max: 5000, navImage: 'YELLOW ㅇ.png' },
@@ -396,12 +412,10 @@ let isTodayDataReady = false;  // 데이터 준비 상태 추가
             return `${year}-${month}-${day}`;
         }
 
-        // 2주 이상 지난 데이터 삭제
         async function cleanOldData() {
             const today = new Date();
             const twoWeeksAgo = new Date(today.getTime() - (14 * 24 * 60 * 60 * 1000));
             
-            // localStorage에서 오래된 캐시 삭제
             const keys = Object.keys(localStorage);
             keys.forEach(key => {
                 if (key.startsWith('todayFinancialData_')) {
@@ -414,7 +428,6 @@ let isTodayDataReady = false;  // 데이터 준비 상태 추가
                 }
             });
 
-            // Firebase에서 오래된 캐시 삭제
             if (window.firebaseDB && window.firebaseRemove) {
                 try {
                     const cacheRef = window.firebaseRef(window.firebaseDB, 'cache');
@@ -439,35 +452,29 @@ let isTodayDataReady = false;  // 데이터 준비 상태 추가
             }
         }
 
-        // 데이터 유효성 검증
         function validateTodayData(data) {
             if (!data) return false;
             
-            // 필수 필드 확인
             if (!data.date || !data.news || !data.terms || !data.quizzes) {
                 console.log('❌ 필수 필드 누락');
                 return false;
             }
             
-            // 뉴스 확인 (최소 1개 이상)
             if (!Array.isArray(data.news) || data.news.length === 0) {
                 console.log('❌ 뉴스 데이터 없음');
                 return false;
             }
             
-            // 용어 확인 (정확히 3개)
             if (!Array.isArray(data.terms) || data.terms.length < 3) {
                 console.log('❌ 용어 데이터 부족 (3개 필요)');
                 return false;
             }
             
-            // 퀴즈 확인
             if (!data.quizzes.beginner || !Array.isArray(data.quizzes.beginner) || data.quizzes.beginner.length < 5) {
                 console.log('❌ 초급 퀴즈 부족 (5개 필요)');
                 return false;
             }
             
-            // 중급, 고급 퀴즈 확인
             if (!data.quizzes.intermediate || !Array.isArray(data.quizzes.intermediate) || data.quizzes.intermediate.length < 5) {
                 console.log('❌ 중급 퀴즈 없음');
                 return false;
@@ -481,6 +488,99 @@ let isTodayDataReady = false;  // 데이터 준비 상태 추가
             console.log('✅ 데이터 유효성 검증 통과');
             return true;
         }
+
+        function updateStudyCardsStatus(status) {
+            const cards = [
+                { id: 'card-financial-terms', title: '금융 용어', func: 'goToTermsPage' },
+                { id: 'card-financial-news', title: '금융 뉴스', func: 'goToNewsPage' },
+                { id: 'card-financial-quiz', title: '금융 퀴즈', func: 'goToQuizPage' }
+            ];
+            
+            cards.forEach(card => {
+                const cardElement = document.getElementById(card.id);
+                if (!cardElement) return;
+                
+                if (status === 'loading') {
+                    cardElement.classList.add('disabled');
+                    cardElement.style.opacity = '0.5';
+                    cardElement.style.cursor = 'not-allowed';
+                    cardElement.onclick = function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        alert('📊 데이터를 생성 중입니다.\n잠시만 기다려주세요...');
+                        return false;
+                    };
+                    
+                    const starIcon = document.getElementById(`star-${card.id.replace('card-', '')}`);
+                    if (starIcon) {
+                        starIcon.className = 'fas fa-spinner fa-spin';
+                        starIcon.style.color = '#999';
+                    }
+                } else if (status === 'ready') {
+                    cardElement.classList.remove('disabled');
+                    cardElement.style.opacity = '1';
+                    cardElement.style.cursor = 'pointer';
+                    
+                    if (card.func === 'goToTermsPage') {
+                        cardElement.onclick = function() { goToTermsPage(); };
+                    } else if (card.func === 'goToNewsPage') {
+                        cardElement.onclick = function() { goToNewsPage(); };
+                    } else if (card.func === 'goToQuizPage') {
+                        cardElement.onclick = function() { goToQuizPage(); };
+                    }
+                    
+                    const starIcon = document.getElementById(`star-${card.id.replace('card-', '')}`);
+                    if (starIcon) {
+                        starIcon.className = 'fas fa-star star-icon';
+                        starIcon.style.color = '#ffd700';
+                    }
+                    
+                    checkTodayCompletion();
+                }
+            });
+        }
+
+        function showLoadingOverlay() {
+            const existingOverlay = document.getElementById('loadingOverlay');
+            if (existingOverlay) {
+                existingOverlay.remove();
+            }
+            
+            const overlay = document.createElement('div');
+            overlay.id = 'loadingOverlay';
+            overlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.7);
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                z-index: 9999;
+            `;
+            
+            overlay.innerHTML = `
+                <div style="background: white; padding: 30px; border-radius: 16px; text-align: center;">
+                    <div class="loading-spinner" style="margin: 0 auto 20px;"></div>
+                    <h3 style="margin-bottom: 10px; color: #333;">오늘의 학습 콘텐츠 생성 중</h3>
+                    <p style="color: #666; font-size: 14px;">최신 금융 뉴스와 용어를 준비하고 있습니다...</p>
+                    <p style="color: #999; font-size: 12px; margin-top: 10px;">최대 30초 정도 소요될 수 있습니다</p>
+                </div>
+            `;
+            
+            document.body.appendChild(overlay);
+        }
+
+        function hideLoadingOverlay() {
+            const overlay = document.getElementById('loadingOverlay');
+            if (overlay) {
+                overlay.remove();
+            }
+        }
+
         async function loadUserDataFromFirebase() {
             try {
                 if (!window.firebaseDB) {
@@ -508,7 +608,8 @@ let isTodayDataReady = false;  // 데이터 준비 상태 추가
                         portfolio: firebaseData.portfolio || {},
                         joinDate: firebaseData.joinDate || new Date().toISOString().split('T')[0],
                         lastUpdated: firebaseData.lastUpdated || new Date().toISOString(),
-                        studyProgress: firebaseData.studyProgress || {}
+                        studyProgress: firebaseData.studyProgress || {},
+                        scrappedItems: firebaseData.scrappedItems || []
                     };
                     
                     updateGradeButton(userAssets.level);
@@ -525,7 +626,8 @@ let isTodayDataReady = false;  // 데이터 준비 상태 추가
                         portfolio: {},
                         joinDate: new Date().toISOString().split('T')[0],
                         lastUpdated: new Date().toISOString(),
-                        studyProgress: {}
+                        studyProgress: {},
+                        scrappedItems: []
                     };
                     updateGradeButton('yellow');
                 }
@@ -544,7 +646,8 @@ let isTodayDataReady = false;  // 데이터 준비 상태 추가
                     level: 'yellow',
                     exp: 0,
                     experience: 0,
-                    studyProgress: {}
+                    studyProgress: {},
+                    scrappedItems: []
                 };
                 updateGradeButton('yellow');
             }
@@ -808,7 +911,6 @@ let isTodayDataReady = false;  // 데이터 준비 상태 추가
             }
         }
 
-        // 중급 퀴즈 생성 함수
         function generateIntermediateQuiz() {
             return [
                 {
@@ -844,7 +946,6 @@ let isTodayDataReady = false;  // 데이터 준비 상태 추가
             ];
         }
 
-        // 고급 퀴즈 생성 함수
         function generateAdvancedQuiz() {
             return [
                 {
@@ -885,9 +986,9 @@ let isTodayDataReady = false;  // 데이터 준비 상태 추가
             const firebaseCacheKey = `daily_${today}`;
             
             console.log(`📅 ${today} 데이터 생성 프로세스 시작`);
-            // 데이터 생성 중 표시
+            
             updateStudyCardsStatus('loading');
-            // Firebase 연결 대기
+            
             if (!window.firebaseDB) {
                 console.log('⏳ Firebase 연결 대기 중...');
                 setTimeout(generateTodayContent, 1000);
@@ -895,7 +996,6 @@ let isTodayDataReady = false;  // 데이터 준비 상태 추가
             }
             
             try {
-                // 1. Firebase에서 오늘 데이터 확인
                 console.log('🔍 Firebase에서 데이터 확인 중...');
                 const firebaseRef = window.firebaseRef(window.firebaseDB, `cache/${firebaseCacheKey}`);
                 const firebaseSnapshot = await window.firebaseGet(firebaseRef);
@@ -907,13 +1007,12 @@ let isTodayDataReady = false;  // 데이터 준비 상태 추가
                     existingData = firebaseSnapshot.val();
                     console.log('📦 Firebase에 데이터 존재');
                     
-                    // 데이터 유효성 검증
                     if (validateTodayData(existingData)) {
                         console.log('✅ Firebase 데이터 유효 - 사용');
                         localStorage.setItem('todayFinancialData', JSON.stringify(existingData));
                         localStorage.setItem(`todayFinancialData_${today}`, JSON.stringify(existingData));
-                        isTodayDataReady = true;  // 데이터 준비 완료
-                        updateStudyCardsStatus('ready');  // 카드 활성화
+                        isTodayDataReady = true;
+                        updateStudyCardsStatus('ready');
                         return;
                     } else {
                         console.log('❌ Firebase 데이터 불완전 - 재생성 필요');
@@ -924,24 +1023,14 @@ let isTodayDataReady = false;  // 데이터 준비 상태 추가
                     needsGeneration = true;
                 }
                 
-                // 2. 데이터 생성이 필요한 경우
                 if (needsGeneration) {
                     console.log('🔄 새 데이터 생성 시작...');
-                     // 로딩 표시
-                    showLoadingOverlay();
-                    const loadingDiv = document.createElement('div');
-                    loadingDiv.className = 'loading-spinner';
-                    loadingDiv.style.position = 'fixed';
-                    loadingDiv.style.top = '50%';
-                    loadingDiv.style.left = '50%';
-                    loadingDiv.style.transform = 'translate(-50%, -50%)';
-                    document.body.appendChild(loadingDiv);
                     
-                    // 뉴스 데이터 가져오기
+                    showLoadingOverlay();
+                    
                     const newsData = await getLatestFinanceNews();
                     console.log(`📰 뉴스 ${newsData.length}건 수집 완료`);
                     
-                    // 3개의 금융 용어 생성
                     const termsPrompt = `오늘의 금융 뉴스를 바탕으로 중요한 금융 용어 3개를 선정하고 JSON 형식으로 반환해주세요:
                     ${newsData.map(n => n.title).join('\n')}
                     
@@ -970,7 +1059,6 @@ let isTodayDataReady = false;  // 데이터 준비 상태 추가
                         }
                     ]`;
                     
-                    // 개선된 퀴즈 프롬프트
                     const quizPrompt = `다음 금융 뉴스를 바탕으로 초급 퀴즈 5문제를 JSON 형식으로 만들어주세요:
                     ${newsData.map(n => n.title + '\n' + n.description).join('\n\n')}
                     
@@ -997,7 +1085,6 @@ let isTodayDataReady = false;  // 데이터 준비 상태 추가
                     let terms = [];
                     let quizzes = { beginner: [], intermediate: [], advanced: [] };
                     
-                    // GEMINI API로 용어 생성
                     const termsResponse = await callGeminiAPI(termsPrompt);
                     if (termsResponse) {
                         try {
@@ -1010,7 +1097,6 @@ let isTodayDataReady = false;  // 데이터 준비 상태 추가
                         }
                     }
                     
-                    // 용어가 3개 미만이면 기본값 추가
                     if (terms.length < 3) {
                         const defaultTerms = [
                             {
@@ -1041,7 +1127,6 @@ let isTodayDataReady = false;  // 데이터 준비 상태 추가
                         }
                     }
                     
-                    // GEMINI API로 초급 퀴즈 생성
                     const quizResponse = await callGeminiAPI(quizPrompt);
                     if (quizResponse) {
                         try {
@@ -1057,7 +1142,6 @@ let isTodayDataReady = false;  // 데이터 준비 상태 추가
                         }
                     }
                     
-                    // 초급 퀴즈가 부족하면 기본값 추가
                     if (quizzes.beginner.length < 5) {
                         const defaultQuizzes = [
                             {
@@ -1097,7 +1181,6 @@ let isTodayDataReady = false;  // 데이터 준비 상태 추가
                         }
                     }
                     
-                    // 중급, 고급 퀴즈 생성
                     quizzes.intermediate = generateIntermediateQuiz();
                     quizzes.advanced = generateAdvancedQuiz();
                     
@@ -1108,29 +1191,22 @@ let isTodayDataReady = false;  // 데이터 준비 상태 추가
                         quizzes: quizzes
                     };
                     
-                    // Firebase에 저장
                     console.log('💾 Firebase에 데이터 저장 중...');
                     await window.firebaseSet(firebaseRef, todayData);
                     console.log('✅ Firebase 저장 완료');
                     
-                    // localStorage에도 저장
                     localStorage.setItem('todayFinancialData', JSON.stringify(todayData));
                     localStorage.setItem(`todayFinancialData_${today}`, JSON.stringify(todayData));
                     console.log('✅ localStorage 저장 완료');
                     
-                    if (loadingDiv.parentNode) {
-                        document.body.removeChild(loadingDiv);
-                    }
-                    // 데이터 생성 완료 후
-            isTodayDataReady = true;
-            updateStudyCardsStatus('ready');
-            hideLoadingOverlay();
+                    hideLoadingOverlay();
+                    isTodayDataReady = true;
+                    updateStudyCardsStatus('ready');
                 }
                 
             } catch (error) {
                 console.error('❌ 콘텐츠 생성 실패:', error);
                 
-                // 에러 시 기본 데이터 생성
                 const fallbackData = {
                     date: today,
                     news: getFallbackNews(),
@@ -1195,7 +1271,6 @@ let isTodayDataReady = false;  // 데이터 준비 상태 추가
                     }
                 };
                 
-                // Firebase에 기본 데이터 저장
                 try {
                     const firebaseRef = window.firebaseRef(window.firebaseDB, `cache/${firebaseCacheKey}`);
                     await window.firebaseSet(firebaseRef, fallbackData);
@@ -1206,28 +1281,36 @@ let isTodayDataReady = false;  // 데이터 준비 상태 추가
                 localStorage.setItem('todayFinancialData', JSON.stringify(fallbackData));
                 localStorage.setItem(`todayFinancialData_${today}`, JSON.stringify(fallbackData));
                 
-                const loadingDiv = document.querySelector('.loading-spinner');
-                if (loadingDiv && loadingDiv.parentNode) {
-                    loadingDiv.parentNode.removeChild(loadingDiv);
-                }
-                 isTodayDataReady = true;
-        updateStudyCardsStatus('ready');
-        hideLoadingOverlay();
+                hideLoadingOverlay();
+                isTodayDataReady = true;
+                updateStudyCardsStatus('ready');
             }
         }
 
         function goToTermsPage() {
+            if (!isTodayDataReady) {
+                alert('📚 학습 데이터를 준비 중입니다.\n잠시 후 다시 시도해주세요.');
+                return;
+            }
             window.location.href = 'a2-terms.html';
         }
 
         function goToNewsPage() {
+            if (!isTodayDataReady) {
+                alert('📰 뉴스 데이터를 준비 중입니다.\n잠시 후 다시 시도해주세요.');
+                return;
+            }
             window.location.href = 'a2-news.html';
         }
 
         function goToQuizPage() {
+            if (!isTodayDataReady) {
+                alert('❓ 퀴즈 데이터를 준비 중입니다.\n잠시 후 다시 시도해주세요.');
+                return;
+            }
             window.location.href = 'a2-quiz.html';
         }
-        // 이 함수를 새로 추가
+
         function goToScrapPage() {
             window.location.href = 'a2-scrap.html';
         }
@@ -1262,6 +1345,8 @@ let isTodayDataReady = false;  // 데이터 준비 상태 추가
 
         document.addEventListener('DOMContentLoaded', function() {
             if (!checkLoginStatus()) return;
+            
+            updateStudyCardsStatus('loading');
             
             setTimeout(() => {
                 loadUserDataFromFirebase();
