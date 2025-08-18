@@ -407,7 +407,7 @@
                     const keyDate = new Date(dateStr);
                     if (keyDate < twoWeeksAgo) {
                         localStorage.removeItem(key);
-                        console.log(`삭제된 오래된 데이터: ${key}`);
+                        console.log(`삭제된 오래된 로컬 데이터: ${key}`);
                     }
                 }
             });
@@ -435,6 +435,49 @@
                     console.error('Firebase 오래된 데이터 삭제 실패:', error);
                 }
             }
+        }
+
+        // 데이터 유효성 검증
+        function validateTodayData(data) {
+            if (!data) return false;
+            
+            // 필수 필드 확인
+            if (!data.date || !data.news || !data.terms || !data.quizzes) {
+                console.log('❌ 필수 필드 누락');
+                return false;
+            }
+            
+            // 뉴스 확인 (최소 1개 이상)
+            if (!Array.isArray(data.news) || data.news.length === 0) {
+                console.log('❌ 뉴스 데이터 없음');
+                return false;
+            }
+            
+            // 용어 확인 (정확히 3개)
+            if (!Array.isArray(data.terms) || data.terms.length < 3) {
+                console.log('❌ 용어 데이터 부족 (3개 필요)');
+                return false;
+            }
+            
+            // 퀴즈 확인
+            if (!data.quizzes.beginner || !Array.isArray(data.quizzes.beginner) || data.quizzes.beginner.length < 5) {
+                console.log('❌ 초급 퀴즈 부족 (5개 필요)');
+                return false;
+            }
+            
+            // 중급, 고급 퀴즈 확인
+            if (!data.quizzes.intermediate || !Array.isArray(data.quizzes.intermediate) || data.quizzes.intermediate.length < 5) {
+                console.log('❌ 중급 퀴즈 없음');
+                return false;
+            }
+            
+            if (!data.quizzes.advanced || !Array.isArray(data.quizzes.advanced) || data.quizzes.advanced.length < 5) {
+                console.log('❌ 고급 퀴즈 없음');
+                return false;
+            }
+            
+            console.log('✅ 데이터 유효성 검증 통과');
+            return true;
         }
 
         async function loadUserDataFromFirebase() {
@@ -488,7 +531,7 @@
                 
                 localStorage.setItem('fineu_user_assets', JSON.stringify(userAssets));
                 checkTodayCompletion();
-                await cleanOldData(); // 오래된 데이터 정리
+                await cleanOldData();
                 await generateTodayContent();
 
             } catch (error) {
@@ -551,6 +594,8 @@
                 const koreaTime = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Seoul"}));
                 const dateStr = `${koreaTime.getFullYear()}년 ${koreaTime.getMonth() + 1}월 ${koreaTime.getDate()}일`;
                 
+                console.log(`🔍 ${dateStr} 실제 뉴스 가져오기 시작...`);
+                
                 const rssProxies = [
                     'https://api.allorigins.win/get?url=',
                     'https://corsproxy.io/?',
@@ -603,9 +648,11 @@
                             publishedAt: item.publishedAt || koreaTime.toISOString()
                         }));
                 
+                    console.log(`✅ 실제 뉴스 ${uniqueNews.length}건 가져오기 성공`);
                     return uniqueNews;
                 }
                 
+                console.log('⚠️ RSS 실패, 대체 뉴스 사용');
                 return getFallbackNews();
                 
             } catch (error) {
@@ -760,220 +807,321 @@
             }
         }
 
+        // 중급 퀴즈 생성 함수
+        function generateIntermediateQuiz() {
+            return [
+                {
+                    question: "PER이 낮은 주식의 일반적인 특징은?",
+                    options: ["고평가 상태", "저평가 가능성", "배당금이 높음", "성장성이 높음"],
+                    correct: 1,
+                    explanation: "PER이 낮다는 것은 주가가 수익 대비 저평가되어 있을 가능성을 의미합니다."
+                },
+                {
+                    question: "금리 인상 시 일반적으로 하락하는 자산은?",
+                    options: ["예금", "채권 가격", "대출 이자", "원화 가치"],
+                    correct: 1,
+                    explanation: "금리가 오르면 기존 채권의 매력도가 떨어져 채권 가격이 하락합니다."
+                },
+                {
+                    question: "분산투자의 핵심 원리는?",
+                    options: ["수익 극대화", "위험 분산", "세금 절감", "거래 비용 절감"],
+                    correct: 1,
+                    explanation: "분산투자는 여러 자산에 투자하여 전체 포트폴리오의 위험을 줄이는 전략입니다."
+                },
+                {
+                    question: "환율이 상승(원화 약세)하면 유리한 기업은?",
+                    options: ["수입 기업", "수출 기업", "내수 기업", "금융 기업"],
+                    correct: 1,
+                    explanation: "원화 약세는 수출 기업의 가격 경쟁력을 높여 수익성을 개선시킵니다."
+                },
+                {
+                    question: "복리의 마법이 가장 크게 작용하는 요소는?",
+                    options: ["원금 크기", "이자율", "투자 기간", "세금"],
+                    correct: 2,
+                    explanation: "복리는 시간이 지날수록 기하급수적으로 증가하므로 투자 기간이 가장 중요합니다."
+                }
+            ];
+        }
+
+        // 고급 퀴즈 생성 함수
+        function generateAdvancedQuiz() {
+            return [
+                {
+                    question: "옵션의 시간가치가 가장 빠르게 감소하는 시기는?",
+                    options: ["만기 6개월 전", "만기 3개월 전", "만기 1개월 전", "만기 당일"],
+                    correct: 2,
+                    explanation: "옵션의 시간가치는 만기가 가까워질수록 가속도적으로 감소합니다(세타 decay)."
+                },
+                {
+                    question: "헤지펀드가 사용하는 '롱숏 전략'의 목적은?",
+                    options: ["레버리지 극대화", "시장 중립적 수익", "배당 수익", "환차익"],
+                    correct: 1,
+                    explanation: "롱숏 전략은 시장 방향과 관계없이 수익을 추구하는 시장 중립 전략입니다."
+                },
+                {
+                    question: "채권의 듀레이션이 의미하는 것은?",
+                    options: ["만기", "신용등급", "금리 민감도", "유동성"],
+                    correct: 2,
+                    explanation: "듀레이션은 금리 변동에 대한 채권 가격의 민감도를 나타내는 지표입니다."
+                },
+                {
+                    question: "VIX 지수가 급등한다는 것은?",
+                    options: ["주가 상승 예상", "시장 변동성 증가", "금리 인상", "달러 강세"],
+                    correct: 1,
+                    explanation: "VIX는 '공포지수'로 불리며, 시장의 변동성과 불확실성을 나타냅니다."
+                },
+                {
+                    question: "알파(Alpha) 수익률이 양수라는 의미는?",
+                    options: ["손실 발생", "시장 평균 이하", "시장 대비 초과 수익", "무위험 수익률"],
+                    correct: 2,
+                    explanation: "알파는 벤치마크 대비 초과 수익률로, 양수면 시장을 이긴 것입니다."
+                }
+            ];
+        }
+
         async function generateTodayContent() {
             const today = getTodayDate();
-            const cacheKey = `todayFinancialData_${today}`;
+            const firebaseCacheKey = `daily_${today}`;
             
-            const cached = localStorage.getItem(cacheKey);
-            if (cached) {
-                const data = JSON.parse(cached);
-                if (data.date === today) {
-                    localStorage.setItem('todayFinancialData', cached);
-                    return;
-                }
+            console.log(`📅 ${today} 데이터 생성 프로세스 시작`);
+            
+            // Firebase 연결 대기
+            if (!window.firebaseDB) {
+                console.log('⏳ Firebase 연결 대기 중...');
+                setTimeout(generateTodayContent, 1000);
+                return;
             }
             
-            const loadingDiv = document.createElement('div');
-            loadingDiv.className = 'loading-spinner';
-            loadingDiv.style.position = 'fixed';
-            loadingDiv.style.top = '50%';
-            loadingDiv.style.left = '50%';
-            loadingDiv.style.transform = 'translate(-50%, -50%)';
-            document.body.appendChild(loadingDiv);
-            
             try {
-                const newsData = await getLatestFinanceNews();
+                // 1. Firebase에서 오늘 데이터 확인
+                console.log('🔍 Firebase에서 데이터 확인 중...');
+                const firebaseRef = window.firebaseRef(window.firebaseDB, `cache/${firebaseCacheKey}`);
+                const firebaseSnapshot = await window.firebaseGet(firebaseRef);
                 
-                // 3개의 금융 용어 생성
-                const termsPrompt = `오늘의 금융 뉴스를 바탕으로 중요한 금융 용어 3개를 선정하고 JSON 형식으로 반환해주세요:
-                ${newsData.map(n => n.title).join('\n')}
+                let needsGeneration = false;
+                let existingData = null;
                 
-                다음 형식으로 정확히 3개의 용어를 반환:
-                [
-                    {
-                        "id": "term-0",
-                        "term": "용어명 (영문명)",
-                        "definition": "정의 (초보자도 이해할 수 있게 쉽게 설명)",
-                        "example": "실제 사례 (구체적인 예시)",
-                        "isToday": true
-                    },
-                    {
-                        "id": "term-1",
-                        "term": "용어명 (영문명)",
-                        "definition": "정의 (초보자도 이해할 수 있게 쉽게 설명)",
-                        "example": "실제 사례 (구체적인 예시)",
-                        "isToday": true
-                    },
-                    {
-                        "id": "term-2",
-                        "term": "용어명 (영문명)",
-                        "definition": "정의 (초보자도 이해할 수 있게 쉽게 설명)",
-                        "example": "실제 사례 (구체적인 예시)",
-                        "isToday": true
-                    }
-                ]`;
-                
-                // 개선된 퀴즈 프롬프트
-                const quizPrompt = `다음 금융 뉴스를 바탕으로 초급 퀴즈 5문제를 JSON 형식으로 만들어주세요:
-                ${newsData.map(n => n.title + '\n' + n.description).join('\n\n')}
-                
-                문제 구성:
-                1. 뉴스 관련 문제 2개 (위 뉴스 내용 직접 활용)
-                2. 최근 경제 트렌드 금융 상식 문제 2개 (위 뉴스에서 파악되는 트렌드 기반)
-                3. 재미있는 금융 문제 1개 (일상생활과 연관된 쉬운 문제)
-                
-                난이도: 금융 초보자도 상식으로 풀 수 있는 매우 쉬운 수준
-                
-                다음 형식으로 반환:
-                {
-                    "beginner": [
-                        {
-                            "question": "뉴스 관련 문제 1",
-                            "options": ["선택지1", "선택지2", "선택지3", "선택지4"],
-                            "correct": 정답인덱스(0-3),
-                            "explanation": "왜 이것이 정답인지 쉽게 설명"
-                        },
-                        {
-                            "question": "뉴스 관련 문제 2",
-                            "options": ["선택지1", "선택지2", "선택지3", "선택지4"],
-                            "correct": 정답인덱스(0-3),
-                            "explanation": "왜 이것이 정답인지 쉽게 설명"
-                        },
-                        {
-                            "question": "경제 트렌드 상식 문제 1",
-                            "options": ["선택지1", "선택지2", "선택지3", "선택지4"],
-                            "correct": 정답인덱스(0-3),
-                            "explanation": "왜 이것이 정답인지 쉽게 설명"
-                        },
-                        {
-                            "question": "경제 트렌드 상식 문제 2",
-                            "options": ["선택지1", "선택지2", "선택지3", "선택지4"],
-                            "correct": 정답인덱스(0-3),
-                            "explanation": "왜 이것이 정답인지 쉽게 설명"
-                        },
-                        {
-                            "question": "재미있는 일상 금융 문제",
-                            "options": ["선택지1", "선택지2", "선택지3", "선택지4"],
-                            "correct": 정답인덱스(0-3),
-                            "explanation": "왜 이것이 정답인지 쉽게 설명"
-                        }
-                    ]
-                }`;
-                
-                let terms = [];
-                let quizzes = { beginner: [] };
-                
-                const termsResponse = await callGeminiAPI(termsPrompt);
-                if (termsResponse) {
-                    try {
-                        const jsonMatch = termsResponse.match(/\[[\s\S]*\]/);
-                        if (jsonMatch) {
-                            terms = JSON.parse(jsonMatch[0]);
-                        }
-                    } catch (e) {
-                        console.error('Terms 파싱 실패:', e);
-                    }
-                }
-                
-                // 용어가 3개 미만이면 기본값 추가
-                if (terms.length < 3) {
-                    const defaultTerms = [
-                        {
-                            id: "term-0",
-                            term: "복리 (Compound Interest)",
-                            definition: "원금에 붙은 이자가 다시 원금이 되어 이자가 붙는 방식입니다. 시간이 지날수록 자산이 기하급수적으로 증가합니다.",
-                            example: "100만원을 연 10% 복리로 투자하면 1년 후 110만원, 2년 후 121만원, 10년 후에는 약 259만원이 됩니다.",
-                            isToday: true
-                        },
-                        {
-                            id: "term-1",
-                            term: "분산투자 (Diversification)",
-                            definition: "여러 종목이나 자산에 나누어 투자하여 위험을 줄이는 전략입니다. '계란을 한 바구니에 담지 마라'는 격언이 이를 잘 설명합니다.",
-                            example: "주식 50%, 채권 30%, 현금 20%로 포트폴리오를 구성하면 한 자산의 손실을 다른 자산이 보완할 수 있습니다.",
-                            isToday: true
-                        },
-                        {
-                            id: "term-2",
-                            term: "PER (Price Earnings Ratio)",
-                            definition: "주가수익비율로, 주가를 주당순이익으로 나눈 값입니다. 기업의 수익 대비 주가가 적정한지 판단하는 지표입니다.",
-                            example: "PER이 10이면 현재 수익 수준이 유지될 때 투자금을 회수하는데 10년이 걸린다는 의미입니다.",
-                            isToday: true
-                        }
-                    ];
+                if (firebaseSnapshot.exists()) {
+                    existingData = firebaseSnapshot.val();
+                    console.log('📦 Firebase에 데이터 존재');
                     
-                    while (terms.length < 3) {
-                        terms.push(defaultTerms[terms.length]);
+                    // 데이터 유효성 검증
+                    if (validateTodayData(existingData)) {
+                        console.log('✅ Firebase 데이터 유효 - 사용');
+                        localStorage.setItem('todayFinancialData', JSON.stringify(existingData));
+                        localStorage.setItem(`todayFinancialData_${today}`, JSON.stringify(existingData));
+                        return;
+                    } else {
+                        console.log('❌ Firebase 데이터 불완전 - 재생성 필요');
+                        needsGeneration = true;
                     }
+                } else {
+                    console.log('❌ Firebase에 데이터 없음 - 생성 필요');
+                    needsGeneration = true;
                 }
                 
-                const quizResponse = await callGeminiAPI(quizPrompt);
-                if (quizResponse) {
-                    try {
-                        const jsonMatch = quizResponse.match(/\{[\s\S]*\}/);
-                        if (jsonMatch) {
-                            const parsed = JSON.parse(jsonMatch[0]);
-                            if (parsed.beginner && Array.isArray(parsed.beginner)) {
-                                quizzes = parsed;
+                // 2. 데이터 생성이 필요한 경우
+                if (needsGeneration) {
+                    console.log('🔄 새 데이터 생성 시작...');
+                    
+                    const loadingDiv = document.createElement('div');
+                    loadingDiv.className = 'loading-spinner';
+                    loadingDiv.style.position = 'fixed';
+                    loadingDiv.style.top = '50%';
+                    loadingDiv.style.left = '50%';
+                    loadingDiv.style.transform = 'translate(-50%, -50%)';
+                    document.body.appendChild(loadingDiv);
+                    
+                    // 뉴스 데이터 가져오기
+                    const newsData = await getLatestFinanceNews();
+                    console.log(`📰 뉴스 ${newsData.length}건 수집 완료`);
+                    
+                    // 3개의 금융 용어 생성
+                    const termsPrompt = `오늘의 금융 뉴스를 바탕으로 중요한 금융 용어 3개를 선정하고 JSON 형식으로 반환해주세요:
+                    ${newsData.map(n => n.title).join('\n')}
+                    
+                    다음 형식으로 정확히 3개의 용어를 반환:
+                    [
+                        {
+                            "id": "term-0",
+                            "term": "용어명 (영문명)",
+                            "definition": "정의 (초보자도 이해할 수 있게 쉽게 설명)",
+                            "example": "실제 사례 (구체적인 예시)",
+                            "isToday": true
+                        },
+                        {
+                            "id": "term-1",
+                            "term": "용어명 (영문명)",
+                            "definition": "정의 (초보자도 이해할 수 있게 쉽게 설명)",
+                            "example": "실제 사례 (구체적인 예시)",
+                            "isToday": true
+                        },
+                        {
+                            "id": "term-2",
+                            "term": "용어명 (영문명)",
+                            "definition": "정의 (초보자도 이해할 수 있게 쉽게 설명)",
+                            "example": "실제 사례 (구체적인 예시)",
+                            "isToday": true
+                        }
+                    ]`;
+                    
+                    // 개선된 퀴즈 프롬프트
+                    const quizPrompt = `다음 금융 뉴스를 바탕으로 초급 퀴즈 5문제를 JSON 형식으로 만들어주세요:
+                    ${newsData.map(n => n.title + '\n' + n.description).join('\n\n')}
+                    
+                    문제 구성:
+                    1. 뉴스 관련 문제 2개 (위 뉴스 내용 직접 활용)
+                    2. 최근 경제 트렌드 금융 상식 문제 2개 (위 뉴스에서 파악되는 트렌드 기반)
+                    3. 재미있는 금융 문제 1개 (일상생활과 연관된 쉬운 문제)
+                    
+                    난이도: 금융 초보자도 상식으로 풀 수 있는 매우 쉬운 수준
+                    
+                    다음 형식으로 반환:
+                    {
+                        "beginner": [
+                            {
+                                "question": "뉴스 관련 문제 1",
+                                "options": ["선택지1", "선택지2", "선택지3", "선택지4"],
+                                "correct": 정답인덱스(0-3),
+                                "explanation": "왜 이것이 정답인지 쉽게 설명"
+                            },
+                            // ... 5개 문제
+                        ]
+                    }`;
+                    
+                    let terms = [];
+                    let quizzes = { beginner: [], intermediate: [], advanced: [] };
+                    
+                    // GEMINI API로 용어 생성
+                    const termsResponse = await callGeminiAPI(termsPrompt);
+                    if (termsResponse) {
+                        try {
+                            const jsonMatch = termsResponse.match(/\[[\s\S]*\]/);
+                            if (jsonMatch) {
+                                terms = JSON.parse(jsonMatch[0]);
                             }
+                        } catch (e) {
+                            console.error('Terms 파싱 실패:', e);
                         }
-                    } catch (e) {
-                        console.error('Quiz 파싱 실패:', e);
                     }
-                }
-                
-                // 퀴즈가 부족하면 기본값 추가
-                if (quizzes.beginner.length < 5) {
-                    const defaultQuizzes = [
-                        {
-                            question: "한국은행이 기준금리를 올리면 일반적으로 어떤 일이 발생하나요?",
-                            options: ["예금 이자가 오른다", "예금 이자가 내린다", "환율이 고정된다", "주식이 무조건 오른다"],
-                            correct: 0,
-                            explanation: "기준금리가 오르면 시중 은행의 예금과 대출 금리도 함께 오르는 경향이 있습니다."
-                        },
-                        {
-                            question: "주식시장에서 '코스피'는 무엇을 의미하나요?",
-                            options: ["외국 주식", "한국 주식시장 지수", "채권 지수", "환율"],
-                            correct: 1,
-                            explanation: "코스피(KOSPI)는 한국 종합주가지수로, 우리나라 주식시장의 전반적인 상황을 나타냅니다."
-                        },
-                        {
-                            question: "물가가 계속 오르는 현상을 무엇이라고 하나요?",
-                            options: ["디플레이션", "인플레이션", "스태그플레이션", "리세션"],
-                            correct: 1,
-                            explanation: "인플레이션은 물가가 지속적으로 상승하는 현상으로, 화폐 가치가 하락합니다."
-                        },
-                        {
-                            question: "청년들이 주식 투자를 시작하는 가장 좋은 방법은?",
-                            options: ["전 재산 투자", "소액으로 분산 투자", "빚내서 투자", "친구 따라 투자"],
-                            correct: 1,
-                            explanation: "투자는 여유 자금으로 소액부터 시작하고, 여러 종목에 분산하는 것이 안전합니다."
-                        },
-                        {
-                            question: "편의점에서 물건값이 작년보다 올랐다면, 이것은 무엇 때문일까요?",
-                            options: ["물가 상승", "환율 하락", "주가 상승", "금리 하락"],
-                            correct: 0,
-                            explanation: "일상생활에서 물건값이 오르는 것은 물가 상승(인플레이션)의 영향입니다."
-                        }
-                    ];
                     
-                    while (quizzes.beginner.length < 5) {
-                        quizzes.beginner.push(defaultQuizzes[quizzes.beginner.length]);
+                    // 용어가 3개 미만이면 기본값 추가
+                    if (terms.length < 3) {
+                        const defaultTerms = [
+                            {
+                                id: "term-0",
+                                term: "복리 (Compound Interest)",
+                                definition: "원금에 붙은 이자가 다시 원금이 되어 이자가 붙는 방식입니다. 시간이 지날수록 자산이 기하급수적으로 증가합니다.",
+                                example: "100만원을 연 10% 복리로 투자하면 1년 후 110만원, 2년 후 121만원, 10년 후에는 약 259만원이 됩니다.",
+                                isToday: true
+                            },
+                            {
+                                id: "term-1",
+                                term: "분산투자 (Diversification)",
+                                definition: "여러 종목이나 자산에 나누어 투자하여 위험을 줄이는 전략입니다. '계란을 한 바구니에 담지 마라'는 격언이 이를 잘 설명합니다.",
+                                example: "주식 50%, 채권 30%, 현금 20%로 포트폴리오를 구성하면 한 자산의 손실을 다른 자산이 보완할 수 있습니다.",
+                                isToday: true
+                            },
+                            {
+                                id: "term-2",
+                                term: "PER (Price Earnings Ratio)",
+                                definition: "주가수익비율로, 주가를 주당순이익으로 나눈 값입니다. 기업의 수익 대비 주가가 적정한지 판단하는 지표입니다.",
+                                example: "PER이 10이면 현재 수익 수준이 유지될 때 투자금을 회수하는데 10년이 걸린다는 의미입니다.",
+                                isToday: true
+                            }
+                        ];
+                        
+                        while (terms.length < 3) {
+                            terms.push(defaultTerms[terms.length]);
+                        }
+                    }
+                    
+                    // GEMINI API로 초급 퀴즈 생성
+                    const quizResponse = await callGeminiAPI(quizPrompt);
+                    if (quizResponse) {
+                        try {
+                            const jsonMatch = quizResponse.match(/\{[\s\S]*\}/);
+                            if (jsonMatch) {
+                                const parsed = JSON.parse(jsonMatch[0]);
+                                if (parsed.beginner && Array.isArray(parsed.beginner)) {
+                                    quizzes.beginner = parsed.beginner;
+                                }
+                            }
+                        } catch (e) {
+                            console.error('Quiz 파싱 실패:', e);
+                        }
+                    }
+                    
+                    // 초급 퀴즈가 부족하면 기본값 추가
+                    if (quizzes.beginner.length < 5) {
+                        const defaultQuizzes = [
+                            {
+                                question: "한국은행이 기준금리를 올리면 일반적으로 어떤 일이 발생하나요?",
+                                options: ["예금 이자가 오른다", "예금 이자가 내린다", "환율이 고정된다", "주식이 무조건 오른다"],
+                                correct: 0,
+                                explanation: "기준금리가 오르면 시중 은행의 예금과 대출 금리도 함께 오르는 경향이 있습니다."
+                            },
+                            {
+                                question: "주식시장에서 '코스피'는 무엇을 의미하나요?",
+                                options: ["외국 주식", "한국 주식시장 지수", "채권 지수", "환율"],
+                                correct: 1,
+                                explanation: "코스피(KOSPI)는 한국 종합주가지수로, 우리나라 주식시장의 전반적인 상황을 나타냅니다."
+                            },
+                            {
+                                question: "물가가 계속 오르는 현상을 무엇이라고 하나요?",
+                                options: ["디플레이션", "인플레이션", "스태그플레이션", "리세션"],
+                                correct: 1,
+                                explanation: "인플레이션은 물가가 지속적으로 상승하는 현상으로, 화폐 가치가 하락합니다."
+                            },
+                            {
+                                question: "청년들이 주식 투자를 시작하는 가장 좋은 방법은?",
+                                options: ["전 재산 투자", "소액으로 분산 투자", "빚내서 투자", "친구 따라 투자"],
+                                correct: 1,
+                                explanation: "투자는 여유 자금으로 소액부터 시작하고, 여러 종목에 분산하는 것이 안전합니다."
+                            },
+                            {
+                                question: "편의점에서 물건값이 작년보다 올랐다면, 이것은 무엇 때문일까요?",
+                                options: ["물가 상승", "환율 하락", "주가 상승", "금리 하락"],
+                                correct: 0,
+                                explanation: "일상생활에서 물건값이 오르는 것은 물가 상승(인플레이션)의 영향입니다."
+                            }
+                        ];
+                        
+                        while (quizzes.beginner.length < 5) {
+                            quizzes.beginner.push(defaultQuizzes[quizzes.beginner.length]);
+                        }
+                    }
+                    
+                    // 중급, 고급 퀴즈 생성
+                    quizzes.intermediate = generateIntermediateQuiz();
+                    quizzes.advanced = generateAdvancedQuiz();
+                    
+                    const todayData = {
+                        date: today,
+                        news: newsData,
+                        terms: terms.slice(0, 3),
+                        quizzes: quizzes
+                    };
+                    
+                    // Firebase에 저장
+                    console.log('💾 Firebase에 데이터 저장 중...');
+                    await window.firebaseSet(firebaseRef, todayData);
+                    console.log('✅ Firebase 저장 완료');
+                    
+                    // localStorage에도 저장
+                    localStorage.setItem('todayFinancialData', JSON.stringify(todayData));
+                    localStorage.setItem(`todayFinancialData_${today}`, JSON.stringify(todayData));
+                    console.log('✅ localStorage 저장 완료');
+                    
+                    if (loadingDiv.parentNode) {
+                        document.body.removeChild(loadingDiv);
                     }
                 }
-                
-                const todayData = {
-                    date: today,
-                    news: newsData,
-                    terms: terms.slice(0, 3), // 정확히 3개만
-                    quizzes: quizzes
-                };
-                
-                localStorage.setItem(cacheKey, JSON.stringify(todayData));
-                localStorage.setItem('todayFinancialData', JSON.stringify(todayData));
                 
             } catch (error) {
-                console.error('콘텐츠 생성 실패:', error);
+                console.error('❌ 콘텐츠 생성 실패:', error);
                 
+                // 에러 시 기본 데이터 생성
                 const fallbackData = {
                     date: today,
                     news: getFallbackNews(),
@@ -1032,29 +1180,40 @@
                                 correct: 1,
                                 explanation: "수입의 일부를 꾸준히 저축하는 것이 자산을 만드는 첫걸음입니다."
                             }
-                        ]
+                        ],
+                        intermediate: generateIntermediateQuiz(),
+                        advanced: generateAdvancedQuiz()
                     }
                 };
                 
-                localStorage.setItem(cacheKey, JSON.stringify(fallbackData));
+                // Firebase에 기본 데이터 저장
+                try {
+                    const firebaseRef = window.firebaseRef(window.firebaseDB, `cache/${firebaseCacheKey}`);
+                    await window.firebaseSet(firebaseRef, fallbackData);
+                } catch (e) {
+                    console.error('Firebase 저장 실패:', e);
+                }
+                
                 localStorage.setItem('todayFinancialData', JSON.stringify(fallbackData));
-            } finally {
-                if (loadingDiv.parentNode) {
-                    document.body.removeChild(loadingDiv);
+                localStorage.setItem(`todayFinancialData_${today}`, JSON.stringify(fallbackData));
+                
+                const loadingDiv = document.querySelector('.loading-spinner');
+                if (loadingDiv && loadingDiv.parentNode) {
+                    loadingDiv.parentNode.removeChild(loadingDiv);
                 }
             }
         }
 
         function goToTermsPage() {
-            window.location.href = 'a2-terms.html';
+            window.location.href = 'financial-terms.html';
         }
 
         function goToNewsPage() {
-            window.location.href = 'a2-news.html';
+            window.location.href = 'financial-news.html';
         }
 
         function goToQuizPage() {
-            window.location.href = 'a2-quiz.html';
+            window.location.href = 'financial-quiz.html';
         }
 
         function goToPage(page) {
