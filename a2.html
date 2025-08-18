@@ -343,11 +343,6 @@
         스크랩
     </div>
 </div>
-
-// JavaScript 함수 추가
-function goToScrapPage() {
-    window.location.href = 'a2-scrap.html';
-}
     </div>
 
     <div class="bottom-nav">
@@ -484,7 +479,10 @@ function goToScrapPage() {
             console.log('✅ 데이터 유효성 검증 통과');
             return true;
         }
-
+// JavaScript 함수 추가
+function goToScrapPage() {
+    window.location.href = 'a2-scrap.html';
+}
         async function loadUserDataFromFirebase() {
             try {
                 if (!window.firebaseDB) {
