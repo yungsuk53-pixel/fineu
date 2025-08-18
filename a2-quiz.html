@@ -367,7 +367,7 @@
 </div>
 
 <div class="content" style="padding-bottom: 100px;">
-    <div id="beginnerQuiz" class="quiz-card" onclick="startQuiz('beginner')">
+    <div id="beginnerQuiz" class="quiz-card">
         <i class="fas fa-star star-icon" id="beginnerStar"></i>
         <div class="quiz-title">초급</div>
         <div class="quiz-desc">기본적인 금융 개념을 테스트합니다</div>
@@ -536,6 +536,8 @@ function checkQuizAccess() {
             <div class="quiz-desc">심화된 금융 지식을 테스트합니다</div>
             <div class="quiz-info">투자 전략과 금융 상품 이해</div>
         `;
+        // 클릭 이벤트 추가
+        intermediateCard.onclick = function() { startQuiz('intermediate'); };
     }
     
     // BLACK 등급이면 고급 잠금 해제
@@ -548,8 +550,15 @@ function checkQuizAccess() {
             <div class="quiz-desc">전문가 수준의 금융 지식을 테스트합니다</div>
             <div class="quiz-info">파생상품과 고급 투자 이론</div>
         `;
+        // 클릭 이벤트 추가
+        advancedCard.onclick = function() { startQuiz('advanced'); };
     }
 }
+
+// 초급 퀴즈 클릭 이벤트 추가
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('beginnerQuiz').onclick = function() { startQuiz('beginner'); };
+});
 
 function loadQuizData() {
     const savedData = localStorage.getItem('todayFinancialData');
@@ -559,7 +568,7 @@ function loadQuizData() {
     }
     
     const data = JSON.parse(savedData);
-    quizData = data.quizzes;
+    quizData = data.quizzes || {};
     
     // 중급 퀴즈 생성
     if (!quizData.intermediate) {
@@ -762,37 +771,46 @@ async function completeQuiz() {
     const quizKey = currentLevel === 'beginner' ? 'financialQuiz' : 
                     currentLevel === 'intermediate' ? 'intermediateQuiz' : 'advancedQuiz';
     
+    // 정답률 계산
+    const scoreRate = score / 5;
+    
     if (!userAssets.studyProgress[today][quizKey]) {
         userAssets.studyProgress[today][quizKey] = true;
         
-        const baseReward = currentLevel === 'beginner' ? 50000 : 
-                          currentLevel === 'intermediate' ? 75000 : 100000;
-        const baseExp = currentLevel === 'beginner' ? 100 : 
-                       currentLevel === 'intermediate' ? 150 : 200;
-        
-        const cashReward = Math.floor(baseReward * (score / 5));
-        const expReward = Math.floor(baseExp * (score / 5));
-        
-        userAssets.cash = (userAssets.cash || 0) + cashReward;
-        userAssets.totalAssets = (userAssets.totalAssets || 0) + cashReward;
-        userAssets.virtualBalance = (userAssets.virtualBalance || 0) + cashReward;
-        userAssets.exp = (userAssets.exp || 0) + expReward;
-        
-        try {
-            const savedUser = JSON.parse(localStorage.getItem('fineu_current_user'));
-            const userId = savedUser.id || savedUser.username || 'Test';
+        // 70% 이상일 때만 보상 지급
+        if (scoreRate >= 0.7) {
+            const baseReward = currentLevel === 'beginner' ? 50000 : 
+                              currentLevel === 'intermediate' ? 75000 : 100000;
+            const baseExp = currentLevel === 'beginner' ? 100 : 
+                           currentLevel === 'intermediate' ? 150 : 200;
             
-            if (window.firebaseDB) {
-                const userRef = window.firebaseRef(window.firebaseDB, `users/${userId}`);
-                await window.firebaseSet(userRef, userAssets);
+            const cashReward = Math.floor(baseReward * scoreRate);
+            const expReward = Math.floor(baseExp * scoreRate);
+            
+            userAssets.cash = (userAssets.cash || 0) + cashReward;
+            userAssets.totalAssets = (userAssets.totalAssets || 0) + cashReward;
+            userAssets.virtualBalance = (userAssets.virtualBalance || 0) + cashReward;
+            userAssets.exp = (userAssets.exp || 0) + expReward;
+            
+            try {
+                const savedUser = JSON.parse(localStorage.getItem('fineu_current_user'));
+                const userId = savedUser.id || savedUser.username || 'Test';
+                
+                if (window.firebaseDB) {
+                    const userRef = window.firebaseRef(window.firebaseDB, `users/${userId}`);
+                    await window.firebaseSet(userRef, userAssets);
+                }
+                
+                localStorage.setItem('fineu_user_assets', JSON.stringify(userAssets));
+                
+                showRewardAnimation(cashReward, expReward);
+                
+            } catch (error) {
+                console.error('데이터 저장 실패:', error);
             }
-            
-            localStorage.setItem('fineu_user_assets', JSON.stringify(userAssets));
-            
-            showRewardAnimation(cashReward, expReward);
-            
-        } catch (error) {
-            console.error('데이터 저장 실패:', error);
+        } else {
+            // 70% 미만일 경우 보상 없음
+            alert(`퀴즈 완료!\n정답: ${score}/5 (${Math.floor(scoreRate * 100)}%)\n\n70% 이상 정답률이 필요합니다.\n다음에 다시 도전해보세요!`);
         }
     } else {
         alert(`퀴즈 완료!\n정답: ${score}/5\n이미 오늘 완료한 퀴즈입니다.`);
@@ -815,7 +833,7 @@ function showRewardAnimation(cash, exp) {
 
 function showCalendar() {
     const today = getTodayDate();
-    alert(`📅 오늘 날짜: ${today}\n\n매일 새로운 퀴즈가 업데이트됩니다!\n\n• 뉴스 관련 2문제\n• 경제 트렌드 2문제\n• 재미있는 문제 1개`);
+    alert(`📅 오늘 날짜: ${today}\n\n매일 새로운 퀴즈가 업데이트됩니다!\n\n• 뉴스 관련 2문제\n• 경제 트렌드 2문제\n• 재미있는 문제 1개\n\n※ 70% 이상 정답 시 보상 지급`);
 }
 
 document.addEventListener('DOMContentLoaded', async function() {
