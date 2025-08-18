@@ -607,31 +607,36 @@ function calculateLevelFromExp(exp) {
                 if (snapshot.exists()) {
                     const firebaseData = snapshot.val();
                     userAssets = {
-                        id: firebaseData.id || userId,
-                        name: firebaseData.name || userId,
-                        cash: firebaseData.cash || 0,
-                        totalAssets: firebaseData.totalAssets || firebaseData.virtualBalance || firebaseData.cash || 0,
-                        virtualBalance: firebaseData.virtualBalance || firebaseData.cash || 0,
-                        level: firebaseData.level || 'yellow',
-                        exp: firebaseData.exp || firebaseData.experience || 0,
-                        experience: firebaseData.experience || firebaseData.exp || 0,
-                        portfolio: firebaseData.portfolio || {},
-                        joinDate: firebaseData.joinDate || new Date().toISOString().split('T')[0],
-                        lastUpdated: firebaseData.lastUpdated || new Date().toISOString(),
-                        studyProgress: firebaseData.studyProgress || {},
-                        scrappedItems: firebaseData.scrappedItems || []
-                    };
-                     // 이 부분을 추가
-// EXP에 따른 레벨 자동 계산 및 업데이트
-const calculatedLevel = calculateLevelFromExp(userAssets.exp);
-if (calculatedLevel !== userAssets.level) {
-    userAssets.level = calculatedLevel;
-    // Firebase에 업데이트된 레벨 저장
-    const userRef2 = window.firebaseRef(window.firebaseDB, `users/${userId}`);
-    await window.firebaseSet(userRef2, userAssets);
-}
+    id: firebaseData.id || userId,
+    name: firebaseData.name || userId,
+    cash: firebaseData.cash || 0,
+    totalAssets: firebaseData.totalAssets || firebaseData.virtualBalance || firebaseData.cash || 0,
+    virtualBalance: firebaseData.virtualBalance || firebaseData.cash || 0,
+    level: firebaseData.level || 'yellow',
+    exp: firebaseData.exp || firebaseData.experience || 0,
+    experience: firebaseData.experience || firebaseData.exp || 0,
+    portfolio: firebaseData.portfolio || {},
+    joinDate: firebaseData.joinDate || new Date().toISOString().split('T')[0],
+    lastUpdated: firebaseData.lastUpdated || new Date().toISOString(),
+    studyProgress: firebaseData.studyProgress || {},
+    scrappedItems: firebaseData.scrappedItems || []
+};
 
-updateGradeButton(userAssets.level);  // 기존 코드
+// a2-news.html처럼 exp 기반으로 레벨 결정
+const exp = userAssets.exp || 0;
+let determinedLevel = 'yellow';
+if (exp >= 50000) {
+    determinedLevel = 'black';
+} else if (exp >= 30000) {
+    determinedLevel = 'red';
+} else if (exp >= 15000) {
+    determinedLevel = 'blue';
+} else if (exp >= 5000) {
+    determinedLevel = 'green';
+}
+userAssets.level = determinedLevel;
+
+updateGradeButton(determinedLevel);
                 } else {
                     userAssets = {
                         id: userId,
@@ -700,33 +705,34 @@ updateGradeButton(userAssets.level);  // 기존 코드
         }
 
         function updateGradeButton(grade) {
-    console.log('🎯 updateGradeButton 호출됨:', grade);
-    
-    if (!grade) {
-        console.error('❌ grade가 없음');
-        return;
-    }
-    
-    // grade가 소문자로 들어올 수 있으므로 대문자로 변환
-    const upperGrade = grade.toUpperCase();
+    const upperGrade = (grade || 'yellow').toUpperCase();
     const levelData = levelSystem[upperGrade];
-    
-    console.log('📊 레벨 데이터:', levelData);
     
     if (levelData) {
         const gradeButtonImage = document.getElementById('gradeButtonImage');
         if (gradeButtonImage && levelData.navImage) {
-            const imagePath = `images/${levelData.navImage}`;
-            console.log('🖼️ 이미지 경로:', imagePath);
-            gradeButtonImage.src = imagePath;
+            gradeButtonImage.src = `images/${levelData.navImage}`;
             gradeButtonImage.alt = levelData.name;
-            console.log('✅ 그레이드 버튼 업데이트 완료');
-        } else {
-            console.error('❌ gradeButtonImage 요소를 찾을 수 없음');
         }
-    } else {
-        console.error('❌ levelSystem에서 레벨 데이터를 찾을 수 없음:', upperGrade);
     }
+}
+        function updateLevelFromExp() {
+    const exp = userAssets.exp || userAssets.experience || 0;
+    let level = 'yellow';
+    
+    if (exp >= 50000) {
+        level = 'black';
+    } else if (exp >= 30000) {
+        level = 'red';
+    } else if (exp >= 15000) {
+        level = 'blue';
+    } else if (exp >= 5000) {
+        level = 'green';
+    }
+    
+    userAssets.level = level;
+    updateGradeButton(level);
+    return level;
 }
 
         async function getLatestFinanceNews() {
