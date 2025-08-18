@@ -323,18 +323,19 @@
             object-fit: contain;
         }
 
-        .black-button {
+        /* 등급 버튼으로 변경 */
+        .grade-button {
             width: 55px;
             height: 55px;
-            background: #333;
+            background: transparent;
             border-radius: 50%;
-            border: none; /* 테두리 제거 */
+            border: none;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-weight: bold;
-            font-size: 12px;
+            font-size: 10px;
             cursor: pointer;
             transition: all 0.3s ease;
             position: relative;
@@ -343,8 +344,14 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
 
-        .black-button:hover {
+        .grade-button:hover {
             transform: scale(1.1);
+        }
+
+        .grade-button img {
+            width: 45px;
+            height: 45px;
+            object-fit: contain;
         }
 
         /* 반응형 */
@@ -435,7 +442,9 @@
                 <img src="images/문서.png" alt="문서">
             </div>
         </div>
-        <div class="black-button" onclick="goToPage('a3.html')">BLACK</div>
+        <div class="grade-button" id="gradeButton" onclick="goToPage('a3.html')">
+            <img id="gradeButtonImage" src="images/YELLOW ㅇ.png" alt="YELLOW">
+        </div>
         <div class="nav-item active" onclick="goToPage('a4.html')">
             <div class="nav-icon">
                 <img src="images/채팅.png" alt="채팅">
@@ -474,6 +483,15 @@
         const GEMINI_API_KEY = 'AIzaSyDMawZDEzBrAvAJt8ZrZxvvq2aZIRnbObk';
         const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`;
 
+        // 등급 시스템 설정
+        const levelSystem = {
+            YELLOW: { name: 'YELLOW', exp: 0, max: 5000, image: 'YELLOW ㅁ.png', nav: 'YELLOW ㅇ', navImage: 'YELLOW ㅇ.png' },
+            GREEN: { name: 'GREEN', exp: 5000, max: 15000, image: 'GREEN ㅁ.png', nav: 'GREEN ㅇ', navImage: 'GREEN ㅇ.png' },
+            BLUE: { name: 'BLUE', exp: 15000, max: 30000, image: 'BLUE ㅁ.png', nav: 'BLUE ㅇ', navImage: 'BLUE ㅇ.png' },
+            RED: { name: 'RED', exp: 30000, max: 50000, image: 'RED ㅁ.png', nav: 'RED ㅇ', navImage: 'RED ㅇ.png' },
+            BLACK: { name: 'BLACK', exp: 50000, max: 999999, image: 'BLACK ㅁ.png', nav: 'BLACK ㅇ', navImage: 'BLACK ㅇ.png' }
+        };
+
         // 사용자 정보
         let currentUser = JSON.parse(localStorage.getItem('fineu_current_user')) || {
             id: 'user_' + Date.now(),
@@ -488,9 +506,95 @@
 
         // 페이지 로드 시 초기화
         document.addEventListener('DOMContentLoaded', function() {
+            loadUserDataFromFirebase();  // 사용자 데이터 로드 추가
             loadChatHistory();
             initializeWelcomeMessage();
         });
+
+        // Firebase에서 사용자 데이터 가져오기
+        async function loadUserDataFromFirebase() {
+            console.log('=== A4 데이터 로드 시작 ===');
+            
+            try {
+                const savedUser = localStorage.getItem('fineu_current_user');
+                if (!savedUser) {
+                    console.log('❌ 로그인 정보 없음');
+                    return;
+                }
+                
+                currentUser = JSON.parse(savedUser);
+                const userId = currentUser.id || currentUser.username || 'Test';
+                console.log('👤 A4 사용자 ID:', userId);
+                
+                // Firebase에서 데이터 가져오기
+                const snapshot = await database.ref(`users/${userId}`).once('value');
+                console.log('📊 A4 데이터 스냅샷 확인:', snapshot.exists());
+
+                if (snapshot.exists()) {
+                    const firebaseData = snapshot.val();
+                    console.log('✅ A4 Firebase 데이터 로드 성공:', firebaseData);
+                    
+                    // 경험치와 레벨 계산
+                    const exp = firebaseData.exp || firebaseData.experience || 0;
+                    const userLevel = calculateUserLevel(exp);
+                    
+                    // currentUser 업데이트
+                    currentUser.exp = exp;
+                    currentUser.level = userLevel.toLowerCase();
+                    
+                    // 등급 버튼 업데이트
+                    updateGradeButton(currentUser.level);
+                    
+                } else {
+                    console.log('❌ A4 Firebase에 데이터 없음 - 기본값 사용');
+                    updateGradeButton('yellow');
+                }
+                
+            } catch (error) {
+                console.error('❌ A4 데이터 로드 오류:', error);
+                updateGradeButton('yellow');
+            }
+        }
+
+        // 사용자 등급 계산
+        function calculateUserLevel(exp) {
+            for (const [level, data] of Object.entries(levelSystem)) {
+                if (exp >= data.exp && exp < data.max) {
+                    return level;
+                }
+            }
+            return 'BLACK'; // 최고 등급
+        }
+
+        // 등급별 색상 반환
+        function getUserLevelColor(level) {
+            const colors = {
+                'YELLOW': '#FFE99E',
+                'GREEN': '#C1EDB3',
+                'BLUE': '#ADD9FA',
+                'RED': '#FAABAD',
+                'BLACK': '#333333'
+            };
+            return colors[level] || colors['YELLOW'];
+        }
+
+        // 등급 버튼 업데이트
+        function updateGradeButton(grade) {
+            const upperGrade = grade.toUpperCase();
+            const levelData = levelSystem[upperGrade];
+            
+            if (levelData) {
+                const gradeButton = document.getElementById('gradeButton');
+                const gradeButtonImage = document.getElementById('gradeButtonImage');
+                
+                if (gradeButton && gradeButtonImage) {
+                    gradeButtonImage.src = `images/${levelData.navImage}`;
+                    gradeButtonImage.alt = levelData.name;
+                    gradeButton.style.background = getUserLevelColor(upperGrade);  // 배경색 설정
+                    console.log('🎖️ A4 등급 버튼 업데이트:', upperGrade, levelData.navImage);
+                }
+            }
+        }
 
         // 환영 메시지 초기화
         function initializeWelcomeMessage() {
@@ -849,7 +953,6 @@
             document.querySelectorAll('.nav-item').forEach(item => {
                 item.classList.remove('active');
             });
-            event.currentTarget.classList.add('active');
             
             if (page !== 'a4.html') {
                 window.location.href = page;

@@ -245,22 +245,23 @@
         }
 
         /* 중앙 반원 돌출 부분 추가 */
-        .bottom-nav::before {
-            content: '';
-            position: absolute;
-            top: -32px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 65px;
-            height: 65px;
-            background: white;
-            background-image: url('images/배경.png');
-            background-size: cover;
-            background-position: center;
-            border-radius: 50%;
-            box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
-            z-index: -1;
-        }
+.bottom-nav::before {
+    content: '';
+    position: absolute;
+    top: -32px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 65px;
+    height: 65px;
+    background: white;
+    background-image: url('images/배경.png');  /* 이 줄 추가 */
+    background-size: cover;  /* 이 줄 추가 */
+    background-position: center;  /* 이 줄 추가 */
+    border-radius: 50%;
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+    z-index: -1;
+}
+
 
         .nav-item {
             display: flex;
@@ -313,8 +314,9 @@
         .grade-button {
             width: 55px;
             height: 55px;
-            background: #fafaf8;
+            background: transparent;
             border-radius: 50%;
+            border: none;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -325,7 +327,7 @@
             transition: all 0.3s ease;
             position: relative;
             top: -35px;
-            z-index: 150;
+            z-index: 10;
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
 
@@ -672,6 +674,7 @@
                 if (gradeButtonImage && levelData.navImage) {
                     gradeButtonImage.src = `images/${levelData.navImage}`;
                     gradeButtonImage.alt = levelData.name;
+                    gradeButton.style.background = getUserLevelColor(upperGrade);  // 👈 이 줄 추가!
                     console.log('🎖️ A5 등급 버튼 업데이트:', upperGrade, levelData.navImage);
                 }
             }

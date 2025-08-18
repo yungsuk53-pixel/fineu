@@ -296,9 +296,9 @@
         .grade-button {
             width: 55px;
             height: 55px;
-            background: #fafaf8; /* 기본 YELLOW */
+            background: transparent;
             border-radius: 50%;
-            border: none; /* 테두리 제거 */
+            border: none;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -457,7 +457,7 @@
                 <img src="images/문서.png" alt="문서">
             </div>
         </div>
-        <div class="grade-button" id="gradeButton">
+        <div class="grade-button" id="gradeButton" onclick="goToPage('a3.html')">
             <img id="gradeButtonImage" src="images/YELLOW ㅇ.png" alt="YELLOW">
         </div>
         <div class="nav-item" onclick="goToPage('a4.html')">
@@ -506,6 +506,24 @@
                 'BLACK': '#333333'
             };
             return colors[level] || colors['YELLOW'];
+        }
+
+        // 등급 버튼 업데이트 함수 (a4와 동일하게 추가)
+        function updateGradeButton(grade) {
+            const upperGrade = grade.toUpperCase();
+            const levelData = levelSystem[upperGrade];
+            
+            if (levelData) {
+                const gradeButton = document.getElementById('gradeButton');
+                const gradeButtonImage = document.getElementById('gradeButtonImage');
+                
+                if (gradeButton && gradeButtonImage) {
+                    gradeButtonImage.src = `images/${levelData.navImage}`;
+                    gradeButtonImage.alt = levelData.name;
+                    gradeButton.style.background = getUserLevelColor(upperGrade);
+                    console.log('🎖️ A3 등급 버튼 업데이트:', upperGrade, levelData.navImage);
+                }
+            }
         }
         
         // 등급별 잠금 해제 조건
@@ -587,26 +605,9 @@
                     
                     console.log('✅ A3 userAssets 설정 완료:', userAssets);
                     
-                    // 2. 등급 이미지 업데이트
-                    const userLevel = (userAssets.level || 'yellow').toUpperCase();
-                    const levelData = levelSystem[userLevel];
-                    if (levelData) {
-                        const gradeImage = document.querySelector('.grade-image');
-                        if (gradeImage) {
-                            gradeImage.src = `images/${levelData.image}`;
-                            gradeImage.alt = levelData.name;
-                        }
-                        
-                        // 네비게이션 버튼 업데이트
-                        const gradeButton = document.getElementById('gradeButton');
-                        const gradeButtonImage = document.getElementById('gradeButtonImage');
-                        if (gradeButton && gradeButtonImage) {
-                            gradeButtonImage.src = `images/${levelData.navImage}`;
-                            gradeButtonImage.alt = levelData.name;
-                            gradeButton.style.background = getUserLevelColor(userLevel);
-                        }
-                        console.log('🎖️ 등급 표시 완료:', userLevel);
-                    }
+                    // 등급 버튼 업데이트 (수정된 부분)
+                    const userLevel = calculateUserLevel(userAssets.exp);
+                    updateGradeButton(userLevel);
                     
                     // 등급별 메뉴 업데이트
                     updateMenuAccess();
@@ -629,26 +630,8 @@
                         studyProgress: {}
                     };
                     
-                    // 기본 등급 이미지 업데이트 (YELLOW)
-                    const userLevel = 'YELLOW';
-                    const levelData = levelSystem[userLevel];
-                    if (levelData) {
-                        const gradeImage = document.querySelector('.grade-image');
-                        if (gradeImage) {
-                            gradeImage.src = `images/${levelData.image}`;
-                            gradeImage.alt = levelData.name;
-                        }
-                        
-                        // 네비게이션 버튼 업데이트
-                        const gradeButton = document.getElementById('gradeButton');
-                        const gradeButtonImage = document.getElementById('gradeButtonImage');
-                        if (gradeButton && gradeButtonImage) {
-                            gradeButtonImage.src = `images/${levelData.navImage}`;
-                            gradeButtonImage.alt = levelData.name;
-                            gradeButton.style.background = getUserLevelColor(userLevel);
-                        }
-                    }
-                    
+                    // 기본 등급 버튼 업데이트 (수정된 부분)
+                    updateGradeButton('YELLOW');
                     updateMenuAccess();
                 }
                 
@@ -668,26 +651,8 @@
                     experience: 0
                 };
                 
-                // 오류 시 기본 등급 이미지 업데이트 (YELLOW)
-                const userLevel = 'YELLOW';
-                const levelData = levelSystem[userLevel];
-                if (levelData) {
-                    const gradeImage = document.querySelector('.grade-image');
-                    if (gradeImage) {
-                        gradeImage.src = `images/${levelData.image}`;
-                        gradeImage.alt = levelData.name;
-                    }
-                    
-                    // 네비게이션 버튼 업데이트
-                    const gradeButton = document.getElementById('gradeButton');
-                    const gradeButtonImage = document.getElementById('gradeButtonImage');
-                    if (gradeButton && gradeButtonImage) {
-                        gradeButtonImage.src = `images/${levelData.navImage}`;
-                        gradeButtonImage.alt = levelData.name;
-                        gradeButton.style.background = getUserLevelColor(userLevel);
-                    }
-                }
-                
+                // 오류 시 기본 등급 버튼 업데이트 (수정된 부분)
+                updateGradeButton('YELLOW');
                 updateMenuAccess();
             }
         }
@@ -709,25 +674,8 @@
                     const experience = userData.experience || 0;
                     const grade = calculateUserGrade(experience);
                     
-                    // 등급 버튼 업데이트
-                    const userLevel = grade.toUpperCase();
-                    const levelData = levelSystem[userLevel];
-                    if (levelData) {
-                        const gradeImage = document.querySelector('.grade-image');
-                        if (gradeImage) {
-                            gradeImage.src = `images/${levelData.image}`;
-                            gradeImage.alt = levelData.name;
-                        }
-                        
-                        // 네비게이션 버튼 업데이트
-                        const gradeButton = document.getElementById('gradeButton');
-                        const gradeButtonImage = document.getElementById('gradeButtonImage');
-                        if (gradeButton && gradeButtonImage) {
-                            gradeButtonImage.src = `images/${levelData.navImage}`;
-                            gradeButtonImage.alt = levelData.name;
-                            gradeButton.style.background = getUserLevelColor(userLevel);
-                        }
-                    }
+                    // 등급 버튼 업데이트 (수정된 부분)
+                    updateGradeButton(grade.toUpperCase());
                     
                     // userAssets 업데이트
                     userAssets.exp = experience;
@@ -736,27 +684,6 @@
                 console.error('A3 등급 로드 실패:', error);
             }
         }
-
-        // 2. 등급 이미지 업데이트
-                const userLevel = (userAssets.level || 'yellow').toUpperCase();
-                const levelData = levelSystem[userLevel];
-                if (levelData) {
-                    const gradeImage = document.querySelector('.grade-image');
-                    if (gradeImage) {
-                        gradeImage.src = `images/${levelData.image}`;
-                        gradeImage.alt = levelData.name;
-                    }
-                    
-                    // 네비게이션 버튼 업데이트
-                    const gradeButton = document.getElementById('gradeButton');
-                    const gradeButtonImage = document.getElementById('gradeButtonImage');
-                    if (gradeButton && gradeButtonImage) {
-                        gradeButtonImage.src = `images/${levelData.navImage}`;
-                        gradeButtonImage.alt = levelData.name;
-                        gradeButton.style.background = getUserLevelColor(userLevel);
-                    }
-                    console.log('🎖️ 등급 표시 완료:', userLevel);
-                }
 
         // 등급별 메뉴 접근 권한 업데이트
         function updateMenuAccess() {
@@ -2693,7 +2620,7 @@
                     return: 4.56,
                     description: '글로벌 주식형 펀드',
                     company: '삼성자산운용'
-                },
+                                },
                 {
                     name: 'KB 성장동력펀드',
                     price: 12340,
@@ -2787,6 +2714,17 @@
         function showNotifications() {
             alert('알림 기능은 준비 중입니다.');
         }
+
+        // 전역 함수로 등록 (모달 내부에서 호출 가능하도록)
+        window.addAccountItem = addAccountItem;
+        window.subscribeSavings = subscribeSavings;
+        window.searchStocks = searchStocks;
+        window.buyStock = buyStock;
+        window.applyLoan = applyLoan;
+        window.searchFunds = searchFunds;
+        window.investFund = investFund;
+        window.showTradeModal = showTradeModal;
+        window.closeModal = closeModal;
     </script>
 </body>
 </html>
