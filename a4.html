@@ -2,39 +2,11 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FINE U - AI 챗봇</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FINE U - 채팅</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
     
-    <!-- Firebase SDK -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, set, get, update, push, child } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyBYZ8Q9x6x6QJ9x6x6x6x6x6x6x6x6x6x6",
-            authDomain: "fineu-demo.firebaseapp.com",
-            databaseURL: "https://fineu-demo-default-rtdb.firebaseio.com",
-            projectId: "fineu-demo",
-            storageBucket: "fineu-demo.appspot.com",
-            messagingSenderId: "123456789012",
-            appId: "1:123456789012:web:demo123456"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const database = getDatabase(app);
-
-        window.firebaseDB = database;
-        window.firebaseRef = ref;
-        window.firebaseSet = set;
-        window.firebaseGet = get;
-        window.firebaseUpdate = update;
-        window.firebasePush = push;
-        window.firebaseChild = child;
-
-        console.log('🔥 A4 Firebase 초기화 완료');
-    </script>
-
     <style>
         * {
             margin: 0;
@@ -43,85 +15,95 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            height: 100vh;
-            overflow: hidden;
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
         }
 
-        /* 헤더 */
+        /* 공통 헤더 */
         .header {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             height: 60px;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
+            background: white;
             display: flex;
-            align-items: center;
             justify-content: space-between;
+            align-items: center;
             padding: 0 20px;
-            z-index: 1000;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
-        .power-icon, .notification-icon {
-            font-size: 20px;
-            color: #333;
+        .power-icon {
+            width: 24px;
+            height: 24px;
+            color: #ff6b9d;
+            font-size: 24px;
             cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .power-icon:hover, .notification-icon:hover {
-            color: #667eea;
-            transform: scale(1.1);
         }
 
         .fine-u-logo {
             display: flex;
             align-items: center;
+            font-size: 28px;
+            font-weight: bold;
         }
 
         .logo-image {
-            height: 35px;
+            height: 40px;
             width: auto;
+            object-fit: contain;
+        }
+
+        .fine-text {
+            color: #7cb9e8;
+        }
+
+        .u-text {
+            color: #ffd700;
+        }
+
+        .notification-icon {
+            width: 24px;
+            height: 24px;
+            color: #ffd700;
+            font-size: 20px;
+            cursor: pointer;
         }
 
         /* 메인 콘텐츠 */
         .main-content {
-            position: fixed;
-            top: 60px;
-            left: 0;
-            right: 0;
-            bottom: 160px;
-            padding: 20px;
-            overflow: hidden;
+            padding: 70px 20px 160px;
+            max-width: 400px;
+            margin: 0 auto;
+            height: calc(100vh - 160px);
+            display: flex;
+            flex-direction: column;
         }
 
         .page-title {
-            text-align: center;
-            color: white;
             font-size: 24px;
             font-weight: bold;
+            color: #333;
             margin-bottom: 20px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
 
         /* 채팅 영역 */
         .chat-area {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            height: calc(100% - 60px);
-            padding: 20px;
+            flex: 1;
             overflow-y: auto;
-            backdrop-filter: blur(10px);
+            padding: 10px 0;
         }
 
-        /* 메시지 스타일 */
         .message {
             margin-bottom: 15px;
             display: flex;
-            align-items: flex-start;
+            align-items: flex-end;
         }
 
         .message.user {
@@ -130,17 +112,6 @@
 
         .message.bot {
             justify-content: flex-start;
-        }
-
-        .ai-avatar {
-            width: 32px;
-            height: 32px;
-            background-image: url('images/똑부리.png');
-            background-size: cover;
-            background-position: center;
-            border-radius: 50%;
-            margin-right: 8px;
-            flex-shrink: 0;
         }
 
         .message-bubble {
@@ -152,54 +123,102 @@
         }
 
         .message.user .message-bubble {
-            background: #667eea;
+            background: #7cb9e8;
             color: white;
-            border-bottom-right-radius: 6px;
         }
 
         .message.bot .message-bubble {
-            background: #f1f3f4;
+            background: white;
             color: #333;
-            border-bottom-left-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        /* 타이핑 인디케이터 */
+        .typing-indicator {
+            display: none;
+            padding: 12px 16px;
+            background: white;
+            border-radius: 18px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+            max-width: 60px;
+        }
+
+        .typing-indicator.active {
+            display: inline-block;
+        }
+
+        .typing-indicator span {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #999;
+            margin: 0 2px;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% {
+                transform: translateY(0);
+            }
+            30% {
+                transform: translateY(-10px);
+            }
         }
 
         /* 입력 영역 */
         .input-area {
             position: fixed;
-            bottom: 80px;
-            left: 0;
-            right: 0;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 400px;
+            padding: 0 20px;
+            background: #f5f5f5;
+            padding-top: 10px;
+            padding-bottom: 10px;
         }
 
         .input-container {
             display: flex;
             align-items: center;
             gap: 10px;
-            background: white;
-            border-radius: 25px;
-            padding: 8px;
         }
 
         .chat-input {
             flex: 1;
-            border: none;
-            background: transparent;
             padding: 12px 16px;
+            border: none;
+            border-radius: 25px;
+            background: white;
             font-size: 14px;
             outline: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
         .chat-input::placeholder {
             color: #999;
         }
 
+        .chat-input:disabled {
+            background: #f0f0f0;
+            cursor: not-allowed;
+        }
+
         .send-button {
             width: 40px;
             height: 40px;
-            background: #667eea;
+            background: #333;
             border: none;
             border-radius: 50%;
             color: white;
@@ -208,9 +227,35 @@
             transition: all 0.3s ease;
         }
 
-        .send-button:hover {
-            background: #5a6fd8;
+        .send-button:hover:not(:disabled) {
+            background: #555;
             transform: scale(1.05);
+        }
+
+        .send-button:active:not(:disabled) {
+            transform: scale(0.95);
+        }
+
+        .send-button:disabled {
+            background: #999;
+            cursor: not-allowed;
+        }
+
+        .attach-button {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border: none;
+            border-radius: 50%;
+            color: #666;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .attach-button:hover {
+            background: #f0f0f0;
         }
 
         /* 하단 네비게이션 */
@@ -219,13 +264,34 @@
             bottom: 0;
             left: 0;
             right: 0;
-            height: 80px;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
+            height: 70px;
+            background: white;
+            background-image: url('images/배경.png');
+            background-size: cover;
+            background-position: center;
             display: flex;
-            align-items: center;
             justify-content: space-around;
-            padding: 10px 0;
+            align-items: center;
+            box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+
+        /* 중앙 반원 돌출 부분 추가 */
+        .bottom-nav::before {
+            content: '';
+            position: absolute;
+            top: -32px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 65px;
+            height: 65px;
+            background: white;
+            background-image: url('images/배경.png');
+            background-size: cover;
+            background-position: center;
+            border-radius: 50%;
+            box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+            z-index: -1;
         }
 
         .nav-item {
@@ -234,43 +300,88 @@
             align-items: center;
             cursor: pointer;
             transition: all 0.3s ease;
-            padding: 5px;
-            border-radius: 10px;
-        }
-
-        .nav-item:hover {
-            background: rgba(102, 126, 234, 0.1);
+            padding: 8px;
         }
 
         .nav-item.active {
-            background: rgba(102, 126, 234, 0.2);
+            color: #7cb9e8;
         }
 
-        .nav-icon img {
+        .nav-icon {
+            font-size: 18px;
+            margin-bottom: 4px;
             width: 24px;
             height: 24px;
-        }
-
-        .grade-button {
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 50px;
-            height: 50px;
-            background: white;
-            border-radius: 50%;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            cursor: pointer;
-            transition: all 0.3s ease;
         }
 
-        .grade-button:hover {
+        .nav-icon img {
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
+        }
+
+        .black-button {
+            width: 55px;
+            height: 55px;
+            background: #333;
+            border-radius: 50%;
+            border: none; /* 테두리 제거 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            top: -35px;
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .black-button:hover {
             transform: scale(1.1);
         }
 
-        .grade-button img {
-            width: 30px;
-            height: 30px;
+        /* 반응형 */
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 70px 15px 160px;
+            }
+            
+            .input-area {
+                padding: 0 15px;
+            }
+        }
+
+        /* 에러 메시지 스타일 */
+        .error-message {
+            background: #fee;
+            color: #c00;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        /* 로딩 스피너 */
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #333;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -290,15 +401,23 @@
         
         <!-- 채팅 영역 -->
         <div class="chat-area" id="chatArea">
-            <!-- 동적으로 채팅 메시지가 추가됩니다 -->
+            <!-- 타이핑 인디케이터 -->
+            <div class="typing-indicator" id="typingIndicator">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
         </div>
     </div>
 
     <!-- 입력 영역 -->
     <div class="input-area">
         <div class="input-container">
+            <button class="attach-button" onclick="attachFile()">
+                <i class="fas fa-camera"></i>
+            </button>
             <input type="text" class="chat-input" placeholder="채팅을 입력하세요." id="chatInput" onkeypress="handleKeyPress(event)">
-            <button class="send-button" onclick="sendMessage()">
+            <button class="send-button" id="sendButton" onclick="sendMessage()">
                 <i class="fas fa-paper-plane"></i>
             </button>
         </div>
@@ -316,9 +435,7 @@
                 <img src="images/문서.png" alt="문서">
             </div>
         </div>
-        <div class="grade-button" id="gradeButton" onclick="goToPage('a3.html')">
-            <img id="gradeButtonImage" src="images/YELLOW ㅇ.png" alt="YELLOW">
-        </div>
+        <div class="black-button" onclick="goToPage('a3.html')">BLACK</div>
         <div class="nav-item active" onclick="goToPage('a4.html')">
             <div class="nav-icon">
                 <img src="images/채팅.png" alt="채팅">
@@ -331,60 +448,70 @@
         </div>
     </div>
 
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+
     <script>
-        // 전역 변수
+        // Firebase 설정
+        const firebaseConfig = {
+            apiKey: "AIzaSyApKJHvNXftrzXAZsH41FxqVj0_Byh_V28",
+            authDomain: "invest-97aa7.firebaseapp.com",
+            databaseURL: "https://invest-97aa7-default-rtdb.firebaseio.com",
+            projectId: "invest-97aa7",
+            storageBucket: "invest-97aa7.firebasestorage.app",
+            messagingSenderId: "136719207030",
+            appId: "1:136719207030:web:391bd46b7b79800c0fed57",
+            measurementId: "G-78K35WTPGQ"
+        };
+
+        // Firebase 초기화
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Gemini API 설정 (새로운 API 키 사용)
+        const GEMINI_API_KEY = 'AIzaSyDMawZDEzBrAvAJt8ZrZxvvq2aZIRnbObk';
+        const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`;
+
+        // 사용자 정보
+        let currentUser = JSON.parse(localStorage.getItem('fineu_current_user')) || {
+            id: 'user_' + Date.now(),
+            name: '사용자',
+            level: 'yellow',
+            exp: 0
+        };
+
+        // 채팅 히스토리
         let chatHistory = [];
-        let currentUser = null;
+        let isProcessing = false;
 
-        // API 설정
-        const GEMINI_API_KEY = 'AIzaSyBYZ8Q9x6x6QJ9x6x6x6x6x6x6x6x6x6x6'; // 데모용
-        const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent';
-
-        // 페이지 로드시 초기화
+        // 페이지 로드 시 초기화
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🤖 A4 AI 챗봇 페이지 로드됨');
-            
-            // 로그인 확인
-            if (!checkLogin()) {
-                return;
-            }
-            
-            // 초기 메시지 표시
-            setTimeout(() => {
-                initializeChat();
-            }, 500);
+            loadChatHistory();
+            initializeWelcomeMessage();
         });
 
-        // 로그인 확인
-        function checkLogin() {
-            const savedUser = localStorage.getItem('fineu_current_user');
-            if (!savedUser) {
-                alert('로그인이 필요합니다.');
-                window.location.href = 'index.html';
-                return false;
-            }
-            
-            currentUser = JSON.parse(savedUser);
-            console.log('✅ A4 로그인 확인:', currentUser.id);
-            return true;
+        // 환영 메시지 초기화
+        function initializeWelcomeMessage() {
+            // 첫 번째 챗봇 메시지 추가 (저장하지 않음)
+            const welcomeMessage = "안녕하세요.\n저는 여러분의 슬기로운 금융 생활을 돕는 똑부리에요.\n혹시 도움이 필요한 일이 있나요?";
+            addMessage(welcomeMessage, 'bot', false);
         }
 
-        // 초기 채팅 메시지
-        function initializeChat() {
-            const welcomeMessage = `안녕하세요! 똑부리입니다 😊
-
-금융에 대해 궁금한 것이 있으시면 언제든지 물어보세요!
-
-예를 들어:
-• 저축 방법
-• 예산 관리  
-• 투자 기초 지식
-• 신용카드 사용법
-
-등에 대해 도움을 드릴 수 있어요!`;
-
-            displayMessage(welcomeMessage, 'bot');
-            chatHistory.push({ role: 'assistant', content: welcomeMessage });
+        // 채팅 히스토리 로드
+        async function loadChatHistory() {
+            try {
+                const snapshot = await database.ref(`chats/${currentUser.id}`).limitToLast(20).once('value');
+                const data = snapshot.val();
+                if (data) {
+                    Object.values(data).forEach(msg => {
+                        addMessage(msg.text, msg.sender, false);
+                    });
+                }
+            } catch (error) {
+                console.error('채팅 히스토리 로드 실패:', error);
+            }
         }
 
         // 메시지 전송
@@ -392,129 +519,338 @@
             const input = document.getElementById('chatInput');
             const message = input.value.trim();
             
-            if (!message) return;
+            if (message === '' || isProcessing) return;
             
-            // 사용자 메시지 표시
-            displayMessage(message, 'user');
-            chatHistory.push({ role: 'user', content: message });
+            // UI 상태 변경
+            isProcessing = true;
+            input.disabled = true;
+            document.getElementById('sendButton').disabled = true;
             
-            // 입력창 초기화
+            // 사용자 메시지 추가
+            addMessage(message, 'user', true);
+            
+            // 입력 필드 초기화
             input.value = '';
             
-            // 로딩 메시지 표시
-            displayMessage('생각 중...', 'bot');
+            // 타이핑 인디케이터 표시
+            showTypingIndicator();
             
             try {
-                // AI 응답 생성
-                const response = await generateResponse(message);
+                // 사용자 정보 가져오기
+                const userInfo = await getUserFinancialInfo();
                 
-                // 로딩 메시지 제거
-                removeLastMessage();
+                // Gemini API 호출
+                const response = await callGeminiAPI(message, userInfo);
                 
-                // AI 응답 표시
-                displayMessage(response, 'bot');
-                chatHistory.push({ role: 'assistant', content: response });
+                // 타이핑 인디케이터 숨기기
+                hideTypingIndicator();
+                
+                // 봇 응답 추가
+                addMessage(response, 'bot', true);
                 
             } catch (error) {
-                console.error('채팅 오류:', error);
-                removeLastMessage();
-                displayMessage('죄송해요. 일시적인 오류가 발생했습니다. 다시 시도해주세요.', 'bot');
+                console.error('메시지 전송 실패:', error);
+                hideTypingIndicator();
+                addMessage('죄송합니다. 일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.', 'bot', false);
+            } finally {
+                // UI 상태 복원
+                isProcessing = false;
+                input.disabled = false;
+                document.getElementById('sendButton').disabled = false;
+                input.focus();
             }
         }
 
-        // AI 응답 생성
-        async function generateResponse(message) {
-            // 위험한 투자 조언 체크
-            if (isDangerousInvestmentAdvice(message)) {
-                return '죄송해요. 저는 특정 투자 상품에 대한 추천은 드리지 않아요.\n대신 금융 기초 지식이나 투자 원칙에 대해 설명해드릴 수 있어요!';
+        // 사용자 금융 정보 가져오기
+        async function getUserFinancialInfo() {
+            try {
+                const snapshot = await database.ref(`users/${currentUser.id}/financial`).once('value');
+                const data = snapshot.val() || {};
+                
+                return {
+                    level: currentUser.level || 'yellow',
+                    exp: currentUser.exp || 0,
+                    portfolio: data.portfolio || [],
+                    transactions: data.transactions || [],
+                    learningProgress: data.learningProgress || {},
+                    quizScores: data.quizScores || []
+                };
+            } catch (error) {
+                console.error('사용자 정보 로드 실패:', error);
+                return {
+                    level: currentUser.level || 'yellow',
+                    exp: currentUser.exp || 0
+                };
             }
-            
-            // 스마트 응답 생성
-            return getSmartResponse(message);
         }
 
-        // 스마트 응답 시스템
-        function getSmartResponse(message) {
-            const lowerMessage = message.toLowerCase();
-            
-            if (lowerMessage.includes('안녕') || lowerMessage.includes('hello')) {
-                return '안녕하세요! 똑부리입니다 😊\n금융에 대해 궁금한 것이 있으시면 언제든지 물어보세요!';
-            }
-            
-            if (lowerMessage.includes('투자') && !isDangerousInvestmentAdvice(message)) {
-                return '투자의 기본 원칙은 분산투자와 장기투자예요.\n위험을 줄이기 위해 여러 자산에 나누어 투자하고, 짧은 시간에 큰 수익을 기대하지 않는 것이 중요해요! 📈';
-            }
-            
-            if (lowerMessage.includes('저축') || lowerMessage.includes('적금')) {
-                return '저축은 목표를 정하고 꾸준히 하는 것이 중요해요!\n매월 일정 금액을 자동으로 저축하는 자동이체를 설정하면 더 쉽게 돈을 모을 수 있어요 💰';
-            }
-            
-            if (lowerMessage.includes('예산') || lowerMessage.includes('가계부')) {
-                return '예산 관리의 핵심은 수입과 지출을 기록하는 것이에요.\n50/30/20 법칙을 참고해보세요: 필수지출 50%, 여가 30%, 저축 20% 📊';
-            }
-            
-            if (lowerMessage.includes('카드') || lowerMessage.includes('신용')) {
-                return '신용카드는 편리하지만 신중하게 사용해야 해요.\n결제일에 맞춰 전액 납부하고, 과도한 사용은 피하는 것이 좋습니다 💳';
-            }
-            
-            if (lowerMessage.includes('대출') || lowerMessage.includes('부채')) {
-                return '부채 관리는 높은 금리부터 먼저 상환하는 것이 좋아요.\n무리한 대출보다는 현실적인 계획을 세우는 것이 중요합니다 📋';
-            }
-            
-            return '금융에 대해 더 구체적으로 물어보시면 도움을 드릴 수 있어요!\n예를 들어 저축, 투자, 예산 관리 등에 대해 궁금한 점이 있으시면 언제든지 말씀해주세요 🤝';
-        }
-
-        // 위험한 투자 조언 감지
-        function isDangerousInvestmentAdvice(message) {
+        // Gemini API 호출
+        async function callGeminiAPI(userMessage, userInfo) {
+            // 위험한 질문 필터링
             const dangerousKeywords = [
-                '어떤 주식', '주식 추천', '사는게 좋아', '투자 추천', '어떤 종목',
-                '코인 추천', '암호화폐 추천', '펀드 추천', 'ETF 추천',
-                '수익률 높은', '돈 벌', '투자하면 좋은', '오를 것 같은',
-                '사야 할', '팔아야 할', '지금 사면', '급등할', '하락할'
+                '종목 추천', '주식 추천', '코인 추천', '암호화폐 추천',
+                '어떤 주식', '어떤 코인', '뭘 사야', '투자 종목',
+                '수익률 보장', '확실한 수익'
             ];
             
-            return dangerousKeywords.some(keyword => message.includes(keyword));
+            const isDangerous = dangerousKeywords.some(keyword => 
+                userMessage.toLowerCase().includes(keyword.toLowerCase())
+            );
+            
+            if (isDangerous) {
+                return '죄송하지만 특정 투자 종목을 추천하거나 수익을 보장하는 조언은 드릴 수 없습니다. 대신 투자의 기본 원칙, 분산투자의 중요성, 리스크 관리 방법 등에 대해 알려드릴 수 있어요. 건전한 투자 습관을 기르는 것이 가장 중요합니다!';
+            }
+
+            // 시스템 프롬프트 구성
+            const systemPrompt = `당신은 '똑부리'라는 이름의 친근한 금융 교육 AI 챗봇입니다.
+            
+            사용자 정보:
+            - 투자 레벨: ${userInfo.level}
+            - 경험치: ${userInfo.exp}
+            - 학습 진도: ${JSON.stringify(userInfo.learningProgress || {})}
+            
+            역할과 지침:
+            1. 금융 교육을 목적으로 친근하고 이해하기 쉽게 설명합니다
+            2. 사용자의 레벨에 맞는 설명을 제공합니다
+            3. 구체적인 투자 종목 추천이나 투자 조언은 절대 하지 않습니다
+            4. 금융의 기본 개념, 저축의 중요성, 리스크 관리 등을 강조합니다
+            5. 실제 사례나 비유를 들어 쉽게 설명합니다
+            6. 항상 긍정적이고 격려하는 톤을 유지합니다
+            7. 답변은 2-3문단 이내로 간결하게 합니다
+            8. 이모지를 적절히 사용하여 친근감을 높입니다`;
+
+            const requestBody = {
+                contents: [{
+                    parts: [{
+                        text: `${systemPrompt}\n\n사용자 질문: ${userMessage}\n\n위 정보를 바탕으로 교육적이고 도움이 되는 답변을 제공해주세요.`
+                    }]
+                }],
+                generationConfig: {
+                    temperature: 0.7,
+                    topK: 40,
+                    topP: 0.95,
+                    maxOutputTokens: 1024,
+                },
+                safetySettings: [
+                    {
+                        category: "HARM_CATEGORY_HARASSMENT",
+                        threshold: "BLOCK_MEDIUM_AND_ABOVE"
+                    },
+                    {
+                        category: "HARM_CATEGORY_HATE_SPEECH",
+                        threshold: "BLOCK_MEDIUM_AND_ABOVE"
+                    },
+                    {
+                        category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                        threshold: "BLOCK_MEDIUM_AND_ABOVE"
+                    },
+                    {
+                        category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+                        threshold: "BLOCK_MEDIUM_AND_ABOVE"
+                    }
+                ]
+            };
+
+            try {
+                console.log('🤖 Gemini API 호출 시작:', GEMINI_API_URL);
+                
+                const response = await fetch(GEMINI_API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'Origin': window.location.origin
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+
+                console.log('📡 API 응답 상태:', response.status);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('❌ API 에러 상세:', errorText);
+                    throw new Error(`API 요청 실패: ${response.status} - ${errorText}`);
+                }
+
+                const data = await response.json();
+                console.log('📊 API 응답 데이터:', data);
+                
+                // 응답 구조 확인 및 텍스트 추출
+                if (data.candidates && data.candidates.length > 0) {
+                    const candidate = data.candidates[0];
+                    if (candidate.content && candidate.content.parts && candidate.content.parts.length > 0) {
+                        const responseText = candidate.content.parts[0].text;
+                        console.log('✅ Gemini 응답 성공:', responseText.substring(0, 100) + '...');
+                        return responseText;
+                    }
+                }
+                
+                // 응답 구조가 예상과 다른 경우
+                console.warn('⚠️ 예상과 다른 응답 구조:', data);
+                throw new Error('응답에서 텍스트를 찾을 수 없습니다');
+                
+            } catch (error) {
+                console.error('❌ Gemini API 오류:', error);
+                
+                // 폴백 응답
+                return getFallbackResponse(userMessage);
+            }
         }
 
-        // 메시지 표시
-        function displayMessage(content, sender) {
+        // 폴백 응답 생성 (개선된 버전)
+        function getFallbackResponse(message) {
+            const lowerMessage = message.toLowerCase();
+            
+            // 구체적인 키워드 기반 응답
+            const keywordResponses = {
+                '투자': '📈 투자는 미래를 준비하는 중요한 방법입니다! \n\n기본 원칙을 알려드릴게요:\n• 여유자금으로만 투자하기\n• 분산투자로 리스크 관리\n• 장기적인 관점 유지\n• 충분한 공부와 분석 후 결정\n\n투자에 대해 더 궁금한 점이 있으시면 언제든 물어보세요!',
+                
+                '저축': '💰 저축은 금융 안정의 첫 걸음이에요!\n\n효과적인 저축 방법:\n• 선저축 후소비 원칙\n• 자동이체로 강제 저축\n• 목표 금액과 기간 설정\n• 비상금 먼저 준비하기\n\n작은 금액이라도 꾸준히 하는 것이 가장 중요합니다!',
+                
+                '주식': '📊 주식 투자를 고려하고 계시는군요!\n\n시작하기 전 준비사항:\n• 기업 분석 방법 학습\n• 재무제표 읽기 연습\n• 투자 철학 정립\n• 손실 각오와 위험 관리\n\n무작정 시작하기보다는 충분한 공부가 선행되어야 해요!',
+                
+                '예산': '📝 예산 관리는 건전한 금융 생활의 기초입니다!\n\n예산 관리 단계:\n• 수입과 지출 파악\n• 필수/선택 지출 분류\n• 저축 목표 설정\n• 정기적인 점검과 조정\n\n가계부 앱을 활용하시면 더 쉽게 관리할 수 있어요!',
+                
+                '은퇴': '🏖️ 은퇴 준비는 빠를수록 좋아요!\n\n은퇴 준비 방법:\n• 복리 효과 활용한 장기 투자\n• 연금저축, IRP 등 세제혜택 상품\n• 다양한 자산에 분산 투자\n• 정기적인 계획 점검\n\n시간이 가장 큰 무기이니 지금부터 시작하세요!',
+                
+                '복리': '✨ 복리는 정말 마법 같은 힘을 가지고 있어요!\n\n복리의 힘:\n• 시간이 길수록 효과 극대화\n• 원금과 이자가 함께 재투자\n• 작은 차이가 큰 결과로\n• 꾸준함이 가장 중요\n\n"복리는 세상에서 가장 강한 힘이다" - 아인슈타인',
+                
+                '부채': '⚠️ 부채 관리는 매우 중요한 문제예요!\n\n부채 정리 방법:\n• 고금리 부채부터 우선 상환\n• 최소 납입금액 이상 납부\n• 추가 대출 자제\n• 가계부로 지출 관리\n\n부채를 줄이는 것도 수익률 높은 투자라고 생각하세요!',
+                
+                'etf': '📈 ETF는 초보자에게 좋은 투자 방법이에요!\n\nETF의 장점:\n• 분산투자 효과\n• 낮은 운용비용\n• 높은 유동성\n• 투명한 운용\n\n하지만 여전히 투자이므로 충분한 공부가 필요해요!'
+            };
+            
+            // 키워드 매칭으로 응답 찾기
+            for (const [keyword, response] of Object.entries(keywordResponses)) {
+                if (lowerMessage.includes(keyword)) {
+                    return response;
+                }
+            }
+            
+            // 질문 형태별 응답
+            if (lowerMessage.includes('어떻게') || lowerMessage.includes('방법')) {
+                return '🤔 구체적인 방법을 알고 싶으시는군요! 투자, 저축, 예산관리 등 어떤 분야의 방법이 궁금하신지 좀 더 구체적으로 말씀해주시면 더 정확한 답변을 드릴 수 있어요!';
+            }
+            
+            if (lowerMessage.includes('추천') || lowerMessage.includes('종목')) {
+                return '⚠️ 죄송하지만 특정 투자 종목이나 금융상품 추천은 드릴 수 없어요. 대신 투자 원칙, 분산투자의 중요성, 상품 선택 기준 등에 대해 알려드릴 수 있습니다!';
+            }
+            
+            // 인사말 응답
+            if (lowerMessage.includes('안녕') || lowerMessage.includes('하이') || lowerMessage.includes('hello')) {
+                return '👋 안녕하세요! 저는 똑부리예요! 금융에 대한 궁금한 점이 있으시면 언제든 물어보세요. 투자, 저축, 예산관리 등 다양한 주제로 도움을 드릴 수 있어요! 😊';
+            }
+            
+            // 기본 응답
+            return '🤖 금융에 대해 궁금한 점이 있으시군요! 더 구체적으로 알려주시면 정확한 답변을 드릴 수 있어요.\n\n이런 주제들로 도움드릴 수 있습니다:\n• 투자 기초와 원칙\n• 저축과 예산 관리\n• 복리와 자산 증식\n• 은퇴 준비 방법\n• 부채 관리 전략\n\n어떤 것이 궁금하세요? 😊';
+        }
+
+        // 메시지 추가
+        function addMessage(text, sender, save = true) {
             const chatArea = document.getElementById('chatArea');
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${sender}`;
-            
+
             if (sender === 'bot') {
-                messageDiv.innerHTML = `
-                    <div class="ai-avatar"></div>
-                    <div class="message-bubble">${content.replace(/\n/g, '<br>')}</div>
+                messageDiv.style.flexDirection = 'row';
+                messageDiv.style.alignItems = 'flex-start';
+
+                const avatarDiv = document.createElement('div');
+                avatarDiv.style.cssText = `
+                    width: 35px;
+                    height: 35px;
+                    background-image: url('images/똑부리.png');
+                    background-size: cover;
+                    background-position: center;
+                    border-radius: 50%;
+                    margin-right: 8px;
+                    flex-shrink: 0;
                 `;
-            } else {
-                messageDiv.innerHTML = `
-                    <div class="message-bubble">${content}</div>
-                `;
+                messageDiv.appendChild(avatarDiv);
+            }
+
+            const bubbleDiv = document.createElement('div');
+            bubbleDiv.className = 'message-bubble';
+
+            // HTML 이스케이프 처리
+            const escapedText = text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+            // 줄바꿈 처리
+            bubbleDiv.innerHTML = escapedText.replace(/\n/g, '<br>');
+
+            messageDiv.appendChild(bubbleDiv);
+            
+            // 타이핑 인디케이터 앞에 삽입
+            const typingIndicator = document.getElementById('typingIndicator');
+            chatArea.insertBefore(messageDiv, typingIndicator);
+            
+            // 스크롤을 맨 아래로
+            chatArea.scrollTop = chatArea.scrollHeight;
+            
+            // Firebase에 저장
+            if (save) {
+                saveChatMessage(text, sender);
             }
             
-            chatArea.appendChild(messageDiv);
+            // 채팅 히스토리에 추가
+            chatHistory.push({ text, sender, timestamp: Date.now() });
+            
+            // 히스토리 크기 제한 (최근 50개만 유지)
+            if (chatHistory.length > 50) {
+                chatHistory = chatHistory.slice(-50);
+            }
+        }
+
+        // 채팅 메시지 저장
+        async function saveChatMessage(text, sender) {
+            try {
+                await database.ref(`chats/${currentUser.id}`).push({
+                    text: text,
+                    sender: sender,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                });
+            } catch (error) {
+                console.error('메시지 저장 실패:', error);
+            }
+        }
+
+        // 타이핑 인디케이터 표시
+        function showTypingIndicator() {
+            const indicator = document.getElementById('typingIndicator');
+            indicator.classList.add('active');
+            
+            // 스크롤을 맨 아래로
+            const chatArea = document.getElementById('chatArea');
             chatArea.scrollTop = chatArea.scrollHeight;
         }
 
-        // 마지막 메시지 제거 (로딩 메시지 제거용)
-        function removeLastMessage() {
-            const chatArea = document.getElementById('chatArea');
-            if (chatArea.lastChild) {
-                chatArea.removeChild(chatArea.lastChild);
-            }
+        // 타이핑 인디케이터 숨기기
+        function hideTypingIndicator() {
+            const indicator = document.getElementById('typingIndicator');
+            indicator.classList.remove('active');
         }
 
-        // 키 입력 처리
+        // 엔터 키 처리
         function handleKeyPress(event) {
-            if (event.key === 'Enter') {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
                 sendMessage();
             }
         }
 
-        // 페이지 이동
+        // 파일 첨부
+        function attachFile() {
+            alert('파일 첨부 기능은 준비 중입니다.');
+        }
+
+        // 네비게이션 함수
         function goToPage(page) {
-            console.log('🔄 페이지 이동:', page);
+            // 네비게이션 활성 상태 업데이트
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+            
             if (page !== 'a4.html') {
                 window.location.href = page;
             }
@@ -528,10 +864,25 @@
             }
         }
 
-        // 알림 (준비 중)
+        // 알림
         function showNotifications() {
             alert('알림 기능은 준비 중입니다.');
         }
+
+        // 에러 처리
+        window.addEventListener('error', function(event) {
+            console.error('전역 에러:', event.error);
+        });
+
+        // 네트워크 상태 체크
+        window.addEventListener('online', function() {
+            console.log('네트워크 연결됨');
+        });
+
+        window.addEventListener('offline', function() {
+            console.log('네트워크 연결 끊김');
+            addMessage('네트워크 연결이 끊겼습니다. 연결 상태를 확인해주세요.', 'bot', false);
+        });
     </script>
 </body>
 </html>

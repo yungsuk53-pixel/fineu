@@ -291,7 +291,7 @@
             object-fit: contain;
         }
 
-                .black-button {
+        .black-button {
             width: 55px;
             height: 55px;
             background: #333;
@@ -402,36 +402,35 @@
         <div class="page-title">SEE MORE</div>
 
         <!-- 공식 홈페이지 섹션 -->
-        <div class="section">
-            <div class="content-card">
-                <div class="section-title">금융감독원 공식 홈페이지</div>
-            </div>
-        </div>
+        <div class="menu-item" onclick="window.open('https://www.fss.or.kr', '_blank')">
+    <div class="menu-title">금융감독원 공식 홈페이지</div>
+    <i class="fas fa-chevron-right menu-arrow"></i>
+</div>
 
         <!-- 소셜 아이콘 그리드 -->
         <div class="social-grid">
-            <a href="#" class="social-item" onclick="openSocial('kakao')">
+            <a href="https://pf.kakao.com/_xmxdHxl" target="_blank" class="social-item">
                 <div class="social-icon">
                     <img src="images/카카오톡.png" alt="카카오톡">
                 </div>
                 <div class="social-label">카카오톡</div>
             </a>
             
-            <a href="#" class="social-item" onclick="openSocial('youtube')">
+            <a href="https://www.youtube.com/@fss_korea" target="_blank" class="social-item">
                 <div class="social-icon">
                     <img src="images/유튜브.png" alt="유튜브">
                 </div>
                 <div class="social-label">유튜브</div>
             </a>
             
-            <a href="#" class="social-item" onclick="openSocial('instagram')">
+            <a href="https://www.instagram.com/fss_korea" target="_blank" class="social-item">
                 <div class="social-icon">
                     <img src="images/인스타그램.png" alt="인스타그램">
                 </div>
                 <div class="social-label">인스타그램</div>
             </a>
             
-            <a href="#" class="social-item" onclick="openSocial('blog')">
+            <a href="https://blog.naver.com/fss2009" target="_blank" class="social-item">
                 <div class="social-icon">
                     <img src="images/블로그.png" alt="블로그">
                 </div>
@@ -440,18 +439,28 @@
         </div>
 
         <!-- 메뉴 항목들 -->
-        <div class="menu-item" onclick="openLink('fss')">
+        <div class="menu-item" onclick="window.open('https://dart.fss.or.kr', '_blank')">
             <div class="menu-title">금융감독원 전자공시시스템</div>
             <i class="fas fa-chevron-right menu-arrow"></i>
         </div>
 
-        <div class="menu-item" onclick="openLink('info')">
-            <div class="menu-title">금융감독원 정보포털</div>
+        <div class="menu-item" onclick="window.open('https://fine.fss.or.kr', '_blank')">
+            <div class="menu-title">금융감독원 금융소비자정보포털</div>
             <i class="fas fa-chevron-right menu-arrow"></i>
         </div>
 
-        <div class="menu-item" onclick="openLink('center')">
-            <div class="menu-title">금융감독원 e-정보센터</div>
+        <div class="menu-item" onclick="window.open('https://www.fcsc.kr', '_blank')">
+            <div class="menu-title">금융소비자보호처</div>
+            <i class="fas fa-chevron-right menu-arrow"></i>
+        </div>
+
+        <div class="menu-item" onclick="window.open('https://www.fss.or.kr/edu', '_blank')">
+            <div class="menu-title">금융교육센터</div>
+            <i class="fas fa-chevron-right menu-arrow"></i>
+        </div>
+
+        <div class="menu-item" onclick="window.open('https://www.k-mooc.kr', '_blank')">
+            <div class="menu-title">K-MOOC 금융강좌</div>
             <i class="fas fa-chevron-right menu-arrow"></i>
         </div>
     </div>
@@ -665,37 +674,6 @@
                     gradeButtonImage.alt = levelData.name;
                     console.log('🎖️ A5 등급 버튼 업데이트:', upperGrade, levelData.navImage);
                 }
-            }
-        }
-
-        // 소셜 링크 열기
-        function openSocial(platform) {
-            const links = {
-                kakao: 'https://talk.naver.com', // 예시 링크
-                youtube: 'https://youtube.com/c/금융감독원',
-                instagram: 'https://instagram.com/fss_korea',
-                blog: 'https://blog.naver.com/fss_blog'
-            };
-            
-            if (links[platform]) {
-                window.open(links[platform], '_blank');
-            } else {
-                alert(`${platform} 링크는 준비 중입니다.`);
-            }
-        }
-
-        // 외부 링크 열기
-        function openLink(type) {
-            const links = {
-                fss: 'https://dart.fss.or.kr',
-                info: 'https://www.fss.or.kr',
-                center: 'https://efinance.fss.or.kr'
-            };
-            
-            if (links[type]) {
-                window.open(links[type], '_blank');
-            } else {
-                alert('링크는 준비 중입니다.');
             }
         }
 

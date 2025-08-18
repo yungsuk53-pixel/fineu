@@ -475,6 +475,7 @@
             height: 55px;
             background: #fafaf8;
             border-radius: 50%;
+            border: none;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -485,7 +486,7 @@
             transition: all 0.3s ease;
             position: relative;
             top: -35px;
-            z-index: 150;
+            z-index: 10;
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
 
@@ -677,6 +678,7 @@
     <script>
         // API 키들
         const GEMINI_API_KEY = 'AIzaSyBJhMtNOYyCfl6NRCQQz_CkTUHWP2TNweI';
+        const NEWS_API_KEY = '7e4e7f1b1f4a4a93b27c3c9e09c8e6f2'; // NewsAPI 키 추가
         
         // Firebase 사용자 및 전역 변수
         let currentUser = null;
@@ -697,7 +699,7 @@
             return true;
         }
         
-        // Firebase에서 사용자 데이터 가져오기 (a1과 동일)
+        // Firebase에서 사용자 데이터 가져오기
         async function loadUserDataFromFirebase() {
             console.log('=== A2 데이터 로드 시작 ===');
             
@@ -743,10 +745,26 @@
                     
                     console.log('✅ A2 userAssets 설정 완료:', userAssets);
                     
-                    // 등급 업데이트
-                    const currentLevel = calculateUserLevel(userAssets.exp || userAssets.experience || 0);
-                    userAssets.level = currentLevel.toLowerCase();
-                    updateGradeButton(userAssets.level);
+                    // 2. 등급 이미지 업데이트
+                    const userLevel = (userAssets.level || 'yellow').toUpperCase();
+                    const levelData = levelSystem[userLevel];
+                    if (levelData) {
+                        const gradeImage = document.querySelector('.grade-image');
+                        if (gradeImage) {
+                            gradeImage.src = `images/${levelData.image}`;
+                            gradeImage.alt = levelData.name;
+                        }
+                        
+                        // 네비게이션 버튼 업데이트
+                        const gradeButton = document.getElementById('gradeButton');
+                        const gradeButtonImage = document.getElementById('gradeButtonImage');
+                        if (gradeButton && gradeButtonImage) {
+                            gradeButtonImage.src = `images/${levelData.navImage}`;
+                            gradeButtonImage.alt = levelData.name;
+                            gradeButton.style.background = getUserLevelColor(userLevel);
+                        }
+                        console.log('🎖️ 등급 표시 완료:', userLevel);
+                    }
                     
                 } else {
                     // Firebase에 데이터가 없으면 기본 데이터 설정
@@ -791,28 +809,34 @@
             }
         }
 
-        // Firebase에서 사용자 데이터 동기화 (호환성 유지)
-        async function syncUserData() {
-            return await loadUserDataFromFirebase();
-        }
-
-        // 오늘 날짜 가져오기
+        // 수정된 코드 - 한국 시간대 적용
         function getTodayDate() {
-            return new Date().toISOString().split('T')[0];
+            const now = new Date();
+            const koreaTime = new Date(now.toLocaleString("en-US", {timeZone: "Asia/Seoul"}));
+            const year = koreaTime.getFullYear();
+            const month = String(koreaTime.getMonth() + 1).padStart(2, '0');
+            const day = String(koreaTime.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
         }
 
-        // 오늘의 완료 상태 확인
+        // 오늘의 완료 상태 확인 (수정됨)
         function checkTodayCompletion() {
             const today = getTodayDate();
-            if (!userAssets.studyProgress) userAssets.studyProgress = {};
-            if (!userAssets.studyProgress[today]) userAssets.studyProgress[today] = {};
-
-            const todayProgress = userAssets.studyProgress[today];
             
-            // 각 콘텐츠별 완료 상태 업데이트
-            updateCardCompletion('financial-terms', todayProgress.financialTerms || false);
-            updateCardCompletion('financial-news', todayProgress.financialNews || false);
-            updateCardCompletion('financial-quiz', todayProgress.financialQuiz || false);
+            // studyProgress가 없으면 초기화
+            if (!userAssets.studyProgress) {
+                userAssets.studyProgress = {};
+            }
+            
+            // 오늘 날짜의 진행 상황만 확인
+            const todayProgress = userAssets.studyProgress[today] || {};
+            
+            // 각 콘텐츠별 완료 상태 업데이트 (오늘 완료한 것만 true)
+            updateCardCompletion('financial-terms', todayProgress.financialTerms === true);
+            updateCardCompletion('financial-news', todayProgress.financialNews === true);
+            updateCardCompletion('financial-quiz', todayProgress.financialQuiz === true);
+            
+            console.log(`📅 오늘(${today}) 완료 상태:`, todayProgress);
         }
 
         // 카드 완료 상태 업데이트
@@ -829,281 +853,81 @@
             }
         }
 
-        // RSS를 통한 실제 한국 금융 뉴스 가져오기 (다중 프록시 방법)
+        // 실제 한국 금융 뉴스 가져오기 - NewsAPI 사용
         async function getLatestFinanceNews() {
             try {
-                const today = new Date();
-                const dateStr = `${today.getFullYear()}년 ${today.getMonth() + 1}월 ${today.getDate()}일`;
+                const koreaTime = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Seoul"}));
+                const dateStr = `${koreaTime.getFullYear()}년 ${koreaTime.getMonth() + 1}월 ${koreaTime.getDate()}일`;
                 
-                console.log(`🔍 RSS로 ${dateStr} 한국 금융 뉴스 검색 중...`);
+                console.log(`🔍 ${dateStr} 한국 금융 뉴스 가져오는 중...`);
                 
-                // 여러 RSS 프록시 서비스 시도
-                const rssProxies = [
-                    'https://api.allorigins.win/get?url=',
-                    'https://corsproxy.io/?',
-                    'https://api.codetabs.com/v1/proxy?quest='
-                ];
+                // NewsAPI를 통한 실제 뉴스 가져오기
+                const response = await fetch(`https://newsapi.org/v2/everything?q=(금융 OR 경제 OR 주식 OR 투자 OR 코스피 OR 환율 OR 금리)&language=ko&sortBy=publishedAt&apiKey=${NEWS_API_KEY}`);
                 
-                // Google News RSS URL들 (한국 금융 뉴스)
-                const rssUrls = [
-                    'https://news.google.com/rss/search?q=금융+site:yna.co.kr&hl=ko&gl=KR',
-                    'https://news.google.com/rss/search?q=코스피+site:mk.co.kr&hl=ko&gl=KR',
-                    'https://news.google.com/rss/search?q=한국은행+site:hankyung.com&hl=ko&gl=KR',
-                    'https://news.google.com/rss/search?q=경제+site:chosun.com&hl=ko&gl=KR'
-                ];
-                
-                let allNews = [];
-                
-                for (const rssUrl of rssUrls) {
-                    let success = false;
+                if (response.ok) {
+                    const data = await response.json();
                     
-                    for (const proxy of rssProxies) {
-                        try {
-                            const proxyUrl = proxy + encodeURIComponent(rssUrl);
-                            const response = await fetch(proxyUrl);
-                            
-                            if (response.ok) {
-                                const data = await response.text();
-                                const newsItems = parseRSSData(data);
-                                
-                                if (newsItems && newsItems.length > 0) {
-                                    allNews.push(...newsItems.slice(0, 2)); // 각 RSS당 최대 2개
-                                    success = true;
-                                    console.log(`✅ RSS 성공: ${newsItems.length}건 가져옴`);
-                                    break; // 성공하면 다음 RSS로
-                                }
-                            }
-                        } catch (error) {
-                            console.warn(`RSS 프록시 실패 (${proxy}):`, error);
-                        }
-                    }
-                    
-                    if (!success) {
-                        console.warn(`모든 프록시에서 RSS 실패: ${rssUrl}`);
-                    }
-                }
-                
-                if (allNews.length > 0) {
-                    // 중복 제거 및 정리
-                    const uniqueNews = allNews
-                        .filter((item, index, self) => 
-                            index === self.findIndex(t => t.title === item.title)
-                        )
-                        .slice(0, 4)
-                        .map(item => ({
-                            title: item.title.replace(/<[^>]*>/g, ''), // HTML 태그 제거
-                            description: item.description.replace(/<[^>]*>/g, '').substring(0, 200) + '...', // HTML 태그 제거 및 길이 제한
-                            url: item.url,
-                            source: item.source || 'Google News',
-                            category: '금융뉴스',
-                            publishedAt: item.publishedAt || today.toISOString()
+                    if (data.articles && data.articles.length > 0) {
+                        // 실제 뉴스 데이터 포맷팅
+                        const formattedNews = data.articles.slice(0, 5).map(article => ({
+                            title: article.title,
+                            description: article.description || article.content?.substring(0, 200) || '내용 없음',
+                            publishedAt: article.publishedAt,
+                            source: article.source.name,
+                            url: article.url,
+                            category: '금융'
                         }));
-                
-                    if (uniqueNews.length > 0) {
-                        console.log(`✅ RSS 한국 금융 뉴스 ${uniqueNews.length}건 가져오기 완료`);
-                        return uniqueNews;
+                        
+                        console.log(`✅ 실제 뉴스 ${formattedNews.length}건 가져오기 성공`);
+                        return formattedNews;
                     }
                 }
                 
-                console.log('RSS 뉴스 데이터 없음, GEMINI로 생성');
-                return await generateNewsWithGemini();
+                // NewsAPI 실패 시 대체 뉴스 사용
+                console.log('⚠️ NewsAPI 실패, 대체 뉴스 사용');
+                return getFallbackNews();
                 
             } catch (error) {
-                console.error('❌ RSS 뉴스 가져오기 실패:', error);
-                // RSS 실패 시 GEMINI AI로 뉴스 생성
-                return await generateNewsWithGemini();
+                console.error('❌ 뉴스 가져오기 실패:', error);
+                return getFallbackNews();
             }
         }
 
-        // RSS XML 데이터 파싱 함수
-        function parseRSSData(xmlText) {
-            try {
-                // AllOrigins의 경우 JSON으로 래핑되어 있을 수 있음
-                if (xmlText.includes('"contents"')) {
-                    const jsonData = JSON.parse(xmlText);
-                    xmlText = jsonData.contents;
-                }
-                
-                const parser = new DOMParser();
-                const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
-                const items = xmlDoc.querySelectorAll('item');
-                
-                const newsItems = [];
-                items.forEach((item, index) => {
-                    if (index < 3) { // 최대 3개만
-                        const title = item.querySelector('title')?.textContent;
-                        const description = item.querySelector('description')?.textContent;
-                        const link = item.querySelector('link')?.textContent;
-                        const pubDate = item.querySelector('pubDate')?.textContent;
-                        
-                        if (title && description && link) {
-                            // 금융 관련 뉴스만 필터링
-                            if (title.includes('금융') || 
-                                title.includes('경제') || 
-                                title.includes('코스피') || 
-                                title.includes('코스닥') || 
-                                title.includes('한국은행') || 
-                                title.includes('금리') || 
-                                title.includes('환율') || 
-                                title.includes('삼성전자') ||
-                                title.includes('주식') ||
-                                title.includes('투자') ||
-                                title.includes('증시') ||
-                                title.includes('기업') ||
-                                title.includes('시장')) {
-                                
-                                newsItems.push({
-                                    title: title,
-                                    description: description,
-                                    url: link,
-                                    source: 'Google News',
-                                    publishedAt: pubDate || new Date().toISOString()
-                                });
-                            }
-                        }
-                    }
-                });
-                
-                return newsItems;
-            } catch (error) {
-                console.error('RSS 파싱 오류:', error);
-                return [];
-            }
-        }
-
-        // GEMINI AI로 뉴스 생성 (RSS 대체)
-        async function generateNewsWithGemini() {
-            try {
-                const currentDate = new Date();
-                const currentDateStr = `${currentDate.getFullYear()}년 ${currentDate.getMonth() + 1}월 ${currentDate.getDate()}일`;
-                
-                const prompt = `Generate 4 realistic Korean financial news items for ${currentDateStr}. Return only valid JSON array:
-
-[
-    {
-        "title": "실제 같은 한국 금융 뉴스 제목 1",
-        "description": "뉴스 내용 설명 (2-3줄)",
-        "url": "https://news.google.com/articles/article1",
-        "source": "Google News",
-        "category": "금융뉴스",
-        "publishedAt": "${currentDate.toISOString()}"
-    },
-    {
-        "title": "실제 같은 한국 금융 뉴스 제목 2",
-        "description": "뉴스 내용 설명 (2-3줄)",
-        "url": "https://news.google.com/articles/article2",
-        "source": "Google News",
-        "category": "금융뉴스",
-        "publishedAt": "${currentDate.toISOString()}"
-    },
-    {
-        "title": "실제 같은 한국 금융 뉴스 제목 3",
-        "description": "뉴스 내용 설명 (2-3줄)",
-        "url": "https://news.google.com/articles/article3",
-        "source": "Google News",
-        "category": "금융뉴스",
-        "publishedAt": "${currentDate.toISOString()}"
-    },
-    {
-        "title": "실제 같은 한국 금융 뉴스 제목 4",
-        "description": "뉴스 내용 설명 (2-3줄)",
-        "url": "https://news.google.com/articles/article4",
-        "source": "Google News",
-        "category": "금융뉴스",
-        "publishedAt": "${currentDate.toISOString()}"
-    }
-]
-
-Topics: 한국은행 기준금리, 코스피/코스닥 동향, 환율, 주요 기업 실적, 부동산 금융 등
-Return ONLY the JSON array. No explanations.`;
-
-                console.log(`🤖 GEMINI AI로 ${currentDateStr} 뉴스 생성 중...`);
-                const geminiResponse = await callGeminiAPI(prompt);
-                
-                if (geminiResponse) {
-                    try {
-                        let cleanResponse = geminiResponse.trim();
-                        cleanResponse = cleanResponse.replace(/```json\s*/gi, '');
-                        cleanResponse = cleanResponse.replace(/```\s*/g, '');
-                        cleanResponse = cleanResponse.replace(/`/g, '');
-                        
-                        if (!cleanResponse.startsWith('[')) {
-                            const jsonStart = cleanResponse.indexOf('[');
-                            if (jsonStart > -1) {
-                                cleanResponse = cleanResponse.substring(jsonStart);
-                            }
-                        }
-                        
-                        if (!cleanResponse.endsWith(']')) {
-                            const jsonEnd = cleanResponse.lastIndexOf(']');
-                            if (jsonEnd > -1) {
-                                cleanResponse = cleanResponse.substring(0, jsonEnd + 1);
-                            }
-                        }
-                        
-                        const newsData = JSON.parse(cleanResponse);
-                        
-                        if (Array.isArray(newsData) && newsData.length > 0) {
-                            console.log(`✅ GEMINI AI 뉴스 생성 완료: ${newsData.length}건`);
-                            return newsData;
-                        }
-                    } catch (parseError) {
-                        console.warn('⚠️ GEMINI 뉴스 JSON 파싱 실패:', parseError);
-                    }
-                }
-                
-                // GEMINI도 실패 시 대체 뉴스
-                console.log('❌ GEMINI 뉴스 생성 실패, 대체 뉴스 사용');
-                const fallbackDate = new Date();
-                const fallbackDateStr = `${fallbackDate.getFullYear()}년 ${fallbackDate.getMonth() + 1}월 ${fallbackDate.getDate()}일`;
-                return getFallbackNews(fallbackDateStr);
-                
-            } catch (error) {
-                console.error('GEMINI 뉴스 생성 오류:', error);
-                const errorDate = new Date();
-                const errorDateStr = `${errorDate.getFullYear()}년 ${errorDate.getMonth() + 1}월 ${errorDate.getDate()}일`;
-                return getFallbackNews(errorDateStr);
-            }
-        }
-
-        // 대체 뉴스 생성 (NewsAPI 실패 시)
-        function getFallbackNews(dateStr) {
+        // 대체 뉴스 데이터
+        function getFallbackNews() {
             const today = new Date();
-            const kospiPrice = 2650 + Math.floor(Math.random() * 100); // 2650-2750 사이
-            const usdRate = 1320 + Math.floor(Math.random() * 50); // 1320-1370 사이
-            
             return [
                 {
-                    title: `${dateStr} 한국은행 통화정책 현황 - 기준금리 3.50% 유지`,
-                    description: `한국은행이 ${today.getMonth() + 1}월 금융통화위원회에서 현행 기준금리 3.50%를 유지하기로 결정했습니다. 인플레이션 압력과 경제성장세를 종합 고려한 결과로 분석됩니다.`,
-                    url: "https://www.bok.or.kr/",
+                    title: "한국은행, 기준금리 3.50% 동결 결정",
+                    description: "물가 안정세와 경제성장률을 고려한 통화정책 방향 유지. 한은 총재는 향후 경제 상황을 면밀히 모니터링하겠다고 밝혔다.",
+                    publishedAt: today.toISOString(),
                     source: "한국은행",
                     category: "통화정책",
-                    publishedAt: today.toISOString()
+                    url: "https://www.bok.or.kr"
                 },
                 {
-                    title: `코스피 ${kospiPrice}선에서 등락 - 외국인 투자 동향 주목`,
-                    description: `${dateStr} 국내 증시가 ${kospiPrice}대에서 등락을 거듭하고 있습니다. 반도체와 2차전지 업종을 중심으로 외국인 투자자들의 매매 패턴이 시장 방향성을 좌우하고 있습니다.`,
-                    url: "https://finance.naver.com/sise/",
+                    title: "코스피 2600선 회복, 반도체주 강세 지속",
+                    description: "삼성전자, SK하이닉스 등 주요 반도체 기업 주가 상승. AI 수요 증가와 메모리 반도체 가격 상승이 주요 요인으로 분석된다.",
+                    publishedAt: today.toISOString(),
                     source: "한국거래소",
-                    category: "증시동향",
-                    publishedAt: today.toISOString()
+                    category: "증시",
+                    url: "https://www.krx.co.kr"
                 },
                 {
-                    title: `달러-원 환율 ${usdRate}원대 - 미 연준 정책 영향`,
-                    description: `${dateStr} 원-달러 환율이 ${usdRate}원대에서 형성되고 있습니다. 미국 연방준비제도의 통화정책 방향과 국내 경제지표가 환율 변동의 주요 요인으로 작용하고 있습니다.`,
-                    url: "https://www.koreaexim.go.kr/",
-                    source: "한국수출입은행",
-                    category: "환율동향",
-                    publishedAt: today.toISOString()
+                    title: "원달러 환율 1,320원대 중반 등락",
+                    description: "대외 경제 불확실성 속 환율 변동성 확대. 미국 연준의 통화정책 변화와 중국 경제 회복세가 주요 변수로 작용하고 있다.",
+                    publishedAt: today.toISOString(),
+                    source: "외환시장",
+                    category: "외환",
+                    url: "https://www.bok.or.kr"
                 },
                 {
-                    title: `삼성전자 ${today.getMonth() + 1}월 실적 전망 - 메모리 반도체 수요 회복`,
-                    description: `삼성전자의 ${today.getMonth() + 1}월 실적에 대한 시장 관심이 높아지고 있습니다. 메모리 반도체 업황 개선과 스마트폰 사업 부문의 안정적 성장이 주요 포인트로 분석됩니다.`,
-                    url: "https://news.samsung.com/kr/",
-                    source: "삼성전자",
-                    category: "기업실적",
-                    publishedAt: today.toISOString()
+                    title: "청년 대상 디지털자산 투자교육 확대",
+                    description: "금융감독원, 가상자산 투자 위험성 교육 프로그램 운영. 올바른 투자 문화 정착을 위한 교육 콘텐츠를 제공한다.",
+                    publishedAt: today.toISOString(),
+                    source: "금융감독원",
+                    category: "금융교육",
+                    url: "https://www.fss.or.kr"
                 }
             ];
         }
@@ -1134,7 +958,7 @@ Return ONLY the JSON array. No explanations.`;
                 if (data.candidates && data.candidates[0] && data.candidates[0].content) {
                     let result = data.candidates[0].content.parts[0].text;
                     
-                    // 모든 종류의 코드 블록 제거 (더 강력한 패턴)
+                    // 모든 종류의 코드 블록 제거
                     result = result.replace(/```html\s*/gi, '');
                     result = result.replace(/```javascript\s*/gi, '');
                     result = result.replace(/```css\s*/gi, '');
@@ -1169,9 +993,8 @@ Return ONLY the JSON array. No explanations.`;
                 
                 switch(type) {
                     case '금융 용어':
-                        // NewsAPI에서 가져온 실제 뉴스를 바탕으로 금융 용어 설명
                         const termNewsData = newsData || await getLatestFinanceNews();
-                        prompt = '다음은 NewsAPI에서 가져온 실제 최신 한국 금융 뉴스입니다. 이 뉴스들에서 언급된 금융 용어들을 찾아서 3개를 선별하여 설명해주세요:\n\n' +
+                        prompt = '다음은 실제 최신 한국 금융 뉴스입니다. 이 뉴스들에서 언급된 금융 용어들을 찾아서 3개를 선별하여 설명해주세요:\n\n' +
                         (termNewsData ? termNewsData.map(n => '제목: ' + n.title + '\n내용: ' + n.description + '\n출처: ' + n.source + '\n발행일: ' + n.publishedAt).join('\n\n') : '') +
                         '\n\n다음과 같은 정확한 형식으로만 응답해주세요 (코드 블록 없이):\n\n' +
                         '<div class="content-section">\n' +
@@ -1188,14 +1011,13 @@ Return ONLY the JSON array. No explanations.`;
                         '<strong>실제 사례:</strong> [위 뉴스 내용과 연관된 구체적 예시]\n' +
                         '</div>\n' +
                         '</div>\n\n' +
-                        '중요: 반드시 제공된 실제 NewsAPI 뉴스 내용에서만 금융용어를 추출하고, HTML 태그는 <strong>, <br> 만 사용해주세요. 코드 블록은 절대 사용하지 마세요.';
+                        '중요: 반드시 제공된 실제 뉴스 내용에서만 금융용어를 추출하고, HTML 태그는 <strong>, <br> 만 사용해주세요. 코드 블록은 절대 사용하지 마세요.';
                         break;
                         
                     case '금융 뉴스':
-                        // NewsAPI 뉴스를 GEMINI가 분석하여 정리
                         const newsText = newsData ? newsData.map(n => '제목: ' + n.title + '\n내용: ' + n.description + '\n출처: ' + n.source + '\n발행일: ' + n.publishedAt + '\n카테고리: ' + (n.category || '금융')).join('\n\n') : '';
                         newsLinks = newsData ? newsData.map(n => '<a href="' + n.url + '" target="_blank" style="color: #7cb9e8; text-decoration: none; display: block; margin: 8px 0; padding: 10px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #7cb9e8;">📰 ' + n.title + '</a>').join('') : '';
-                        prompt = '다음은 NewsAPI에서 가져온 실제 최신 한국 금융 뉴스들입니다. 이를 전문가 관점에서 분석하고 정리해주세요:\n\n' +
+                        prompt = '다음은 실제 최신 한국 금융 뉴스들입니다. 이를 전문가 관점에서 분석하고 정리해주세요:\n\n' +
                         newsText + '\n\n' +
                         '다음 형식으로 상세 분석해주세요:\n\n' +
                         '<div class="content-section">\n' +
@@ -1213,35 +1035,32 @@ Return ONLY the JSON array. No explanations.`;
                         '[실제 뉴스를 통해 예상되는 향후 이벤트나 지표]\n' +
                         '</div>\n' +
                         '</div>\n\n' +
-                        '중요: 제공된 실제 NewsAPI 뉴스 내용만을 바탕으로 분석하고, 전문용어는 쉽게 풀어서 설명해주세요. 코드 블록은 사용하지 마세요.';
+                        '중요: 제공된 실제 뉴스 내용만을 바탕으로 분석하고, 전문용어는 쉽게 풀어서 설명해주세요. 코드 블록은 사용하지 마세요.';
                         break;
                         
                     case '금융 퀴즈':
-                        // NewsAPI 뉴스를 바탕으로 퀴즈 생성
-                        prompt = '다음은 NewsAPI에서 가져온 실제 최신 한국 금융 뉴스들입니다. 이를 바탕으로 실무에 도움되는 금융 퀴즈를 만들어주세요:\n\n' +
+                        prompt = '다음은 실제 최신 한국 금융 뉴스들입니다. 이를 바탕으로 실무에 도움되는 금융 퀴즈를 만들어주세요:\n\n' +
                         (newsData ? newsData.map(n => '제목: ' + n.title + '\n내용: ' + n.description + '\n출처: ' + n.source + '\n발행일: ' + n.publishedAt).join('\n\n') : '') + '\n\n' +
                         '퀴즈 요구사항:\n' +
-                        '- 실제 NewsAPI 뉴스 내용을 바탕으로 한 사지선다 문제 3개\n' +
+                        '- 금융기초 문제 2개, 금융 역사 문제 1개,금융 심화 문제 1개, 실제 뉴스 내용을 바탕으로 한 금융 사지선다 문제 1개\n' +
                         '- 초보자도 이해할 수 있는 수준\n' +
                         '- 실무에 도움되는 금융 지식 포함\n' +
                         '- 각 문제마다 자세한 해설 제공\n\n' +
                         '다음 형식으로 작성해주세요:\n' +
-                        '1. 퀴즈 소개 (실제 NewsAPI 뉴스 기반이라는 점 언급)\n' +
-                        '2. 4지선다 문제 3개 (정답 포함)\n' +
+                        '1. 퀴즈 소개 (실제 뉴스 기반이라는 점 언급)\n' +
+                        '2. 4지선다 문제 5개 (정답 포함)\n' +
                         '3. 각 문제별 상세 해설\n' +
                         '4. 추가 학습 팁\n\n' +
                         '코드 블록은 사용하지 마세요.';
                         break;
                 }
 
-                // 실제 GEMINI API 호출
-                console.log('🤖 GEMINI AI NewsAPI 뉴스 분석 시작:', type);
+                console.log('🤖 GEMINI AI 뉴스 분석 시작:', type);
                 const geminiResponse = await callGeminiAPI(prompt);
                 
                 if (geminiResponse) {
-                    console.log('✅ GEMINI AI NewsAPI 뉴스 분석 완료');
+                    console.log('✅ GEMINI AI 뉴스 분석 완료');
                     
-                    // 뉴스의 경우 링크 섹션 추가
                     if (type === '금융 뉴스' && newsLinks) {
                         return geminiResponse + `
                             <div class="content-section">
@@ -1255,7 +1074,6 @@ Return ONLY the JSON array. No explanations.`;
                     
                     return geminiResponse;
                 } else {
-                    // GEMINI API 실패 시 대체 콘텐츠
                     console.log('❌ GEMINI API 실패, 대체 콘텐츠 사용');
                     return getFallbackContent(type, newsLinks);
                 }
@@ -1335,14 +1153,10 @@ Return ONLY the JSON array. No explanations.`;
             return fallbackResponses[type] || '콘텐츠를 생성하는 중입니다...';
         }
 
-        // 일일 캐싱 시스템
-        function getTodayKey(type) {
-            const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD 형식
-            return `daily_${type}_${today}`;
-        }
-
+        // 일일 캐싱 시스템 (수정됨)
         async function getCachedDataOrUpdate(type, generateFunction) {
-            const cacheKey = getTodayKey(type);
+            const today = getTodayDate(); // 한국 시간 기준 날짜
+            const cacheKey = `daily_${type}_${today}`; // 오늘 날짜 키
             
             try {
                 // Firebase 초기화 대기
@@ -1360,121 +1174,159 @@ Return ONLY the JSON array. No explanations.`;
                     });
                 }
                 
-                // window.firebaseDB 사용
+                // 오늘 날짜의 캐시만 확인
                 const cacheRef = window.firebaseRef(window.firebaseDB, `cache/${cacheKey}`);
                 const snapshot = await window.firebaseGet(cacheRef);
                 const cachedData = snapshot.val();
                 
+                // 오늘 날짜의 유효한 캐시가 있는지 확인
                 if (cachedData && cachedData.data) {
-                    console.log(`${type} 캐시된 데이터 사용 (${cachedData.timestamp})`);
-                    return cachedData.data;
+                    // 캐시 날짜가 오늘인지 다시 한번 확인
+                    const cacheDate = cachedData.date || new Date(cachedData.timestamp).toISOString().split('T')[0];
+                    
+                    if (cacheDate === today) {
+                        // 데이터 유효성 검사
+                        let isValid = false;
+                        if (Array.isArray(cachedData.data)) {
+                            isValid = cachedData.data.length > 0;
+                        } else if (typeof cachedData.data === 'object') {
+                            isValid = Object.keys(cachedData.data).length > 0;
+                        } else if (typeof cachedData.data === 'string') {
+                            isValid = cachedData.data.trim().length > 0;
+                        } else {
+                            isValid = true;
+                        }
+                        
+                        if (isValid) {
+                            console.log(`✅ ${type} 오늘(${today}) 캐시 사용`);
+                            return cachedData.data;
+                        }
+                    }
                 }
                 
-                // 캐시된 데이터가 없으면 새로 생성
-                console.log(`${type} 새 데이터 생성 중...`);
+                // 오늘 날짜의 캐시가 없으면 무조건 새로 생성
+                console.log(`🔄 ${type} 오늘(${today}) 데이터 새로 생성`);
                 const newData = await generateFunction();
                 
-                // Firebase에 저장
-                await window.firebaseSet(cacheRef, {
-                    data: newData,
-                    timestamp: new Date().toISOString(),
-                    type: type
-                });
+                // 새 데이터를 오늘 날짜로 저장
+                if (newData) {
+                    await window.firebaseSet(cacheRef, {
+                        data: newData,
+                        timestamp: new Date().toISOString(),
+                        type: type,
+                        date: today // 명시적으로 오늘 날짜 저장
+                    });
+                    
+                    console.log(`✅ ${type} 오늘(${today}) 데이터 저장 완료`);
+                }
                 
-                console.log(`${type} 새 데이터 저장 완료`);
                 return newData;
                 
             } catch (error) {
-                console.error(`${type} 데이터 처리 오류:`, error);
-                return await generateFunction(); // 에러 시 직접 생성
+                console.error(`❌ ${type} 데이터 처리 오류:`, error);
+                // 에러 시에도 새로 생성
+                return await generateFunction();
             }
         }
 
-        // NewsAPI 뉴스 기반 퀴즈 데이터 생성
+        // 뉴스 기반 퀴즈 데이터 생성
         async function generateQuizData(newsData = null) {
             try {
                 if (!newsData) {
                     newsData = await getLatestFinanceNews();
                 }
                 
-                const prompt = '다음은 NewsAPI에서 가져온 실제 최신 한국 금융 뉴스들입니다. 이를 바탕으로 사지선다 금융 퀴즈 3문제를 JSON 형식으로 만들어주세요:\n\n' +
-                (newsData ? newsData.map(n => '제목: ' + n.title + '\n내용: ' + n.description + '\n출처: ' + n.source + '\n발행일: ' + n.publishedAt).join('\n\n') : '') +
-                '\n\n다음과 같은 정확한 JSON 형식으로만 응답해주세요 (코드 블록 없이):\n\n' +
+                const prompt = '다음은 실제 최신 한국 금융 뉴스들입니다. 이를 바탕으로 사지선다 금융 퀴즈 3문제를 JSON 형식으로 만들어주세요:\n\n' +
+                (newsData ? newsData.map(n => '제목: ' + n.title + '\n내용: ' + n.description + '\n출처: ' + n.source).join('\n\n') : '') +
+                '\n\n다음과 같은 정확한 JSON 형식으로만 응답해주세요:\n\n' +
                 '[\n' +
                 '    {\n' +
-                '        "question": "실제 NewsAPI 뉴스 기반 문제 1",\n' +
+                '        "question": "금융 기초 문제 1",\n' +
                 '        "options": ["선택지1", "선택지2", "선택지3", "선택지4"],\n' +
                 '        "correct": 0,\n' +
-                '        "explanation": "실제 뉴스와 연관된 정답 설명"\n' +
+                '        "explanation": "실제 금융과 연관된 정답 설명"\n' +
                 '    },\n' +
                 '    {\n' +
-                '        "question": "실제 NewsAPI 뉴스 기반 문제 2",\n' + 
+                '        "question": "금융 기초 문제 2",\n' + 
                 '        "options": ["선택지1", "선택지2", "선택지3", "선택지4"],\n' +
                 '        "correct": 1,\n' +
-                '        "explanation": "실제 뉴스와 연관된 정답 설명"\n' +
+                '        "explanation": "실제 금융과 연관된 정답 설명"\n' +
                 '    },\n' +
                 '    {\n' +
-                '        "question": "실제 NewsAPI 뉴스 기반 문제 3",\n' +
+                '        "question": "실제 뉴스 기반 금융 문제 3",\n' +
                 '        "options": ["선택지1", "선택지2", "선택지3", "선택지4"],\n' +
                 '        "correct": 2,\n' +
                 '        "explanation": "실제 뉴스와 연관된 정답 설명"\n' +
                 '    }\n' +
                 ']\n\n' +
                 '주의사항:\n' +
-                '- 문제는 반드시 제공된 실제 NewsAPI 뉴스 내용을 바탕으로 작성\n' +
+                '- 제공된 실제 뉴스 내용을 참고하여 최신 금융 트렌드 반영\n' +
                 '- 각 문제마다 정확히 4개의 선택지 제공\n' +
                 '- correct는 정답 인덱스 (0, 1, 2, 3 중 하나)\n' +
-                '- 설명은 실제 뉴스와 연관지어 설명\n' +
-                '- 순수 JSON만 응답하고 코드 블록은 절대 사용하지 마세요\n' +
-                '- 백틱(`)은 사용하지 마세요';
+                '- 설명은 실제 뉴스와 금융 연관지어 설명\n' +
+                '- 순수 JSON만 응답 (코드 블록, 백틱 절대 사용하지 마세요)\n' +
+                '- 유효한 JSON 형식만 반환하세요';
 
-                console.log('🧩 실제 NewsAPI 뉴스 기반 퀴즈 생성 중...');
+                console.log('🧩 실제 뉴스 기반 퀴즈 생성 중...');
                 const geminiResponse = await callGeminiAPI(prompt);
                 
-                if (geminiResponse) {
+                if (geminiResponse && geminiResponse.trim()) {
                     try {
-                        // JSON 블록 제거 (```json 과 ``` 제거) - 더 강력한 패턴
-                        let cleanResponse = geminiResponse;
+                        console.log('📝 Gemini 원본 응답 확인:', geminiResponse.substring(0, 300) + '...');
                         
-                        // 다양한 마크다운 블록 제거
-                        cleanResponse = cleanResponse.replace(/```json\s*/g, '');
-                        cleanResponse = cleanResponse.replace(/```javascript\s*/g, '');
+                        // JSON 블록 제거 및 정리
+                        let cleanResponse = geminiResponse.trim();
+                        
+                        // 모든 종류의 마크다운 블록 제거
+                        cleanResponse = cleanResponse.replace(/```(?:json|javascript|js)?\s*/gi, '');
                         cleanResponse = cleanResponse.replace(/```\s*/g, '');
                         cleanResponse = cleanResponse.replace(/`/g, '');
                         
-                        // 앞뒤 공백 제거
-                        cleanResponse = cleanResponse.trim();
+                        // 불필요한 텍스트 제거
+                        cleanResponse = cleanResponse.replace(/^[^[\{]*/, ''); // 시작 부분의 불필요한 텍스트
+                        cleanResponse = cleanResponse.replace(/[^}\]]*$/, ''); // 끝 부분의 불필요한 텍스트
                         
-                        // JSON 시작과 끝 확인
-                        if (!cleanResponse.startsWith('[')) {
-                            const jsonStart = cleanResponse.indexOf('[');
-                            if (jsonStart > -1) {
-                                cleanResponse = cleanResponse.substring(jsonStart);
-                            }
+                        // JSON 배열 추출
+                        const jsonMatch = cleanResponse.match(/\[[\s\S]*\]/);
+                        if (jsonMatch) {
+                            cleanResponse = jsonMatch[0];
                         }
                         
-                        if (!cleanResponse.endsWith(']')) {
-                            const jsonEnd = cleanResponse.lastIndexOf(']');
-                            if (jsonEnd > -1) {
-                                cleanResponse = cleanResponse.substring(0, jsonEnd + 1);
-                            }
-                        }
-                        
-                        console.log('🔍 정리된 JSON:', cleanResponse.substring(0, 100) + '...');
+                        console.log('🔍 정리된 JSON:', cleanResponse.substring(0, 200) + '...');
                         
                         // JSON 파싱 시도
                         const quizData = JSON.parse(cleanResponse);
-                        if (Array.isArray(quizData) && quizData.length === 3) {
-                            console.log('✅ 실제 NewsAPI 뉴스 기반 퀴즈 생성 완료');
-                            return quizData;
+                        
+                        // 퀴즈 데이터 유효성 검증
+                        if (Array.isArray(quizData) && quizData.length >= 1) {
+                            // 각 퀴즈 문제의 구조 검증
+                            const isValid = quizData.every(quiz => 
+                                quiz.question && 
+                                Array.isArray(quiz.options) && 
+                                quiz.options.length === 4 && 
+                                typeof quiz.correct === 'number' && 
+                                quiz.correct >= 0 && quiz.correct <= 3 && 
+                                quiz.explanation
+                            );
+                            
+                            if (isValid) {
+                                console.log('✅ 실제 뉴스 기반 퀴즈 생성 완료:', quizData.length + '문제');
+                                return quizData;
+                            } else {
+                                console.warn('⚠️ 퀴즈 데이터 구조가 유효하지 않음');
+                            }
+                        } else {
+                            console.warn('⚠️ 퀴즈 배열이 비어있거나 유효하지 않음');
                         }
                     } catch (parseError) {
-                        console.warn('⚠️ GEMINI 응답 JSON 파싱 실패:', parseError);
-                        console.log('📝 원본 응답:', geminiResponse.substring(0, 200) + '...');
+                        console.warn('⚠️ GEMINI 응답 JSON 파싱 실패:', parseError.message);
+                        console.log('📝 정리된 응답 일부:', cleanResponse?.substring(0, 300));
                     }
+                } else {
+                    console.warn('⚠️ Gemini API에서 빈 응답 반환');
                 }
                 
-                console.log('❌ 실제 NewsAPI 뉴스 기반 퀴즈 생성 실패, 대체 퀴즈 사용');
+                console.log('❌ 실제 뉴스 기반 퀴즈 생성 실패, 대체 퀴즈 사용');
                 return getFallbackQuizData();
                 
             } catch (error) {
@@ -1524,8 +1376,15 @@ Return ONLY the JSON array. No explanations.`;
                 if (type === '금융 뉴스') {
                     // 뉴스는 캐싱된 데이터 또는 새로 생성
                     content = await getCachedDataOrUpdate('news', async () => {
+                        console.log('📰 새로운 뉴스 데이터 생성 시작');
                         const newsData = await getLatestFinanceNews();
-                        return await generateFormattedNews(newsData);
+                        if (!newsData || newsData.length === 0) {
+                            console.log('⚠️ 뉴스 데이터가 비어있음');
+                            return getFallbackContent('금융 뉴스');
+                        }
+                        const formatted = await generateFormattedNews(newsData);
+                        console.log('✅ 뉴스 포맷팅 완료');
+                        return formatted;
                     });
                 } else if (type === '금융 용어') {
                     // 금융 용어는 캐싱된 데이터 또는 새로 생성
@@ -1566,8 +1425,8 @@ Return ONLY the JSON array. No explanations.`;
                     return '<div style="text-align: center; color: #666;">뉴스를 불러올 수 없습니다.</div>';
                 }
 
-                const today = new Date();
-                const dateStr = `${today.getFullYear()}년 ${today.getMonth() + 1}월 ${today.getDate()}일`;
+                const koreaTime = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Seoul"}));
+                const dateStr = `${koreaTime.getFullYear()}년 ${koreaTime.getMonth() + 1}월 ${koreaTime.getDate()}일`;
 
                 const prompt = 
                     '다음 ' + dateStr + ' 최신 금융 뉴스들을 분석하여 주요 내용을 번호별로 정리해주세요:\n\n' +
@@ -1732,7 +1591,6 @@ Return ONLY the JSON array. No explanations.`;
             }
         }
 
-        // 퀴즈 인터페이스 추가 (뉴스 기반)
         // 학습 완료 인터페이스 추가
         function addCompletionInterface(type) {
             const modalBody = document.getElementById('modalBody');
@@ -1758,19 +1616,27 @@ Return ONLY the JSON array. No explanations.`;
             modalBody.appendChild(completionDiv);
         }
 
-        // 학습 완료 처리
+        // 학습 완료 처리 (수정됨)
         async function completeStudy(type, cashReward, expReward) {
             try {
                 const today = getTodayDate();
-                if (!userAssets.studyProgress) userAssets.studyProgress = {};
-                if (!userAssets.studyProgress[today]) userAssets.studyProgress[today] = {};
                 
-                // 이미 완료했는지 확인
+                // studyProgress 초기화
+                if (!userAssets.studyProgress) {
+                    userAssets.studyProgress = {};
+                }
+                if (!userAssets.studyProgress[today]) {
+                    userAssets.studyProgress[today] = {};
+                }
+                
+                // 타입 키 설정
                 const typeKey = type === '금융 용어' ? 'financialTerms' : 
                               type === '금융 뉴스' ? 'financialNews' : 'financialQuiz';
                 
-                if (userAssets.studyProgress[today][typeKey]) {
+                // 오늘 이미 완료했는지 확인
+                if (userAssets.studyProgress[today][typeKey] === true) {
                     alert('이미 오늘 완료한 콘텐츠입니다!');
+                    closeModal();
                     return;
                 }
                 
@@ -1784,9 +1650,12 @@ Return ONLY the JSON array. No explanations.`;
                 const oldLevel = userAssets.level;
                 userAssets.level = calculateUserLevel(userAssets.exp);
                 
-                // 완료 상태 저장
+                // 오늘 날짜로 완료 상태 저장
                 userAssets.studyProgress[today][typeKey] = true;
+                userAssets.studyProgress[today].completedAt = new Date().toISOString();
                 userAssets.lastUpdated = new Date().toISOString();
+                
+                console.log(`✅ ${type} 오늘(${today}) 완료 처리`);
                 
                 // Firebase에 저장
                 const userRef = window.firebaseRef(window.firebaseDB, `users/${currentUser.id}`);
@@ -1819,7 +1688,7 @@ Return ONLY the JSON array. No explanations.`;
             }
         }
 
-        // 등급 시스템 설정 (a1과 동일)
+        // 등급 시스템 설정
         const levelSystem = {
             YELLOW: { name: 'YELLOW', exp: 0, max: 5000, image: 'YELLOW ㅁ.png', nav: 'YELLOW ㅇ', navImage: 'YELLOW ㅇ.png' },
             GREEN: { name: 'GREEN', exp: 5000, max: 15000, image: 'GREEN ㅁ.png', nav: 'GREEN ㅇ', navImage: 'GREEN ㅇ.png' },
@@ -1828,7 +1697,7 @@ Return ONLY the JSON array. No explanations.`;
             BLACK: { name: 'BLACK', exp: 50000, max: 999999, image: 'BLACK ㅁ.png', nav: 'BLACK ㅇ', navImage: 'BLACK ㅇ.png' }
         };
 
-        // 사용자 등급 계산 (a1과 동일)
+        // 사용자 등급 계산
         function calculateUserLevel(exp) {
             for (const [level, data] of Object.entries(levelSystem)) {
                 if (exp >= data.exp && exp < data.max) {
@@ -1838,7 +1707,7 @@ Return ONLY the JSON array. No explanations.`;
             return 'BLACK'; // 최고 등급
         }
 
-        // 등급별 색상 반환 (a1과 동일)
+        // 등급별 색상 반환
         function getUserLevelColor(level) {
             const colors = {
                 'YELLOW': '#FFE99E',
@@ -1853,6 +1722,21 @@ Return ONLY the JSON array. No explanations.`;
         // 호환성을 위한 별칭
         function calculateUserGrade(exp) {
             return calculateUserLevel(exp).toLowerCase();
+        }
+
+        // 등급 버튼 업데이트
+        function updateGradeButton(grade) {
+            const upperGrade = grade.toUpperCase();
+            const levelData = levelSystem[upperGrade];
+            
+            if (levelData) {
+                const gradeButtonImage = document.getElementById('gradeButtonImage');
+                if (gradeButtonImage && levelData.navImage) {
+                    gradeButtonImage.src = `images/${levelData.navImage}`;
+                    gradeButtonImage.alt = levelData.name;
+                    console.log('🎖️ A2 등급 버튼 업데이트:', upperGrade, levelData.navImage);
+                }
+            }
         }
 
         // 보상 애니메이션
@@ -1895,9 +1779,13 @@ Return ONLY the JSON array. No explanations.`;
             document.getElementById('contentModal').classList.remove('show');
         }
 
-        // 페이지 로드 시 초기화
+        // 페이지 로드 시 초기화 (수정됨)
         document.addEventListener('DOMContentLoaded', function() {
             console.log('📚 A2 페이지 로드됨');
+            
+            // 오늘 날짜 표시
+            const today = getTodayDate(); // 한국 시간 기준
+            console.log(`📅 오늘 날짜: ${today}`);
             
             // 로그인 상태 확인
             if (!checkLoginStatus()) return;
@@ -1917,65 +1805,28 @@ Return ONLY the JSON array. No explanations.`;
             });
         });
 
-        // 사용자 등급 로드 및 표시
-        async function loadUserGrade() {
-            try {
-                if (!window.firebaseDB || !currentUser) {
-                    console.log('🔥 Firebase 또는 사용자 정보 대기 중...');
-                    setTimeout(loadUserGrade, 500);
-                    return;
-                }
-                
-                const userRef = window.firebaseRef(window.firebaseDB, `users/${currentUser.id}`);
-                const snapshot = await window.firebaseGet(userRef);
-                
-                if (snapshot.exists()) {
-                    const userData = snapshot.val();
-                    const experience = userData.experience || 0;
-                    const grade = calculateUserGrade(experience);
-                    
-                    // 등급 버튼 업데이트
-                    updateGradeButton(grade);
-                }
-            } catch (error) {
-                console.error('A2 등급 로드 실패:', error);
-            }
-        }
-
-        // 등급 버튼 업데이트 (a1과 동일한 로직)
-        function updateGradeButton(grade) {
-            const upperGrade = grade.toUpperCase();
-            const levelData = levelSystem[upperGrade];
-            
-            if (levelData) {
-                // 등급 버튼 이미지 업데이트
-                const gradeButtonImage = document.getElementById('gradeButtonImage');
-                if (gradeButtonImage && levelData.navImage) {
-                    gradeButtonImage.src = `images/${levelData.navImage}`;
-                    gradeButtonImage.alt = levelData.name;
-                    console.log('🎖️ A2 등급 버튼 업데이트:', upperGrade, levelData.navImage);
-                }
-            }
-        }
-
         // 네비게이션 함수
         function goToPage(page) {
             console.log('🔄 A2에서 페이지 이동:', page);
             
-            // 네비게이션 활성 상태 업데이트
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-            });
+            // 현재 페이지 확인
+            if (page === 'a2.html') {
+                console.log('현재 페이지(a2)에서 동일 페이지로 이동 시도 - 무시');
+                return;
+            }
             
-            // 페이지 이동
-            if (page !== 'a2.html') {
+            try {
+                // 네비게이션 활성 상태 업데이트
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                // 페이지 이동
+                console.log('페이지 이동 실행:', page);
                 window.location.href = page;
-            } else {
-                // 현재 페이지면 활성 상태 유지
-                const currentNavItem = document.querySelector('.nav-item[onclick*="a2.html"]');
-                if (currentNavItem) {
-                    currentNavItem.classList.add('active');
-                }
+            } catch (error) {
+                console.error('페이지 이동 오류:', error);
+                alert('페이지 이동 중 오류가 발생했습니다.');
             }
         }
 

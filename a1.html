@@ -455,6 +455,7 @@
             height: 55px;
             background: #fafaf8; /* 기본 YELLOW */
             border-radius: 50%;
+            border: none; /* 테두리 제거 */
             display: flex;
             align-items: center;
             justify-content: center;
@@ -789,9 +790,9 @@
             userAssets = {
                 id: userId,
                 name: userId,
-                cash: 10000000, // 기본 1천만원
-                totalAssets: 10000000,
-                virtualBalance: 10000000,
+                cash: 0, // 가상 투자 금액 제거
+                totalAssets: 0,
+                virtualBalance: 0,
                 level: 'yellow',
                 exp: 0,
                 portfolio: {},
@@ -869,14 +870,37 @@
             }
         }
 
-        // 실시간 주식 가격 업데이트 (실제 데이터는 portfolio 구조 사용)
+        // 실시간 주식 가격 업데이트 (다양한 자산 유형 지원)
         function updateRealTimePrices() {
             if (!userAssets.portfolio) return;
 
-            // 포트폴리오가 있다면 간단한 가상 변동 적용
-            // 실제로는 외부 API에서 실시간 가격을 받아올 예정
-
-            updateDisplay();
+            // 포트폴리오의 주식과 펀드만 가격 변동 적용 (예적금과 대출은 고정)
+            let hasUpdates = false;
+            
+            Object.entries(userAssets.portfolio).forEach(([symbol, holding]) => {
+                const assetType = holding.type || 'stock';
+                
+                // 주식과 펀드만 실시간 가격 변동 적용
+                if (assetType === 'stock' || assetType === 'fund') {
+                    const currentPrice = holding.currentPrice || holding.avgPrice || 0;
+                    if (currentPrice > 0) {
+                        // 간단한 가상 변동 (-2% ~ +2%)
+                        const changePercent = (Math.random() - 0.5) * 0.04;
+                        const newPrice = Math.max(1, Math.round(currentPrice * (1 + changePercent)));
+                        
+                        if (newPrice !== currentPrice) {
+                            holding.currentPrice = newPrice;
+                            hasUpdates = true;
+                            console.log(`📈 ${holding.name} 가격 업데이트: ${currentPrice} → ${newPrice}원`);
+                        }
+                    }
+                }
+            });
+            
+            // 가격 변동이 있었으면 화면 업데이트
+            if (hasUpdates) {
+                updateDisplay();
+            }
         }
 
         // 디스플레이 업데이트 (새로운 로직)
@@ -915,12 +939,16 @@
                     console.log('🎖️ 등급 표시 완료:', userLevel);
                 }
                 
-                // 3. 총 자산 표시
-                const totalAssets = userAssets.totalAssets || userAssets.virtualBalance || userAssets.cash || 0;
+                // 3. 총 자산 표시 (현금만)
+                const totalAssets = calculateRealTotalAssets();
+                
                 const totalAssetsElement = document.getElementById('totalAssets');
                 if (totalAssetsElement) {
-                    totalAssetsElement.textContent = totalAssets.toLocaleString();
-                    console.log('💰 총 자산 표시:', totalAssets.toLocaleString());
+                    // 총 자산을 간단하게 표시 (현금만)
+                    totalAssetsElement.innerHTML = `${totalAssets.toLocaleString()}원`;
+                    console.log('💰 총 자산 표시 (현금만):', {
+                        총자산: totalAssets.toLocaleString()
+                    });
                 }
                 
                 // 4. 자산 목록과 포트폴리오 차트 업데이트
@@ -942,44 +970,134 @@
             }
         }
 
-        // 자산 목록 업데이트
+        // 자산 목록 업데이트 (실제 포트폴리오 데이터 반영)
         function updateAssetList() {
             const assetListElement = document.getElementById('assetList');
             if (!assetListElement) return;
 
             let assetHTML = '';
 
-            // 실제 데이터에서는 portfolio 구조를 사용
-            // 현재는 기본 메시지 표시
-            if (!userAssets.portfolio || Object.keys(userAssets.portfolio).length === 0) {
-                assetHTML = `
-                    <div class="asset-item">
-                        <div class="asset-left">
-                            <div class="asset-name">투자 상품이 없습니다.</div>
-                            <div class="asset-details">투자를 시작해보세요!</div>
+            // 포트폴리오 데이터 표시 (다양한 자산 유형 지원)
+            if (userAssets.portfolio && Object.keys(userAssets.portfolio).length > 0) {
+                Object.entries(userAssets.portfolio).forEach(([symbol, holding]) => {
+                    // 자산 유형별 표시 방식 결정
+                    const assetType = holding.type || 'stock';
+                    let displayName = holding.name || symbol;
+                    let detailText = '';
+                    let currentValue = 0;
+                    let profitLoss = 0;
+                    let profitLossPercent = '0.00';
+                    
+                    if (assetType === 'stock') {
+                        // 주식 표시
+                        const currentPrice = holding.currentPrice || holding.price || holding.avgPrice || 0;
+                        currentValue = (holding.quantity || 0) * currentPrice;
+                        const totalInvested = holding.totalInvested || ((holding.quantity || 0) * (holding.avgPrice || 0));
+                        profitLoss = currentValue - totalInvested;
+                        profitLossPercent = totalInvested > 0 ? ((profitLoss / totalInvested) * 100).toFixed(2) : '0.00';
+                        detailText = `${(holding.quantity || 0).toLocaleString()}주 (현재가: ${currentPrice.toLocaleString()}원)`;
+                    } else if (assetType === 'savings') {
+                        // 예적금 표시
+                        currentValue = holding.avgPrice || 0;
+                        detailText = `예적금 상품 (금액: ${currentValue.toLocaleString()}원)`;
+                        profitLoss = 0; // 예적금은 수익률 표시 안함
+                    } else if (assetType === 'loan') {
+                        // 대출 표시
+                        currentValue = -(holding.avgPrice || 0); // 부채는 음수로 표시
+                        detailText = `대출 상품 (금액: ${Math.abs(currentValue).toLocaleString()}원)`;
+                        profitLoss = 0; // 대출은 수익률 표시 안함
+                        displayName += ' (부채)';
+                    } else if (assetType === 'fund') {
+                        // 펀드 표시
+                        const currentPrice = holding.currentPrice || holding.price || holding.avgPrice || 0;
+                        currentValue = (holding.quantity || 0) * currentPrice;
+                        const totalInvested = holding.totalInvested || ((holding.quantity || 0) * (holding.avgPrice || 0));
+                        profitLoss = currentValue - totalInvested;
+                        profitLossPercent = totalInvested > 0 ? ((profitLoss / totalInvested) * 100).toFixed(2) : '0.00';
+                        detailText = `${(holding.quantity || 0).toLocaleString()}좌 (현재가: ${currentPrice.toLocaleString()}원)`;
+                    }
+                    
+                    const isProfit = profitLoss >= 0;
+                    const profitClass = isProfit ? 'text-red-500' : 'text-blue-500';
+                    const profitSign = isProfit ? '+' : '';
+
+                    assetHTML += `
+                        <div class="asset-item">
+                            <div class="asset-left">
+                                <div class="asset-name">${displayName}</div>
+                                <div class="asset-details">${detailText}</div>
+                            </div>
+                            <div class="asset-right">
+                                <div>${currentValue.toLocaleString()}원</div>
+                                ${(assetType === 'stock' || assetType === 'fund') ? `
+                                    <div class="asset-profit ${profitClass}">
+                                        ${profitSign}${profitLoss.toLocaleString()}원 (${profitSign}${profitLossPercent}%)
+                                    </div>
+                                ` : ''}
+                            </div>
                         </div>
-                    </div>
-                `;
+                    `;
+                    console.log(`📊 ${symbol}: ${assetType} = ${currentValue.toLocaleString()}원`);
+                });
             } else {
-                // portfolio 데이터가 있는 경우 간단 표시
-                assetHTML = `
+                assetHTML += `
                     <div class="asset-item">
                         <div class="asset-left">
-                            <div class="asset-name">포트폴리오</div>
-                            <div class="asset-details">투자 상품 보유중</div>
+                            <div class="asset-name">투자 상품이 없습니다</div>
+                            <div class="asset-details">투자를 시작해보세요!</div>
                         </div>
                     </div>
                 `;
             }
 
             assetListElement.innerHTML = assetHTML;
+            console.log('📊 자산 목록 업데이트 완료');
         }
 
-        // 총 자산 계산 (백업용 - 실제로는 Firebase의 totalAssets 사용)
-        function calculateTotalAssets() {
-            return userAssets.totalAssets || userAssets.virtualBalance || userAssets.cash || 0;
+        // 실제 총 자산 계산 (다양한 자산 유형 포함)
+        function calculateRealTotalAssets() {
+            const cash = userAssets.cash || 0;
+            let portfolioValue = 0;
+            
+            // 포트폴리오 자산 가치 계산 (다양한 자산 유형 지원)
+            if (userAssets.portfolio && typeof userAssets.portfolio === 'object') {
+                Object.values(userAssets.portfolio).forEach(holding => {
+                    const assetType = holding.type || 'stock';
+                    let assetValue = 0;
+                    
+                    if (assetType === 'stock' || assetType === 'fund') {
+                        // 주식/펀드: 현재가 × 수량
+                        const currentPrice = holding.currentPrice || holding.price || holding.avgPrice || 0;
+                        assetValue = (holding.quantity || 0) * currentPrice;
+                    } else if (assetType === 'savings') {
+                        // 예적금: 납입 금액
+                        assetValue = holding.avgPrice || holding.totalInvested || 0;
+                    } else if (assetType === 'loan') {
+                        // 대출: 부채는 총 자산에서 차감
+                        assetValue = -(holding.avgPrice || holding.totalInvested || 0);
+                    }
+                    
+                    portfolioValue += assetValue;
+                    console.log(`💎 ${holding.name || holding.symbol} (${assetType}): ${assetValue.toLocaleString()}원`);
+                });
+            }
+            
+            const totalAssets = cash + portfolioValue;
+            
+            // userAssets에 업데이트된 총 자산 저장 (현금만 표시하기 위해 totalAssets는 현금만)
+            userAssets.totalAssets = cash; // 화면 표시용 (현금만)
+            userAssets.realTotalAssets = totalAssets; // 실제 총 자산 (포트폴리오 포함)
+            
+            console.log('💰 자산 계산 완료:', {
+                현금: cash.toLocaleString(),
+                포트폴리오가치: portfolioValue.toLocaleString(),
+                실제총자산: totalAssets.toLocaleString(),
+                화면표시현금: cash.toLocaleString()
+            });
+
+            return cash; // 화면에는 현금만 표시
         }
-                
+        
 
         // 포트폴리오 차트 생성
 
@@ -988,7 +1106,7 @@
             return userAssets.totalAssets || userAssets.virtualBalance || userAssets.cash || 0;
         }
 
-        // 포트폴리오 차트 생성 (새로운 로직)
+        // 포트폴리오 차트 생성 (실제 Firebase 데이터 기반)
         function createPortfolioChart() {
             const ctx = document.getElementById('portfolioChart').getContext('2d');
             
@@ -996,21 +1114,88 @@
                 portfolioChart.destroy();
             }
 
-            // 간단한 현금 기반 차트 (실제 portfolio 데이터가 있을 때 확장 가능)
-            const totalAssets = userAssets.totalAssets || userAssets.virtualBalance || userAssets.cash || 0;
+            // 실제 총 자산 및 현금 계산
+            const totalAssets = calculateRealTotalAssets();
             const cashValue = userAssets.cash || 0;
             
-            // 현재는 현금만 표시 (나중에 portfolio 데이터가 있으면 확장)
-            const cashPercent = totalAssets > 0 ? (cashValue / totalAssets * 100) : 100;
-            const otherPercent = 100 - cashPercent;
+            console.log('🍰 포트폴리오 차트 데이터:', { totalAssets, cashValue, portfolio: userAssets.portfolio });
+            
+            // 포트폴리오 데이터로 차트 구성 (legend 색상과 일치)
+            let chartData = [];
+            let chartLabels = [];
+            // legend 색상과 동일하게 설정: 현금(파란색), 주식(분홍색), 저축(노란색), 기타(초록색)
+            let chartColors = [];
+            
+            // 현금 추가 (첫 번째, 파란색 - legend cash 색상)
+            if (cashValue > 0) {
+                chartData.push(cashValue);
+                chartLabels.push(`현금 (${cashValue.toLocaleString()}원)`);
+                chartColors.push('#bae1ff'); // legend-dot.cash 색상
+            }
+            
+            // 포트폴리오 자산 추가 (다양한 자산 유형 지원)
+            if (userAssets.portfolio && typeof userAssets.portfolio === 'object') {
+                Object.entries(userAssets.portfolio).forEach(([symbol, holding], index) => {
+                    const assetType = holding.type || 'stock';
+                    let assetValue = 0;
+                    let assetName = holding.name || holding.symbol || symbol;
+                    
+                    // 자산 유형별 가치 계산
+                    if (assetType === 'stock' || assetType === 'fund') {
+                        // 주식/펀드: 현재가 × 수량
+                        const currentPrice = holding.currentPrice || holding.price || holding.avgPrice || 0;
+                        assetValue = (holding.quantity || 0) * currentPrice;
+                    } else if (assetType === 'savings') {
+                        // 예적금: 납입 금액
+                        assetValue = holding.avgPrice || holding.totalInvested || 0;
+                    } else if (assetType === 'loan') {
+                        // 대출: 부채는 차트에서 제외 (음수 값이므로)
+                        assetValue = 0;
+                    }
+                    
+                    if (assetValue > 0) {
+                        chartData.push(assetValue);
+                        chartLabels.push(`${assetName} (${assetValue.toLocaleString()}원)`);
+                        
+                        // 자산 유형별 색상 설정
+                        if (assetType === 'stock') {
+                            // 주식들은 분홍색 계열 사용 (legend stock 색상 기반)
+                            const stockColors = ['#ffb3ba', '#ff9aa8', '#ff8196', '#ff6884', '#ff4f72'];
+                            chartColors.push(stockColors[index % stockColors.length]);
+                        } else if (assetType === 'savings') {
+                            // 예적금은 노란색 계열 사용 (legend savings 색상 기반)
+                            const savingsColors = ['#fff3cd', '#ffecb3', '#ffe596', '#ffde7a', '#ffd85e'];
+                            chartColors.push(savingsColors[index % savingsColors.length]);
+                        } else if (assetType === 'fund') {
+                            // 펀드는 초록색 계열 사용 (legend other 색상 기반)
+                            const fundColors = ['#d4edda', '#c3e6cb', '#b8dfbc', '#aed8ad', '#a4d19e'];
+                            chartColors.push(fundColors[index % fundColors.length]);
+                        } else {
+                            // 기타 자산은 회색 계열
+                            chartColors.push('#e9ecef');
+                        }
+                        
+                        console.log(`📊 ${assetName} (${assetType}): ${assetValue.toLocaleString()}원`);
+                    }
+                });
+            }
+            
+            // 데이터가 없을 경우 기본값
+            if (chartData.length === 0) {
+                chartData = [1];
+                chartLabels = ['투자 데이터 없음'];
+                chartColors = ['#e9ecef'];
+            }
+
+            console.log('🍰 차트 데이터 최종:', { chartData, chartLabels });
 
             portfolioChart = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['현금', '기타 투자'],
+                    labels: chartLabels,
                     datasets: [{
-                        data: [cashPercent, otherPercent],
-                        backgroundColor: ['#bae1ff', '#baffc9'],
+                        data: chartData,
+                        backgroundColor: chartColors.slice(0, chartData.length),
                         borderWidth: 0
                     }]
                 },
@@ -1027,7 +1212,9 @@
                                 label: function(context) {
                                     const label = context.label;
                                     const value = context.parsed;
-                                    return `${label}: ${value.toFixed(1)}%`;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((value / total) * 100).toFixed(1);
+                                    return `${label}: ${percentage}%`;
                                 }
                             }
                         }
@@ -1082,14 +1269,26 @@
 
         // 네비게이션 함수
         function goToPage(page) {
-            // 네비게이션 활성 상태 업데이트
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-            });
+            console.log('🔄 A1에서 페이지 이동:', page);
             
-            // 페이지 이동
-            if (page !== 'a1.html') {
+            // 현재 페이지 확인
+            if (page === 'a1.html') {
+                console.log('현재 페이지(a1)에서 동일 페이지로 이동 시도 - 무시');
+                return;
+            }
+            
+            try {
+                // 네비게이션 활성 상태 업데이트
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                // 페이지 이동
+                console.log('페이지 이동 실행:', page);
                 window.location.href = page;
+            } catch (error) {
+                console.error('페이지 이동 오류:', error);
+                alert('페이지 이동 중 오류가 발생했습니다.');
             }
         }
 
