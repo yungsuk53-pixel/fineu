@@ -622,21 +622,20 @@ function calculateLevelFromExp(exp) {
     scrappedItems: firebaseData.scrappedItems || []
 };
 
-// a2-news.html처럼 exp 기반으로 레벨 결정
-const exp = userAssets.exp || 0;
-let determinedLevel = 'yellow';
-if (exp >= 50000) {
-    determinedLevel = 'black';
-} else if (exp >= 30000) {
-    determinedLevel = 'red';
-} else if (exp >= 15000) {
-    determinedLevel = 'blue';
-} else if (exp >= 5000) {
-    determinedLevel = 'green';
-}
-userAssets.level = determinedLevel;
-
-updateGradeButton(determinedLevel);
+  // 이 부분을 추가! (a2-news.html처럼)
+    const exp = userAssets.exp || 0;
+    let determinedLevel = 'yellow';
+    if (exp >= 50000) {
+        determinedLevel = 'black';
+    } else if (exp >= 30000) {
+        determinedLevel = 'red';
+    } else if (exp >= 15000) {
+        determinedLevel = 'blue';
+    } else if (exp >= 5000) {
+        determinedLevel = 'green';
+    }
+    userAssets.level = determinedLevel;
+    updateGradeButton(determinedLevel);  //
                 } else {
                     userAssets = {
                         id: userId,
@@ -713,6 +712,7 @@ updateGradeButton(determinedLevel);
         if (gradeButtonImage && levelData.navImage) {
             gradeButtonImage.src = `images/${levelData.navImage}`;
             gradeButtonImage.alt = levelData.name;
+            console.log('✅ 그레이드 버튼 업데이트:', levelData.name);
         }
     }
 }
