@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FINE U - 금융 뉴스</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .level-badge-nav {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 12px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 10;
+        }
+        
+        .level-black { background: linear-gradient(135deg, #374151, #111827); }
+
+        .bottom-navigation {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid #e5e7eb;
+            padding: 12px 0 8px 0;
+            z-index: 50;
+        }
+
+        .nav-container {
+            max-width: 28rem;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+            align-items: end;
+            position: relative;
+            height: 60px;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 4px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item i {
+            font-size: 20px;
+        }
+
+        .nav-item span {
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .nav-item.active i {
+            color: #3B82F6;
+        }
+
+        .nav-item.active span {
+            color: #3B82F6;
+        }
+
+        .nav-center {
+            grid-column: 3;
+            display: flex;
+            justify-content: center;
+            align-items: end;
+            height: 100%;
+            position: relative;
+        }
+
+        .news-item {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            border-left: 3px solid transparent;
+        }
+
+        .news-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .news-item.read {
+            opacity: 0.7;
+            background: #F9FAFB;
+        }
+
+        .news-item.featured {
+            border-left-color: #F59E0B;
+            background: linear-gradient(to right, #FEF3C7, #FFFFFF);
+        }
+
+        .star-icon {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            color: #FCD34D;
+            font-size: 20px;
+        }
+
+        .star-icon.completed {
+            color: #D1D5DB;
+        }
+
+        .news-source {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .source-economy {
+            background-color: #DBEAFE;
+            color: #2563EB;
+        }
+
+        .source-stock {
+            background-color: #D1FAE5;
+            color: #059669;
+        }
+
+        .source-global {
+            background-color: #FEE2E2;
+            color: #DC2626;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            max-width: 400px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        .complete-btn {
+            background: linear-gradient(135deg, #3B82F6, #2563EB);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .complete-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+
+<div class="min-h-screen bg-gray-100">
+    <!-- 상단 헤더 -->
+    <div class="bg-white shadow-sm p-4">
+        <div class="flex items-center justify-between max-w-md mx-auto">
+            <button onclick="location.href='a2.html'" class="text-gray-600">
+                <i class="fas fa-arrow-left text-xl"></i>
+            </button>
+            <div class="text-center">
+                <h1 class="text-xl font-bold">금융 뉴스</h1>
+                <p class="text-xs text-gray-500" id="updateInfo">로딩 중...</p>
+            </div>
+            <button onclick="refreshNews()" class="text-gray-600">
+                <i class="fas fa-sync-alt text-xl" id="refreshIcon"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- 뉴스 콘텐츠 -->
+    <div class="max-w-md mx-auto px-4 py-6 mb-24">
+        <div id="newsContainer">
+            <div class="text-center">
+                <div class="loading-spinner"></div>
+                <p class="text-gray-500 text-sm">뉴스를 불러오는 중...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 하단 네비게이션 -->
+    <div class="bottom-navigation">
+        <div class="nav-container">
+            <button onclick="location.href='index.html'" class="nav-item">
+                <i class="fas fa-home text-gray-400"></i>
+                <span class="text-gray-400">홈</span>
+            </button>
+            <button onclick="location.href='a2.html'" class="nav-item active">
+                <i class="fas fa-newspaper"></i>
+                <span>뉴스</span>
+            </button>
+            <div class="nav-center">
+                <div class="level-badge-nav level-black">
+                    BLACK
+                </div>
+            </div>
+            <button onclick="location.href='a4.html'" class="nav-item">
+                <i class="fas fa-gamepad text-gray-400"></i>
+                <span class="text-gray-400">게임</span>
+            </button>
+            <button onclick="location.href='a3.html'" class="nav-item">
+                <i class="fas fa-ellipsis-h text-gray-400"></i>
+                <span class="text-gray-400">더보기</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- 뉴스 상세 모달 -->
+<div id="newsModal" class="modal">
+    <div class="modal-content">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-bold">뉴스 상세</h3>
+            <button onclick="closeNewsModal()" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        
+        <div class="mb-4">
+            <span id="modalSource" class="news-source source-economy">경제</span>
+            <h4 class="text-lg font-bold mt-2 mb-2" id="modalHeadline">뉴스 제목</h4>
+            <p class="text-xs text-gray-500 mb-4" id="modalDate">날짜</p>
+            <div class="text-gray-700 leading-relaxed" id="modalContent">
+                뉴스 내용...
+            </div>
+        </div>
+
+        <button onclick="completeReading()" class="complete-btn" id="completeBtn">
+            <i class="fas fa-check mr-2"></i>
+            읽기 완료 (+30 EXP)
+        </button>
+    </div>
+</div>
+
+<script>
+let newsData = [];
+let currentNewsId = null;
+
+// 오늘 날짜 가져오기
+function getTodayDate() {
+    return new Date().toLocaleDateString('ko-KR');
+}
+
+// 뉴스 데이터 로드
+async function loadNewsData() {
+    const savedData = localStorage.getItem('todayFinancialData');
+    
+    if (!savedData) {
+        alert('오늘의 데이터를 먼저 생성해야 합니다.');
+        location.href = 'a2.html';
+        return;
+    }
+    
+    const data = JSON.parse(savedData);
+    newsData = data.news || [];
+    
+    // 완료 상태 로드
+    const today = getTodayDate();
+    const readNews = JSON.parse(localStorage.getItem('readNews') || '{}');
+    const todayRead = readNews[today] || [];
+    
+    newsData.forEach(news => {
+        news.read = todayRead.includes(news.id);
+    });
+    
+    displayNews();
+    updateInfo(data.generatedAt);
+}
+
+// 뉴스 표시
+function displayNews() {
+    const container = document.getElementById('newsContainer');
+    let html = '';
+    
+    // 첫 번째 뉴스는 특별 표시
+    if (newsData.length > 0) {
+        const featuredNews = newsData[0];
+        html += `
+            <div class="news-item featured ${featuredNews.read ? 'read' : ''}" 
+                 onclick="showNewsDetail('${featuredNews.id}')">
+                <i class="fas fa-star star-icon ${featuredNews.read ? 'completed' : ''}"></i>
+                <span class="news-source source-economy">주요뉴스</span>
+                <h3 class="font-bold mb-2">${featuredNews.title}</h3>
+                <p class="text-sm text-gray-600">${featuredNews.description?.substring(0, 100) || featuredNews.title}...</p>
+            </div>
+        `;
+    }
+    
+    // 나머지 뉴스들
+    newsData.slice(1).forEach(news => {
+        const sourceType = detectSourceType(news.title + ' ' + (news.description || ''));
+        const sourceClass = `source-${sourceType}`;
+        const sourceText = {
+            economy: '경제',
+            stock: '주식',
+            global: '글로벌'
+        }[sourceType];
+        
+        html += `
+            <div class="news-item ${news.read ? 'read' : ''}" 
+                 onclick="showNewsDetail('${news.id}')">
+                ${!news.read ? '<i class="fas fa-star star-icon"></i>' : '<i class="fas fa-star star-icon completed"></i>'}
+                <span class="news-source ${sourceClass}">${sourceText}</span>
+                <h3 class="font-bold mb-2">${news.title}</h3>
+                <p class="text-sm text-gray-600">${news.description?.substring(0, 80) || ''}...</p>
+            </div>
+        `;
+    });
+    
+    container.innerHTML = html;
+}
+
+// 뉴스 소스 타입 감지
+function detectSourceType(content) {
+    const lowerContent = content.toLowerCase();
+    
+    if (lowerContent.includes('코스피') || lowerContent.includes('주가') || 
+        lowerContent.includes('상장') || lowerContent.includes('거래')) {
+        return 'stock';
+    } else if (lowerContent.includes('미국') || lowerContent.includes('글로벌') || 
+               lowerContent.includes('연준') || lowerContent.includes('달러')) {
+        return 'global';
+    } else {
+        return 'economy';
+    }
+}
+
+// 업데이트 정보 표시
+function updateInfo(generatedAt) {
+    const updateTime = new Date(generatedAt);
+    document.getElementById('updateInfo').textContent = 
+        `${updateTime.toLocaleDateString('ko-KR')} ${updateTime.toLocaleTimeString('ko-KR', {hour: '2-digit', minute: '2-digit'})} 생성`;
+}
+
+// 뉴스 상세 보기
+function showNewsDetail(newsId) {
+    const news = newsData.find(n => n.id === newsId);
+    if (!news) return;
+    
+    currentNewsId = newsId;
+    
+    const sourceType = detectSourceType(news.title + ' ' + (news.description || ''));
+    const sourceText = {
+        economy: '경제',
+        stock: '주식',
+        global: '글로벌'
+    }[sourceType];
+    
+    document.getElementById('modalSource').textContent = sourceText;
+    document.getElementById('modalSource').className = `news-source source-${sourceType}`;
+    document.getElementById('modalHeadline').textContent = news.title;
+    document.getElementById('modalDate').textContent = 
+        new Date(news.date).toLocaleDateString('ko-KR');
+    
+    // 상세 내용 생성 (실제 API에서는 full content를 받아옴)
+    const fullContent = news.description || news.title;
+    document.getElementById('modalContent').innerHTML = `
+        <p>${fullContent}</p>
+        <br>
+        <p class="text-sm text-gray-500">
+            <i class="fas fa-info-circle"></i> 
+            이 뉴스는 오늘의 금융 학습 콘텐츠 생성에 활용되었습니다.
+        </p>
+    `;
+    
+    // 완료 버튼 상태
+    if (news.read) {
+        document.getElementById('completeBtn').textContent = '이미 읽음';
+        document.getElementById('completeBtn').disabled = true;
+    } else {
+        document.getElementById('completeBtn').textContent = '읽기 완료 (+30 EXP)';
+        document.getElementById('completeBtn').disabled = false;
+    }
+    
+    document.getElementById('newsModal').classList.add('show');
+}
+
+// 뉴스 읽기 완료
+function completeReading() {
+    if (!currentNewsId) return;
+    
+    const news = newsData.find(n => n.id === currentNewsId);
+    if (!news || news.read) return;
+    
+    const today = getTodayDate();
+    
+    // 읽음 상태 저장
+    const readNews = JSON.parse(localStorage.getItem('readNews') || '{}');
+    if (!readNews[today]) {
+        readNews[today] = [];
+    }
+    readNews[today].push(currentNewsId);
+    localStorage.setItem('readNews', JSON.stringify(readNews));
+    
+    // 경험치 추가
+    let userExp = parseInt(localStorage.getItem('userExp') || 0);
+    userExp += 30;
+    localStorage.setItem('userExp', userExp);
+    
+    // UI 업데이트
+    news.read = true;
+    displayNews();
+    
+    alert('뉴스 읽기를 완료했습니다! (+30 EXP)');
+    closeNewsModal();
+}
+
+// 모달 닫기
+function closeNewsModal() {
+    document.getElementById('newsModal').classList.remove('show');
+    currentNewsId = null;
+}
+
+// 뉴스 새로고침
+function refreshNews() {
+    const refreshIcon = document.getElementById('refreshIcon');
+    refreshIcon.style.transform = 'rotate(360deg)';
+    refreshIcon.style.transition = 'transform 0.5s ease';
+    
+    // 데이터 다시 로드
+    loadNewsData();
+    
+    setTimeout(() => {
+        refreshIcon.style.transform = 'rotate(0deg)';
+    }, 500);
+}
+
+// 페이지 로드시 실행
+document.addEventListener('DOMContentLoaded', function() {
+    loadNewsData();
+});
+
+// 모달 외부 클릭시 닫기
+document.addEventListener('click', function(e) {
+    const modal = document.getElementById('newsModal');
+    if (e.target === modal) {
+        closeNewsModal();
+    }
+});
+</script>
+
+</body>
+</html>
