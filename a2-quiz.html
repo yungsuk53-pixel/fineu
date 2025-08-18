@@ -440,7 +440,10 @@
             <strong>💡 설명:</strong>
             <div id="explanationText"></div>
         </div>
-        
+        <!-- 스크랩 버튼 추가 (정답 확인 후에만 표시) -->
+        <button class="scrap-btn" id="scrapBtn" style="display: none;" onclick="addToScrap()">
+            <i class="fas fa-bookmark"></i> 이 문제 스크랩하기
+        </button>
         <button class="submit-btn" id="submitBtn" onclick="submitAnswer()">답변 제출</button>
     </div>
 </div>
