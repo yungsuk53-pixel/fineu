@@ -733,6 +733,7 @@ function selectOption(index) {
 
 function submitAnswer() {
     if (isAnswered) {
+         document.getElementById('scrapBtn').style.display = 'none';
         currentIndex++;
         loadQuestion();
         return;
@@ -753,9 +754,12 @@ function submitAnswer() {
     
     if (isCorrect) score++;
     
-    // 설명 표시
+     // 설명 표시
     document.getElementById('explanationText').textContent = question.explanation;
     document.getElementById('explanationBox').style.display = 'block';
+    
+    // 스크랩 버튼 표시 (정답 확인 후)
+    document.getElementById('scrapBtn').style.display = 'flex';
     
     isAnswered = true;
     document.getElementById('submitBtn').textContent = currentIndex < 4 ? '다음 문제' : '퀴즈 완료';
