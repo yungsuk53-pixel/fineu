@@ -11,6 +11,745 @@
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
         import { getDatabase, ref, get, set, update } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js';
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FINE U - 금융 용어</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
+        import { getDatabase, ref, get, set, update } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyApKJHvNXftrzXAZsH41FxqVj0_Byh_V28",
+            authDomain: "invest-97aa7.firebaseapp.com",
+            databaseURL: "https://invest-97aa7-default-rtdb.firebaseio.com",
+            projectId: "invest-97aa7",
+            storageBucket: "invest-97aa7.firebasestorage.app",
+            messagingSenderId: "136719207030",
+            appId: "1:136719207030:web:391bd46b7b79800c0fed57",
+            measurementId: "G-78K35WTPGQ"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        
+        window.firebaseDB = database;
+        window.firebaseRef = ref;
+        window.firebaseGet = get;
+        window.firebaseSet = set;
+        window.firebaseUpdate = update;
+    </script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f5f5f5;
+        }
+        
+        .header {
+            background: white;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #000;
+        }
+        
+        .back-btn, .calendar-btn {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #2c2c2c;
+            border-radius: 50%;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .content {
+            padding: 20px;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+        
+        .term-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 12px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .term-card:active {
+            transform: scale(0.98);
+        }
+        
+        .term-card.today-term {
+            background: linear-gradient(135deg, #fff9e6, #fff5cc);
+            border: 2px solid #ffd700;
+        }
+        
+        .term-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 8px;
+        }
+        
+        .term-desc {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.4;
+        }
+        
+        .star-icon {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: #FFD700;
+            font-size: 24px;
+        }
+        
+        .star-icon.completed {
+            color: #4CAF50;
+        }
+        
+        .divider {
+            height: 1px;
+            background: #e0e0e0;
+            margin: 16px 0;
+        }
+        
+        .bottom-navigation {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+            padding: 8px 0 20px 0;
+        }
+        
+        .nav-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #999;
+            position: relative;
+        }
+        
+        .nav-item.active {
+            color: #000;
+        }
+        
+        .nav-item i {
+            font-size: 24px;
+        }
+        
+        .nav-item span {
+            font-size: 11px;
+        }
+        
+        .level-badge {
+            position: absolute;
+            top: -20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: #FFE99E;
+            color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 11px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        
+        .modal.show {
+            display: block;
+        }
+        
+        .modal-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 20px 20px 0 0;
+            padding: 24px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .modal-title {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #666;
+            cursor: pointer;
+        }
+        
+        .term-detail {
+            margin-bottom: 20px;
+        }
+        
+        .term-detail h3 {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+        
+        .term-detail p {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #333;
+            margin-bottom: 16px;
+        }
+        
+        .example-box {
+            background: #f0f4ff;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .example-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #2c5aa0;
+        }
+        
+        .complete-btn {
+            width: 100%;
+            padding: 16px;
+            background: #2c5aa0;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .complete-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .reward-animation {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #333;
+            padding: 20px 30px;
+            border-radius: 16px;
+            font-size: 18px;
+            font-weight: bold;
+            z-index: 2000;
+            box-shadow: 0 8px 24px rgba(255, 215, 0, 0.4);
+            animation: rewardPop 2s ease-in-out forwards;
+        }
+        
+        .review-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .review-date {
+            font-size: 14px;
+            font-weight: 600;
+            color: #2c5aa0;
+            margin: 15px 0 10px 0;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .review-term {
+            padding: 10px;
+            margin: 5px 0;
+            background: #f8f9fa;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .review-term:hover {
+            background: #e8e9ea;
+        }
+        
+        .review-term-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .review-term-def {
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+        }
+        
+        @keyframes rewardPop {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.5);
+            }
+            20% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1.1);
+            }
+            80% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.8);
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <button class="back-btn" onclick="location.href='a2.html'">
+        <i class="fas fa-arrow-left"></i>
+    </button>
+    <div class="header-title">금융 용어</div>
+    <button class="calendar-btn" onclick="showCalendar()">
+        <i class="fas fa-calendar-alt"></i>
+    </button>
+</div>
+
+<div class="content" style="padding-bottom: 100px;">
+    <div class="term-card today-term">
+        <div class="term-title">🌟 오늘의 금융 용어 (3개)</div>
+        <div class="term-desc">오늘 꼭 알아야 할 핵심 금융 용어들을 학습하세요</div>
+    </div>
+    
+    <div id="todayTermsContainer">
+        <!-- 오늘의 용어들이 여기에 표시됩니다 -->
+    </div>
+    
+    <div class="divider"></div>
+    
+    <div class="term-card" onclick="showReviewTerms()">
+        <div class="term-title">📚 금융 용어 복습하기</div>
+        <div class="term-desc">최근 2주간 학습한 용어들을 다시 확인하세요</div>
+    </div>
+</div>
+
+<div class="bottom-navigation">
+    <div class="nav-container">
+        <button class="nav-item" onclick="location.href='a1.html'">
+            <i class="fas fa-home"></i>
+            <span>홈</span>
+        </button>
+        <button class="nav-item active" onclick="location.href='a2.html'">
+            <i class="fas fa-file-alt"></i>
+            <span>학습</span>
+        </button>
+        <button class="nav-item" style="position: relative;">
+            <div class="level-badge" id="levelBadge">YELLOW</div>
+        </button>
+        <button class="nav-item" onclick="location.href='a4.html'">
+            <i class="fas fa-comment-dots"></i>
+            <span>채팅</span>
+        </button>
+        <button class="nav-item" onclick="location.href='a5.html'">
+            <i class="fas fa-ellipsis-h"></i>
+            <span>더보기</span>
+        </button>
+    </div>
+</div>
+
+<div id="termModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-title">금융 용어 학습</div>
+            <button class="close-btn" onclick="closeModal()">×</button>
+        </div>
+        
+        <div class="term-detail">
+            <h3 id="termName">용어</h3>
+            <p id="termDefinition">정의</p>
+            
+            <div class="example-box">
+                <div class="example-title">💡 예시</div>
+                <div id="termExample">예시 설명</div>
+            </div>
+        </div>
+        
+        <button class="complete-btn" id="completeBtn" onclick="completeTerm()">
+            학습 완료 (+10,000원 + 20 EXP)
+        </button>
+    </div>
+</div>
+
+<div id="reviewModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-title">📚 최근 2주 금융 용어 복습</div>
+            <button class="close-btn" onclick="closeReviewModal()">×</button>
+        </div>
+        
+        <div class="review-section" id="reviewContent">
+            <!-- 복습 내용이 여기에 표시됩니다 -->
+        </div>
+    </div>
+</div>
+
+<script>
+let currentTermData = null;
+let userAssets = {};
+let todayTerms = [];
+let completedTerms = [];
+
+function getTodayDate() {
+    const now = new Date();
+    const koreaTime = new Date(now.toLocaleString("en-US", {timeZone: "Asia/Seoul"}));
+    const year = koreaTime.getFullYear();
+    const month = String(koreaTime.getMonth() + 1).padStart(2, '0');
+    const day = String(koreaTime.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+async function loadUserData() {
+    const savedUser = localStorage.getItem('fineu_current_user');
+    if (!savedUser) {
+        location.href = 'index.html';
+        return;
+    }
+    
+    const currentUser = JSON.parse(savedUser);
+    const userId = currentUser.id || currentUser.username || 'Test';
+    
+    try {
+        if (window.firebaseDB) {
+            const userRef = window.firebaseRef(window.firebaseDB, `users/${userId}`);
+            const snapshot = await window.firebaseGet(userRef);
+            
+            if (snapshot.exists()) {
+                userAssets = snapshot.val();
+            } else {
+                userAssets = JSON.parse(localStorage.getItem('fineu_user_assets') || '{}');
+            }
+        } else {
+            userAssets = JSON.parse(localStorage.getItem('fineu_user_assets') || '{}');
+        }
+        
+        updateLevelBadge();
+    } catch (error) {
+        console.error('사용자 데이터 로드 실패:', error);
+        userAssets = JSON.parse(localStorage.getItem('fineu_user_assets') || '{}');
+    }
+}
+
+function updateLevelBadge() {
+    const level = (userAssets.level || 'yellow').toUpperCase();
+    const badge = document.getElementById('levelBadge');
+    if (badge) {
+        badge.textContent = level;
+        
+        const colors = {
+            'YELLOW': '#FFE99E',
+            'GREEN': '#C1EDB3',
+            'BLUE': '#ADD9FA',
+            'RED': '#FAABAD',
+            'BLACK': '#333333'
+        };
+        badge.style.background = colors[level] || colors['YELLOW'];
+        badge.style.color = level === 'BLACK' ? 'white' : '#333';
+    }
+}
+
+function loadTermData() {
+    const savedData = localStorage.getItem('todayFinancialData');
+    if (!savedData) {
+        location.href = 'a2.html';
+        return;
+    }
+    
+    const data = JSON.parse(savedData);
+    todayTerms = data.terms || [];
+    
+    displayTodayTerms();
+    checkCompletionStatus();
+}
+
+function displayTodayTerms() {
+    const container = document.getElementById('todayTermsContainer');
+    const today = getTodayDate();
+    const studyProgress = userAssets.studyProgress || {};
+    const todayProgress = studyProgress[today] || {};
+    completedTerms = todayProgress.completedTerms || [];
+    
+    let html = '';
+    
+    todayTerms.forEach((term, index) => {
+        const isCompleted = completedTerms.includes(term.id);
+        
+        html += `
+            <div class="term-card" onclick="showTermDetail('${term.id}')">
+                <i class="fas fa-star star-icon ${isCompleted ? 'completed' : ''}" id="star-${term.id}"></i>
+                <div class="term-title">${index + 1}. ${term.term}</div>
+                <div class="term-desc">${term.definition.substring(0, 50)}...</div>
+            </div>
+        `;
+    });
+    
+    container.innerHTML = html;
+}
+
+function checkCompletionStatus() {
+    const today = getTodayDate();
+    const studyProgress = userAssets.studyProgress || {};
+    const todayProgress = studyProgress[today] || {};
+    completedTerms = todayProgress.completedTerms || [];
+    
+    // 모든 용어를 완료했는지 확인
+    if (completedTerms.length >= 3) {
+        todayProgress.financialTerms = true;
+    }
+}
+
+function showTermDetail(termId) {
+    const term = todayTerms.find(t => t.id === termId);
+    if (!term) return;
+    
+    currentTermData = term;
+    
+    document.getElementById('termName').textContent = term.term;
+    document.getElementById('termDefinition').textContent = term.definition;
+    document.getElementById('termExample').textContent = term.example;
+    
+    if (completedTerms.includes(termId)) {
+        document.getElementById('completeBtn').textContent = '이미 완료함';
+        document.getElementById('completeBtn').disabled = true;
+    } else {
+        document.getElementById('completeBtn').textContent = '학습 완료 (+10,000원 + 20 EXP)';
+        document.getElementById('completeBtn').disabled = false;
+    }
+    
+    document.getElementById('termModal').classList.add('show');
+}
+
+function showReviewTerms() {
+    const reviewContent = document.getElementById('reviewContent');
+    const today = new Date();
+    const twoWeeksAgo = new Date(today.getTime() - (14 * 24 * 60 * 60 * 1000));
+    
+    let html = '';
+    let termsByDate = {};
+    
+    // 최근 2주간의 데이터 수집
+    for (let i = 0; i < 14; i++) {
+        const checkDate = new Date(today.getTime() - (i * 24 * 60 * 60 * 1000));
+        const dateStr = `${checkDate.getFullYear()}-${String(checkDate.getMonth() + 1).padStart(2, '0')}-${String(checkDate.getDate()).padStart(2, '0')}`;
+        
+        const cacheKey = `todayFinancialData_${dateStr}`;
+        const cached = localStorage.getItem(cacheKey);
+        
+        if (cached) {
+            const data = JSON.parse(cached);
+            if (data.terms && data.terms.length > 0) {
+                termsByDate[dateStr] = data.terms;
+            }
+        }
+    }
+    
+    // 날짜별로 용어 표시
+    const sortedDates = Object.keys(termsByDate).sort().reverse();
+    
+    if (sortedDates.length === 0) {
+        html = '<div style="text-align: center; padding: 40px; color: #666;">최근 2주간 학습한 용어가 없습니다.</div>';
+    } else {
+        sortedDates.forEach(date => {
+            const dateObj = new Date(date);
+            const displayDate = `${dateObj.getMonth() + 1}월 ${dateObj.getDate()}일`;
+            
+            html += `<div class="review-date">${displayDate}</div>`;
+            
+            termsByDate[date].forEach(term => {
+                html += `
+                    <div class="review-term" onclick="showReviewTermDetail('${encodeURIComponent(JSON.stringify(term))}')">
+                        <div class="review-term-title">${term.term}</div>
+                        <div class="review-term-def">${term.definition.substring(0, 60)}...</div>
+                    </div>
+                `;
+            });
+        });
+    }
+    
+    reviewContent.innerHTML = html;
+    document.getElementById('reviewModal').classList.add('show');
+}
+
+function showReviewTermDetail(encodedTerm) {
+    const term = JSON.parse(decodeURIComponent(encodedTerm));
+    
+    document.getElementById('reviewModal').classList.remove('show');
+    
+    currentTermData = term;
+    document.getElementById('termName').textContent = term.term;
+    document.getElementById('termDefinition').textContent = term.definition;
+    document.getElementById('termExample').textContent = term.example;
+    
+    document.getElementById('completeBtn').textContent = '복습 완료';
+    document.getElementById('completeBtn').disabled = true;
+    
+    document.getElementById('termModal').classList.add('show');
+}
+
+function closeModal() {
+    document.getElementById('termModal').classList.remove('show');
+}
+
+function closeReviewModal() {
+    document.getElementById('reviewModal').classList.remove('show');
+}
+
+async function completeTerm() {
+    if (!currentTermData) return;
+    
+    const today = getTodayDate();
+    
+    if (!userAssets.studyProgress) {
+        userAssets.studyProgress = {};
+    }
+    if (!userAssets.studyProgress[today]) {
+        userAssets.studyProgress[today] = {};
+    }
+    if (!userAssets.studyProgress[today].completedTerms) {
+        userAssets.studyProgress[today].completedTerms = [];
+    }
+    
+    if (!userAssets.studyProgress[today].completedTerms.includes(currentTermData.id)) {
+        userAssets.studyProgress[today].completedTerms.push(currentTermData.id);
+        completedTerms.push(currentTermData.id);
+        
+        // 용어당 보상 (3개니까 각각 10,000원, 20 EXP)
+        userAssets.cash = (userAssets.cash || 0) + 10000;
+        userAssets.totalAssets = (userAssets.totalAssets || 0) + 10000;
+        userAssets.virtualBalance = (userAssets.virtualBalance || 0) + 10000;
+        userAssets.exp = (userAssets.exp || 0) + 20;
+        
+        // 3개 모두 완료했는지 확인
+        if (userAssets.studyProgress[today].completedTerms.length >= 3) {
+            userAssets.studyProgress[today].financialTerms = true;
+        }
+        
+        try {
+            const savedUser = JSON.parse(localStorage.getItem('fineu_current_user'));
+            const userId = savedUser.id || savedUser.username || 'Test';
+            
+            if (window.firebaseDB) {
+                const userRef = window.firebaseRef(window.firebaseDB, `users/${userId}`);
+                await window.firebaseSet(userRef, userAssets);
+            }
+            
+            localStorage.setItem('fineu_user_assets', JSON.stringify(userAssets));
+            
+            document.getElementById(`star-${currentTermData.id}`).classList.add('completed');
+            showRewardAnimation();
+            
+        } catch (error) {
+            console.error('데이터 저장 실패:', error);
+        }
+    }
+    
+    closeModal();
+}
+
+function showRewardAnimation() {
+    const rewardDiv = document.createElement('div');
+    rewardDiv.className = 'reward-animation';
+    rewardDiv.innerHTML = '🎉 학습 완료!<br>💰 10,000원<br>⭐ 20 EXP';
+    document.body.appendChild(rewardDiv);
+    
+    setTimeout(() => {
+        document.body.removeChild(rewardDiv);
+    }, 2000);
+}
+
+function showCalendar() {
+    const today = getTodayDate();
+    alert(`📅 오늘 날짜: ${today}\n\n매일 3개의 새로운 금융 용어가 업데이트됩니다!`);
+}
+
+document.addEventListener('DOMContentLoaded', async function() {
+    await loadUserData();
+    loadTermData();
+});
+</script>
+
+</body>
+</html>
 
         const firebaseConfig = {
             apiKey: "AIzaSyApKJHvNXftrzXAZsH41FxqVj0_Byh_V28",
