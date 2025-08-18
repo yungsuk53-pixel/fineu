@@ -375,7 +375,9 @@
         const GEMINI_API_KEY = 'AIzaSyBJhMtNOYyCfl6NRCQQz_CkTUHWP2TNweI';
         
         let currentUser = null;
-        let userAssets = {};
+let userAssets = {};
+let isTodayDataReady = false;  // 데이터 준비 상태 추가
+
         
         const levelSystem = {
             YELLOW: { name: 'YELLOW', exp: 0, max: 5000, navImage: 'YELLOW ㅇ.png' },
@@ -883,7 +885,8 @@
             const firebaseCacheKey = `daily_${today}`;
             
             console.log(`📅 ${today} 데이터 생성 프로세스 시작`);
-            
+            // 데이터 생성 중 표시
+            updateStudyCardsStatus('loading');
             // Firebase 연결 대기
             if (!window.firebaseDB) {
                 console.log('⏳ Firebase 연결 대기 중...');
@@ -909,6 +912,8 @@
                         console.log('✅ Firebase 데이터 유효 - 사용');
                         localStorage.setItem('todayFinancialData', JSON.stringify(existingData));
                         localStorage.setItem(`todayFinancialData_${today}`, JSON.stringify(existingData));
+                        isTodayDataReady = true;  // 데이터 준비 완료
+                        updateStudyCardsStatus('ready');  // 카드 활성화
                         return;
                     } else {
                         console.log('❌ Firebase 데이터 불완전 - 재생성 필요');
@@ -922,7 +927,8 @@
                 // 2. 데이터 생성이 필요한 경우
                 if (needsGeneration) {
                     console.log('🔄 새 데이터 생성 시작...');
-                    
+                     // 로딩 표시
+                    showLoadingOverlay();
                     const loadingDiv = document.createElement('div');
                     loadingDiv.className = 'loading-spinner';
                     loadingDiv.style.position = 'fixed';
@@ -1115,6 +1121,10 @@
                     if (loadingDiv.parentNode) {
                         document.body.removeChild(loadingDiv);
                     }
+                    // 데이터 생성 완료 후
+            isTodayDataReady = true;
+            updateStudyCardsStatus('ready');
+            hideLoadingOverlay();
                 }
                 
             } catch (error) {
@@ -1200,6 +1210,9 @@
                 if (loadingDiv && loadingDiv.parentNode) {
                     loadingDiv.parentNode.removeChild(loadingDiv);
                 }
+                 isTodayDataReady = true;
+        updateStudyCardsStatus('ready');
+        hideLoadingOverlay();
             }
         }
 
