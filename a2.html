@@ -403,6 +403,16 @@
             BLACK: { name: 'BLACK', exp: 50000, max: 999999, navImage: 'BLACK ㅇ.png' }
         };
 
+        // 이 함수를 새로 추가
+function calculateLevelFromExp(exp) {
+    if (exp >= 50000) return 'black';
+    if (exp >= 30000) return 'red';
+    if (exp >= 15000) return 'blue';
+    if (exp >= 5000) return 'green';
+    return 'yellow';
+}
+
+        
         function getTodayDate() {
             const now = new Date();
             const koreaTime = new Date(now.toLocaleString("en-US", {timeZone: "Asia/Seoul"}));
@@ -629,6 +639,17 @@
                         studyProgress: {},
                         scrappedItems: []
                     };
+                    // 이 부분을 추가
+// EXP에 따른 레벨 자동 계산 및 업데이트
+const calculatedLevel = calculateLevelFromExp(userAssets.exp);
+if (calculatedLevel !== userAssets.level) {
+    userAssets.level = calculatedLevel;
+    // Firebase에 업데이트된 레벨 저장
+    const userRef2 = window.firebaseRef(window.firebaseDB, `users/${userId}`);
+    await window.firebaseSet(userRef2, userAssets);
+}
+
+updateGradeButton(userAssets.level);  // 기존 코드
                     updateGradeButton('yellow');
                 }
                 
@@ -681,17 +702,34 @@
         }
 
         function updateGradeButton(grade) {
-            const upperGrade = grade.toUpperCase();
-            const levelData = levelSystem[upperGrade];
-            
-            if (levelData) {
-                const gradeButtonImage = document.getElementById('gradeButtonImage');
-                if (gradeButtonImage && levelData.navImage) {
-                    gradeButtonImage.src = `images/${levelData.navImage}`;
-                    gradeButtonImage.alt = levelData.name;
-                }
-            }
+    console.log('🎯 updateGradeButton 호출됨:', grade);
+    
+    if (!grade) {
+        console.error('❌ grade가 없음');
+        return;
+    }
+    
+    // grade가 소문자로 들어올 수 있으므로 대문자로 변환
+    const upperGrade = grade.toUpperCase();
+    const levelData = levelSystem[upperGrade];
+    
+    console.log('📊 레벨 데이터:', levelData);
+    
+    if (levelData) {
+        const gradeButtonImage = document.getElementById('gradeButtonImage');
+        if (gradeButtonImage && levelData.navImage) {
+            const imagePath = `images/${levelData.navImage}`;
+            console.log('🖼️ 이미지 경로:', imagePath);
+            gradeButtonImage.src = imagePath;
+            gradeButtonImage.alt = levelData.name;
+            console.log('✅ 그레이드 버튼 업데이트 완료');
+        } else {
+            console.error('❌ gradeButtonImage 요소를 찾을 수 없음');
         }
+    } else {
+        console.error('❌ levelSystem에서 레벨 데이터를 찾을 수 없음:', upperGrade);
+    }
+}
 
         async function getLatestFinanceNews() {
             try {
