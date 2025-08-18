@@ -6,6 +6,33 @@
     <title>FINE U - 금융 뉴스</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
+        import { getDatabase, ref, get, set, update } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyApKJHvNXftrzXAZsH41FxqVj0_Byh_V28",
+            authDomain: "invest-97aa7.firebaseapp.com",
+            databaseURL: "https://invest-97aa7-default-rtdb.firebaseio.com",
+            projectId: "invest-97aa7",
+            storageBucket: "invest-97aa7.firebasestorage.app",
+            messagingSenderId: "136719207030",
+            appId: "1:136719207030:web:391bd46b7b79800c0fed57",
+            measurementId: "G-78K35WTPGQ"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        
+        window.firebaseDB = database;
+        window.firebaseRef = ref;
+        window.firebaseGet = get;
+        window.firebaseSet = set;
+        window.firebaseUpdate = update;
+    </script>
+    
     <style>
         * {
             margin: 0;
@@ -93,7 +120,7 @@
         }
         
         .star-icon.completed {
-            color: #d0d0d0;
+            color: #4CAF50;
         }
         
         .bottom-navigation {
@@ -145,8 +172,8 @@
             width: 56px;
             height: 56px;
             border-radius: 50%;
-            background: #2c2c2c;
-            color: white;
+            background: #FFE99E;
+            color: #333;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -209,6 +236,14 @@
             margin-bottom: 20px;
         }
         
+        .news-link {
+            display: inline-block;
+            margin-top: 10px;
+            color: #2c5aa0;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
         .complete-btn {
             width: 100%;
             padding: 16px;
@@ -225,6 +260,41 @@
             background: #ccc;
             cursor: not-allowed;
         }
+        
+        .reward-animation {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #333;
+            padding: 20px 30px;
+            border-radius: 16px;
+            font-size: 18px;
+            font-weight: bold;
+            z-index: 2000;
+            box-shadow: 0 8px 24px rgba(255, 215, 0, 0.4);
+            animation: rewardPop 2s ease-in-out forwards;
+        }
+        
+        @keyframes rewardPop {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.5);
+            }
+            20% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1.1);
+            }
+            80% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.8);
+            }
+        }
     </style>
 </head>
 <body>
@@ -234,7 +304,7 @@
         <i class="fas fa-arrow-left"></i>
     </button>
     <div class="header-title">금융 뉴스</div>
-    <button class="calendar-btn">
+    <button class="calendar-btn" onclick="showCalendar()">
         <i class="fas fa-calendar-alt"></i>
     </button>
 </div>
@@ -245,22 +315,22 @@
 
 <div class="bottom-navigation">
     <div class="nav-container">
-        <button class="nav-item" onclick="location.href='index.html'">
+        <button class="nav-item" onclick="location.href='a1.html'">
             <i class="fas fa-home"></i>
             <span>홈</span>
         </button>
-        <button class="nav-item active">
+        <button class="nav-item active" onclick="location.href='a2.html'">
             <i class="fas fa-file-alt"></i>
-            <span>뉴스</span>
+            <span>학습</span>
         </button>
         <button class="nav-item" style="position: relative;">
-            <div class="level-badge">BLACK</div>
+            <div class="level-badge" id="levelBadge">YELLOW</div>
         </button>
-        <button class="nav-item">
+        <button class="nav-item" onclick="location.href='a4.html'">
             <i class="fas fa-comment-dots"></i>
             <span>채팅</span>
         </button>
-        <button class="nav-item">
+        <button class="nav-item" onclick="location.href='a5.html'">
             <i class="fas fa-ellipsis-h"></i>
             <span>더보기</span>
         </button>
@@ -278,8 +348,10 @@
             뉴스 내용
         </div>
         
+        <a id="newsLink" class="news-link" target="_blank">원문 보기 →</a>
+        
         <button class="complete-btn" id="completeBtn" onclick="completeReading()">
-            읽기 완료 (+30 EXP)
+            읽기 완료 (+30,000원 + 50 EXP)
         </button>
     </div>
 </div>
@@ -287,9 +359,64 @@
 <script>
 let newsData = [];
 let currentNewsId = null;
+let userAssets = {};
 
 function getTodayDate() {
-    return new Date().toLocaleDateString('ko-KR');
+    const now = new Date();
+    const koreaTime = new Date(now.toLocaleString("en-US", {timeZone: "Asia/Seoul"}));
+    const year = koreaTime.getFullYear();
+    const month = String(koreaTime.getMonth() + 1).padStart(2, '0');
+    const day = String(koreaTime.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+async function loadUserData() {
+    const savedUser = localStorage.getItem('fineu_current_user');
+    if (!savedUser) {
+        location.href = 'index.html';
+        return;
+    }
+    
+    const currentUser = JSON.parse(savedUser);
+    const userId = currentUser.id || currentUser.username || 'Test';
+    
+    try {
+        if (window.firebaseDB) {
+            const userRef = window.firebaseRef(window.firebaseDB, `users/${userId}`);
+            const snapshot = await window.firebaseGet(userRef);
+            
+            if (snapshot.exists()) {
+                userAssets = snapshot.val();
+            } else {
+                userAssets = JSON.parse(localStorage.getItem('fineu_user_assets') || '{}');
+            }
+        } else {
+            userAssets = JSON.parse(localStorage.getItem('fineu_user_assets') || '{}');
+        }
+        
+        updateLevelBadge();
+    } catch (error) {
+        console.error('사용자 데이터 로드 실패:', error);
+        userAssets = JSON.parse(localStorage.getItem('fineu_user_assets') || '{}');
+    }
+}
+
+function updateLevelBadge() {
+    const level = (userAssets.level || 'yellow').toUpperCase();
+    const badge = document.getElementById('levelBadge');
+    if (badge) {
+        badge.textContent = level;
+        
+        const colors = {
+            'YELLOW': '#FFE99E',
+            'GREEN': '#C1EDB3',
+            'BLUE': '#ADD9FA',
+            'RED': '#FAABAD',
+            'BLACK': '#333333'
+        };
+        badge.style.background = colors[level] || colors['YELLOW'];
+        badge.style.color = level === 'BLACK' ? 'white' : '#333';
+    }
 }
 
 function loadNewsData() {
@@ -308,15 +435,15 @@ function loadNewsData() {
 function displayNews() {
     const container = document.getElementById('newsContainer');
     const today = getTodayDate();
-    const readNews = JSON.parse(localStorage.getItem('readNews') || '{}');
-    const todayRead = readNews[today] || [];
+    const studyProgress = userAssets.studyProgress || {};
+    const todayProgress = studyProgress[today] || {};
+    const readNews = todayProgress.readNews || [];
     
     let html = '';
     
-    // 첫 번째 뉴스는 특별 표시
     if (newsData.length > 0) {
         const featured = newsData[0];
-        const isRead = todayRead.includes(featured.id);
+        const isRead = readNews.includes(featured.id);
         
         html += `
             <div class="news-card ${isRead ? 'read' : ''}" onclick="showNewsDetail('${featured.id}')">
@@ -327,13 +454,12 @@ function displayNews() {
         `;
     }
     
-    // 나머지 뉴스들
     newsData.slice(1).forEach(news => {
-        const isRead = todayRead.includes(news.id);
+        const isRead = readNews.includes(news.id);
         
         html += `
             <div class="news-card ${isRead ? 'read' : ''}" onclick="showNewsDetail('${news.id}')">
-                ${!isRead ? '<i class="fas fa-star star-icon"></i>' : ''}
+                ${!isRead ? '<i class="fas fa-star star-icon"></i>' : '<i class="fas fa-star star-icon completed"></i>'}
                 <div class="news-title">${news.title}</div>
             </div>
         `;
@@ -351,15 +477,24 @@ function showNewsDetail(newsId) {
     document.getElementById('modalTitle').textContent = news.title;
     document.getElementById('modalContent').textContent = news.content || news.description;
     
-    const today = getTodayDate();
-    const readNews = JSON.parse(localStorage.getItem('readNews') || '{}');
-    const todayRead = readNews[today] || [];
+    const newsLink = document.getElementById('newsLink');
+    if (news.url) {
+        newsLink.href = news.url;
+        newsLink.style.display = 'inline-block';
+    } else {
+        newsLink.style.display = 'none';
+    }
     
-    if (todayRead.includes(newsId)) {
+    const today = getTodayDate();
+    const studyProgress = userAssets.studyProgress || {};
+    const todayProgress = studyProgress[today] || {};
+    const readNews = todayProgress.readNews || [];
+    
+    if (readNews.includes(newsId)) {
         document.getElementById('completeBtn').textContent = '이미 읽음';
         document.getElementById('completeBtn').disabled = true;
     } else {
-        document.getElementById('completeBtn').textContent = '읽기 완료 (+30 EXP)';
+        document.getElementById('completeBtn').textContent = '읽기 완료 (+30,000원 + 50 EXP)';
         document.getElementById('completeBtn').disabled = false;
     }
     
@@ -370,32 +505,77 @@ function closeModal() {
     document.getElementById('newsModal').classList.remove('show');
 }
 
-function completeReading() {
+async function completeReading() {
     if (!currentNewsId) return;
     
     const today = getTodayDate();
-    const readNews = JSON.parse(localStorage.getItem('readNews') || '{}');
     
-    if (!readNews[today]) {
-        readNews[today] = [];
+    if (!userAssets.studyProgress) {
+        userAssets.studyProgress = {};
+    }
+    if (!userAssets.studyProgress[today]) {
+        userAssets.studyProgress[today] = {};
+    }
+    if (!userAssets.studyProgress[today].readNews) {
+        userAssets.studyProgress[today].readNews = [];
     }
     
-    if (!readNews[today].includes(currentNewsId)) {
-        readNews[today].push(currentNewsId);
-        localStorage.setItem('readNews', JSON.stringify(readNews));
+    if (!userAssets.studyProgress[today].readNews.includes(currentNewsId)) {
+        userAssets.studyProgress[today].readNews.push(currentNewsId);
         
-        let userExp = parseInt(localStorage.getItem('userExp') || 0);
-        userExp += 30;
-        localStorage.setItem('userExp', userExp);
+        userAssets.cash = (userAssets.cash || 0) + 30000;
+        userAssets.totalAssets = (userAssets.totalAssets || 0) + 30000;
+        userAssets.virtualBalance = (userAssets.virtualBalance || 0) + 30000;
+        userAssets.exp = (userAssets.exp || 0) + 50;
         
-        displayNews();
-        alert('뉴스를 읽었습니다! (+30 EXP)');
+        const allNewsRead = newsData.every(news => 
+            userAssets.studyProgress[today].readNews.includes(news.id)
+        );
+        
+        if (allNewsRead) {
+            userAssets.studyProgress[today].financialNews = true;
+        }
+        
+        try {
+            const savedUser = JSON.parse(localStorage.getItem('fineu_current_user'));
+            const userId = savedUser.id || savedUser.username || 'Test';
+            
+            if (window.firebaseDB) {
+                const userRef = window.firebaseRef(window.firebaseDB, `users/${userId}`);
+                await window.firebaseSet(userRef, userAssets);
+            }
+            
+            localStorage.setItem('fineu_user_assets', JSON.stringify(userAssets));
+            
+            showRewardAnimation();
+            displayNews();
+            
+        } catch (error) {
+            console.error('데이터 저장 실패:', error);
+        }
     }
     
     closeModal();
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+function showRewardAnimation() {
+    const rewardDiv = document.createElement('div');
+    rewardDiv.className = 'reward-animation';
+    rewardDiv.innerHTML = '🎉 뉴스 읽기 완료!<br>💰 30,000원<br>⭐ 50 EXP';
+    document.body.appendChild(rewardDiv);
+    
+    setTimeout(() => {
+        document.body.removeChild(rewardDiv);
+    }, 2000);
+}
+
+function showCalendar() {
+    const today = getTodayDate();
+    alert(`📅 오늘 날짜: ${today}\n\n매일 새로운 금융 뉴스가 업데이트됩니다!`);
+}
+
+document.addEventListener('DOMContentLoaded', async function() {
+    await loadUserData();
     loadNewsData();
 });
 </script>
