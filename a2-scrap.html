@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FINE U - 스크랩</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
+        import { getDatabase, ref, get, set, update } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyApKJHvNXftrzXAZsH41FxqVj0_Byh_V28",
+            authDomain: "invest-97aa7.firebaseapp.com",
+            databaseURL: "https://invest-97aa7-default-rtdb.firebaseio.com",
+            projectId: "invest-97aa7",
+            storageBucket: "invest-97aa7.firebasestorage.app",
+            messagingSenderId: "136719207030",
+            appId: "1:136719207030:web:391bd46b7b79800c0fed57",
+            measurementId: "G-78K35WTPGQ"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        
+        window.firebaseDB = database;
+        window.firebaseRef = ref;
+        window.firebaseGet = get;
+        window.firebaseSet = set;
+        window.firebaseUpdate = update;
+    </script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .back-arrow {
+            width: 35px;
+            height: 35px;
+            background: #333;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .back-arrow:hover {
+            transform: scale(1.1);
+        }
+
+        .back-arrow i {
+            color: white;
+            font-size: 18px;
+        }
+
+        .fine-u-logo {
+            display: flex;
+            align-items: center;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .logo-image {
+            height: 40px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        .notification-icon {
+            width: 24px;
+            height: 24px;
+            color: #ffd700;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .main-content {
+            padding: 70px 20px 80px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .tab-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 12px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tab-button.active {
+            background: #333;
+            color: white;
+            border-color: #333;
+        }
+
+        .scrap-item {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .scrap-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .scrap-item.news-item {
+            border-left: 4px solid #2196F3;
+        }
+
+        .scrap-item.term-item {
+            border-left: 4px solid #4CAF50;
+        }
+
+        .scrap-item.quiz-item {
+            border-left: 4px solid #FF9800;
+        }
+
+        .scrap-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .scrap-content {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.4;
+            margin-bottom: 10px;
+        }
+
+        .scrap-date {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 30px;
+            height: 30px;
+            background: #ff4444;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .scrap-item:hover .delete-btn {
+            opacity: 1;
+        }
+
+        .delete-btn i {
+            color: white;
+            font-size: 14px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: #ddd;
+        }
+
+        .empty-state p {
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .empty-state small {
+            font-size: 14px;
+            color: #bbb;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: white;
+            background-image: url('images/배경.png');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+
+        .bottom-nav::before {
+            content: '';
+            position: absolute;
+            top: -32px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 65px;
+            height: 65px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+            z-index: -1;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 8px;
+        }
+
+        .nav-item.active {
+            color: #7cb9e8;
+        }
+
+        .nav-icon {
+            font-size: 18px;
+            margin-bottom: 4px;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-icon img {
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
+        }
+
+        .grade-button {
+            width: 55px;
+            height: 55px;
+            background: #fafaf8;
+            border-radius: 50%;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            top: -35px;
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .grade-button:hover {
+            transform: scale(1.1);
+        }
+
+        .grade-button img {
+            width: 45px;
+            height: 45px;
+            object-fit: contain;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+
+        .modal.show {
+            display: block;
+        }
+
+        .modal-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 20px 20px 0 0;
+            padding: 24px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #666;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 70px 15px 80px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="back-arrow" onclick="goBack()">
+            <i class="fas fa-arrow-left"></i>
+        </div>
+        <div class="fine-u-logo">
+            <img src="images/레이어 1.png" alt="FINE U 로고" class="logo-image">
+        </div>
+        <i class="fas fa-bell notification-icon" onclick="showNotifications()"></i>
+    </div>
+
+    <div class="main-content">
+        <div class="page-title">스크랩</div>
+
+        <div class="tab-container">
+            <button class="tab-button active" onclick="filterScraps('all')">전체</button>
+            <button class="tab-button" onclick="filterScraps('news')">뉴스</button>
+            <button class="tab-button" onclick="filterScraps('terms')">용어</button>
+            <button class="tab-button" onclick="filterScraps('quiz')">퀴즈</button>
+        </div>
+
+        <div id="scrapContainer">
+            <!-- 스크랩 아이템들이 여기에 동적으로 추가됩니다 -->
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <div class="nav-item" onclick="goToPage('a1.html')">
+            <div class="nav-icon">
+                <img src="images/집.png" alt="홈">
+            </div>
+        </div>
+        <div class="nav-item active" onclick="goToPage('a2.html')">
+            <div class="nav-icon">
+                <img src="images/문서.png" alt="문서">
+            </div>
+        </div>
+        <div class="grade-button" id="gradeButton" onclick="goToPage('a3.html')">
+            <img id="gradeButtonImage" src="images/YELLOW ㅇ.png" alt="YELLOW">
+        </div>
+        <div class="nav-item" onclick="goToPage('a4.html')">
+            <div class="nav-icon">
+                <img src="images/채팅.png" alt="채팅">
+            </div>
+        </div>
+        <div class="nav-item" onclick="goToPage('a5.html')">
+            <div class="nav-icon">
+                <img src="images/더보기.png" alt="더보기">
+            </div>
+        </div>
+    </div>
+
+    <div id="scrapModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="modalTitle">스크랩 상세</div>
+                <button class="close-btn" onclick="closeModal()">×</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- 상세 내용이 여기에 표시됩니다 -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let userAssets = {};
+        let scrappedItems = [];
+        let currentFilter = 'all';
+
+        const levelSystem = {
+            YELLOW: { name: 'YELLOW', exp: 0, max: 5000, navImage: 'YELLOW ㅇ.png' },
+            GREEN: { name: 'GREEN', exp: 5000, max: 15000, navImage: 'GREEN ㅇ.png' },
+            BLUE: { name: 'BLUE', exp: 15000, max: 30000, navImage: 'BLUE ㅇ.png' },
+            RED: { name: 'RED', exp: 30000, max: 50000, navImage: 'RED ㅇ.png' },
+            BLACK: { name: 'BLACK', exp: 50000, max: 999999, navImage: 'BLACK ㅇ.png' }
+        };
+
+        async function loadUserDataFromFirebase() {
+            try {
+                if (!window.firebaseDB) {
+                    setTimeout(loadUserDataFromFirebase, 1000);
+                    return;
+                }
+
+                const currentUser = JSON.parse(localStorage.getItem('fineu_current_user') || '{}');
+                const userId = currentUser.id || currentUser.username || 'Test';
+                
+                const userRef = window.firebaseRef(window.firebaseDB, `users/${userId}`);
+                const snapshot = await window.firebaseGet(userRef);
+
+                if (snapshot.exists()) {
+                    userAssets = snapshot.val();
+                    scrappedItems = userAssets.scrappedItems || [];
+                } else {
+                    userAssets = JSON.parse(localStorage.getItem('fineu_user_assets') || '{}');
+                    scrappedItems = userAssets.scrappedItems || [];
+                }
+                
+                updateGradeButton(userAssets.level || 'yellow');
+                displayScraps();
+
+            } catch (error) {
+                console.error('데이터 로드 오류:', error);
+                userAssets = JSON.parse(localStorage.getItem('fineu_user_assets') || '{}');
+                scrappedItems = userAssets.scrappedItems || [];
+                displayScraps();
+            }
+        }
+
+        function updateGradeButton(grade) {
+            const upperGrade = grade.toUpperCase();
+            const levelData = levelSystem[upperGrade];
+            
+            if (levelData) {
+                const gradeButtonImage = document.getElementById('gradeButtonImage');
+                if (gradeButtonImage && levelData.navImage) {
+                    gradeButtonImage.src = `images/${levelData.navImage}`;
+                    gradeButtonImage.alt = levelData.name;
+                }
+            }
+        }
+
+        function filterScraps(type) {
+            currentFilter = type;
+            
+            // 탭 버튼 활성화 상태 변경
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            displayScraps();
+        }
+
+        function displayScraps() {
+            const container = document.getElementById('scrapContainer');
+            
+            let filteredItems = scrappedItems;
+            if (currentFilter !== 'all') {
+                filteredItems = scrappedItems.filter(item => item.type === currentFilter);
+            }
+            
+            if (filteredItems.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-bookmark"></i>
+                        <p>스크랩한 항목이 없습니다</p>
+                        <small>학습 중 중요한 내용을 스크랩해보세요</small>
+                    </div>
+                `;
+                return;
+            }
+            
+            // 날짜순으로 정렬 (최신순)
+            filteredItems.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            let html = '';
+            filteredItems.forEach((item, index) => {
+                const itemClass = item.type === 'news' ? 'news-item' : 
+                                 item.type === 'terms' ? 'term-item' : 'quiz-item';
+                
+                html += `
+                    <div class="scrap-item ${itemClass}" onclick="showScrapDetail(${index})">
+                        <div class="delete-btn" onclick="deleteScrap(${index}, event)">
+                            <i class="fas fa-trash"></i>
+                        </div>
+                        <div class="scrap-title">${item.title}</div>
+                        <div class="scrap-content">${item.content.substring(0, 100)}...</div>
+                        <div class="scrap-date">${formatDate(item.date)}</div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function showScrapDetail(index) {
+            const item = scrappedItems[index];
+            
+            document.getElementById('modalTitle').textContent = item.title;
+            document.getElementById('modalBody').innerHTML = `
+                <div style="margin-bottom: 15px;">
+                    <strong>유형:</strong> ${getTypeLabel(item.type)}
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <strong>날짜:</strong> ${formatDate(item.date)}
+                </div>
+                <div style="line-height: 1.6;">
+                    ${item.content}
+                </div>
+                ${item.explanation ? `
+                    <div style="margin-top: 20px; padding: 15px; background: #f0f8ff; border-radius: 8px;">
+                        <strong>💡 설명:</strong><br>
+                        ${item.explanation}
+                    </div>
+                ` : ''}
+            `;
+            
+            document.getElementById('scrapModal').classList.add('show');
+        }
+
+        async function deleteScrap(index, event) {
+            event.stopPropagation();
+            
+            if (confirm('이 스크랩을 삭제하시겠습니까?')) {
+                scrappedItems.splice(index, 1);
+                userAssets.scrappedItems = scrappedItems;
+                
+                try {
+                    const currentUser = JSON.parse(localStorage.getItem('fineu_current_user') || '{}');
+                    const userId = currentUser.id || currentUser.username || 'Test';
+                    
+                    if (window.firebaseDB) {
+                        const userRef = window.firebaseRef(window.firebaseDB, `users/${userId}`);
+                        await window.firebaseSet(userRef, userAssets);
+                    }
+                    
+                    localStorage.setItem('fineu_user_assets', JSON.stringify(userAssets));
+                    displayScraps();
+                    
+                } catch (error) {
+                    console.error('스크랩 삭제 실패:', error);
+                }
+            }
+        }
+
+        function getTypeLabel(type) {
+            switch(type) {
+                case 'news': return '📰 뉴스';
+                case 'terms': return '📚 용어';
+                case 'quiz': return '❓ 퀴즈';
+                default: return '📌 기타';
+            }
+        }
+
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+            const hours = date.getHours();
+            const minutes = date.getMinutes();
+            
+            return `${month}월 ${day}일 ${hours}:${minutes.toString().padStart(2, '0')}`;
+        }
+
+        function closeModal() {
+            document.getElementById('scrapModal').classList.remove('show');
+        }
+
+        function goBack() {
+            window.location.href = 'a2.html';
+        }
+
+        function goToPage(page) {
+            window.location.href = page;
+        }
+
+        function showNotifications() {
+            alert('📚 새로운 학습 콘텐츠가 업데이트되었습니다!');
+        }
+
+        function checkLoginStatus() {
+            const savedUser = localStorage.getItem('fineu_current_user');
+            if (!savedUser) {
+                window.location.href = 'index.html';
+                return false;
+            }
+            return true;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!checkLoginStatus()) return;
+            
+            setTimeout(() => {
+                loadUserDataFromFirebase();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
