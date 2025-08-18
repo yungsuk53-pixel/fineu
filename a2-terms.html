@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FINE U - 금융 용어</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .level-badge-nav {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            font-size: 12px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 10;
+        }
+        
+        .level-black { background: linear-gradient(135deg, #374151, #111827); }
+
+        .bottom-navigation {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid #e5e7eb;
+            padding: 12px 0 8px 0;
+            z-index: 50;
+        }
+
+        .nav-container {
+            max-width: 28rem;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+            align-items: end;
+            position: relative;
+            height: 60px;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 4px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item i {
+            font-size: 20px;
+        }
+
+        .nav-item span {
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .nav-item.active i {
+            color: #3B82F6;
+        }
+
+        .nav-item.active span {
+            color: #3B82F6;
+        }
+
+        .nav-center {
+            grid-column: 3;
+            display: flex;
+            justify-content: center;
+            align-items: end;
+            height: 100%;
+            position: relative;
+        }
+
+        .term-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .term-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .term-card.completed {
+            opacity: 0.7;
+            background: #F9FAFB;
+        }
+
+        .term-card.today {
+            border-left: 4px solid #F59E0B;
+            background: linear-gradient(to right, #FEF3C7, #FFFFFF);
+        }
+
+        .star-icon {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: #FCD34D;
+            font-size: 24px;
+        }
+
+        .star-icon.completed {
+            color: #D1D5DB;
+        }
+
+        .news-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            background: #DBEAFE;
+            color: #2563EB;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-top: 8px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            max-width: 400px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        .complete-btn {
+            background: linear-gradient(135deg, #3B82F6, #2563EB);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: bold;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .complete-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+
+        .complete-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="min-h-screen bg-gray-100">
+    <!-- 상단 헤더 -->
+    <div class="bg-white shadow-sm p-4">
+        <div class="flex items-center justify-between max-w-md mx-auto">
+            <button onclick="location.href='a2.html'" class="text-gray-600">
+                <i class="fas fa-arrow-left text-xl"></i>
+            </button>
+            <div class="text-center">
+                <h1 class="text-xl font-bold">금융 용어</h1>
+                <p class="text-xs text-gray-500" id="updateInfo">로딩 중...</p>
+            </div>
+            <button onclick="location.href='index.html'" class="text-gray-600">
+                <i class="fas fa-calendar-alt text-xl"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- 용어 콘텐츠 -->
+    <div class="max-w-md mx-auto px-4 py-6 mb-24" id="termsContainer">
+        <div class="text-center py-8">
+            <div class="loading-spinner mx-auto mb-2"></div>
+            <p class="text-gray-500">오늘의 용어를 불러오는 중...</p>
+        </div>
+    </div>
+
+    <!-- 하단 네비게이션 -->
+    <div class="bottom-navigation">
+        <div class="nav-container">
+            <button onclick="location.href='index.html'" class="nav-item">
+                <i class="fas fa-home text-gray-400"></i>
+                <span class="text-gray-400">홈</span>
+            </button>
+            <button onclick="location.href='a2.html'" class="nav-item active">
+                <i class="fas fa-newspaper"></i>
+                <span>뉴스</span>
+            </button>
+            <div class="nav-center">
+                <div class="level-badge-nav level-black">
+                    BLACK
+                </div>
+            </div>
+            <button onclick="location.href='a4.html'" class="nav-item">
+                <i class="fas fa-gamepad text-gray-400"></i>
+                <span class="text-gray-400">게임</span>
+            </button>
+            <button onclick="location.href='a3.html'" class="nav-item">
+                <i class="fas fa-ellipsis-h text-gray-400"></i>
+                <span class="text-gray-400">더보기</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- 용어 상세 모달 -->
+<div id="termModal" class="modal">
+    <div class="modal-content">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-bold" id="modalTitle">금융 용어</h3>
+            <button onclick="closeTermModal()" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        
+        <div class="mb-6">
+            <h4 class="text-2xl font-bold text-gray-800 mb-2" id="termName">용어</h4>
+            <p class="text-gray-600 mb-4" id="termDefinition">정의</p>
+            
+            <div class="bg-blue-50 rounded-lg p-4 mb-4">
+                <h5 class="font-semibold mb-2">💡 예시</h5>
+                <p class="text-sm text-gray-700" id="termExample">예시 설명</p>
+            </div>
+            
+            <div class="bg-gray-50 rounded-lg p-4">
+                <h5 class="font-semibold mb-2">📰 관련 뉴스</h5>
+                <p class="text-sm text-gray-700" id="relatedNews">관련 뉴스</p>
+            </div>
+        </div>
+
+        <button onclick="completeTerm()" class="complete-btn" id="completeBtn">
+            <i class="fas fa-check mr-2"></i>
+            학습 완료 (+50 EXP)
+        </button>
+    </div>
+</div>
+
+<script>
+let termsData = [];
+let currentTermId = null;
+
+// 오늘 날짜 가져오기
+function getTodayDate() {
+    return new Date().toLocaleDateString('ko-KR');
+}
+
+// 오늘의 용어 데이터 로드
+async function loadTermsData() {
+    const today = getTodayDate();
+    const savedData = localStorage.getItem('todayFinancialData');
+    
+    if (!savedData) {
+        // 메인 페이지로 리다이렉트 (데이터 생성 필요)
+        alert('오늘의 데이터를 먼저 생성해야 합니다.');
+        location.href = 'a2.html';
+        return;
+    }
+    
+    const data = JSON.parse(savedData);
+    termsData = data.terms || [];
+    
+    // 완료 상태 로드
+    const completedTerms = JSON.parse(localStorage.getItem('completedTerms') || '{}');
+    const todayCompleted = completedTerms[today] || [];
+    
+    termsData.forEach(term => {
+        term.completed = todayCompleted.includes(term.id);
+    });
+    
+    displayTerms();
+    updateInfo(data.generatedAt);
+}
+
+// 용어 표시
+function displayTerms() {
+    const container = document.getElementById('termsContainer');
+    let html = '';
+    
+    // 오늘의 금융 용어 (첫 번째)
+    const todayTerm = termsData.find(t => t.isToday) || termsData[0];
+    if (todayTerm) {
+        html += `
+            <div class="term-card today ${todayTerm.completed ? 'completed' : ''}" 
+                 onclick="showTermDetail('${todayTerm.id}')">
+                <i class="fas fa-star star-icon ${todayTerm.completed ? 'completed' : ''}"></i>
+                <h3 class="text-lg font-bold mb-2">오늘의 금융 용어</h3>
+                <p class="text-gray-700 font-semibold">${todayTerm.term}</p>
+                <p class="text-sm text-gray-600 mt-2">오늘 꼭 학습해야 할 핵심 용어</p>
+            </div>
+        `;
+    }
+    
+    // 금융 용어 복습하기
+    html += `
+        <div class="term-card" onclick="showReviewTerms()">
+            <h3 class="text-lg font-bold mb-2">금융 용어 복습하기</h3>
+            <p class="text-gray-600 text-sm">오늘 뉴스에서 발견된 ${termsData.length}개 용어</p>
+        </div>
+    `;
+    
+    // 추가 용어들
+    termsData.slice(1).forEach(term => {
+        if (!term.isToday) {
+            html += `
+                <div class="term-card ${term.completed ? 'completed' : ''}" 
+                     onclick="showTermDetail('${term.id}')">
+                    ${!term.completed ? '<i class="fas fa-star star-icon"></i>' : '<i class="fas fa-star star-icon completed"></i>'}
+                    <h4 class="font-bold mb-1">${term.term}</h4>
+                    <p class="text-sm text-gray-600">${term.definition.substring(0, 50)}...</p>
+                    <span class="news-badge">뉴스 연관</span>
+                </div>
+            `;
+        }
+    });
+    
+    container.innerHTML = html;
+}
+
+// 업데이트 정보 표시
+function updateInfo(generatedAt) {
+    const updateTime = new Date(generatedAt);
+    document.getElementById('updateInfo').textContent = 
+        `${updateTime.toLocaleDateString('ko-KR')} ${updateTime.toLocaleTimeString('ko-KR', {hour: '2-digit', minute: '2-digit'})} 생성`;
+}
+
+// 용어 상세 보기
+function showTermDetail(termId) {
+    const term = termsData.find(t => t.id === termId);
+    if (!term) return;
+    
+    currentTermId = termId;
+    
+    document.getElementById('modalTitle').textContent = term.isToday ? '오늘의 금융 용어' : '금융 용어';
+    document.getElementById('termName').textContent = term.term;
+    document.getElementById('termDefinition').textContent = term.definition;
+    document.getElementById('termExample').textContent = term.example;
+    document.getElementById('relatedNews').textContent = term.relatedNews || '오늘의 경제 뉴스와 관련된 용어입니다.';
+    
+    // 완료 버튼 상태
+    if (term.completed) {
+        document.getElementById('completeBtn').textContent = '이미 완료함';
+        document.getElementById('completeBtn').disabled = true;
+    } else {
+        const exp = term.isToday ? 100 : 50;
+        document.getElementById('completeBtn').textContent = `학습 완료 (+${exp} EXP)`;
+        document.getElementById('completeBtn').disabled = false;
+    }
+    
+    document.getElementById('termModal').classList.add('show');
+}
+
+// 복습 용어 보기
+function showReviewTerms() {
+    let reviewList = '📚 오늘의 금융 용어 목록\n\n';
+    
+    termsData.forEach((term, index) => {
+        const status = term.completed ? '✅' : '⭐';
+        reviewList += `${status} ${index + 1}. ${term.term}\n`;
+    });
+    
+    reviewList += '\n학습하지 않은 용어를 클릭하여 학습하세요!';
+    alert(reviewList);
+}
+
+// 모달 닫기
+function closeTermModal() {
+    document.getElementById('termModal').classList.remove('show');
+    currentTermId = null;
+}
+
+// 학습 완료
+function completeTerm() {
+    if (!currentTermId) return;
+    
+    const term = termsData.find(t => t.id === currentTermId);
+    if (!term || term.completed) return;
+    
+    const today = getTodayDate();
+    
+    // 완료 상태 저장
+    const completedTerms = JSON.parse(localStorage.getItem('completedTerms') || '{}');
+    if (!completedTerms[today]) {
+        completedTerms[today] = [];
+    }
+    completedTerms[today].push(currentTermId);
+    localStorage.setItem('completedTerms', JSON.stringify(completedTerms));
+    
+    // 경험치 추가
+    const exp = term.isToday ? 100 : 50;
+    let userExp = parseInt(localStorage.getItem('userExp') || 0);
+    userExp += exp;
+    localStorage.setItem('userExp', userExp);
+    
+    // UI 업데이트
+    term.completed = true;
+    displayTerms();
+    
+    alert(`${term.term} 학습을 완료했습니다! (+${exp} EXP)`);
+    closeTermModal();
+}
+
+// 페이지 로드시 실행
+document.addEventListener('DOMContentLoaded', function() {
+    loadTermsData();
+});
+
+// 모달 외부 클릭시 닫기
+document.addEventListener('click', function(e) {
+    const modal = document.getElementById('termModal');
+    if (e.target === modal) {
+        closeTermModal();
+    }
+});
+</script>
+
+</body>
+</html>
