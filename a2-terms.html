@@ -462,7 +462,7 @@
 
 <script>
 // 전역 변수 선언
-let currentTermData = null;  // 중복 선언 제거
+let currentTermData = null;
 let userAssets = {};
 let todayTerms = [];
 let completedTerms = [];
@@ -688,8 +688,7 @@ function showReviewTerms() {
     } else {
         sortedDates.forEach(date => {
             const dateObj = new Date(date);
-            const displayDate = `${dateObj.getMonth() + 1}월 ${dateObj.getDate()}
-               const displayDate = `${dateObj.getMonth() + 1}월 ${dateObj.getDate()}일`;
+            const displayDate = `${dateObj.getMonth() + 1}월 ${dateObj.getDate()}일`;
             
             html += `<div class="review-date">${displayDate}</div>`;
             
