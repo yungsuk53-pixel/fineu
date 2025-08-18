@@ -381,6 +381,259 @@
             background: #baffc9;
         }
 
+        /* 알림 페이지 스타일 */
+        .notification-page {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #f5f5f5;
+            z-index: 1000;
+            display: none;
+            flex-direction: column;
+        }
+
+        .notification-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: white;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            z-index: 101;
+        }
+
+        .back-arrow {
+            font-size: 24px;
+            cursor: pointer;
+            margin-right: 20px;
+        }
+
+        .notification-content {
+            margin-top: 60px;
+            padding: 20px;
+            overflow-y: auto;
+            height: calc(100vh - 60px);
+        }
+
+        .notification-item {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: flex-start;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .notification-dot {
+            width: 8px;
+            height: 8px;
+            background: #ff6b6b;
+            border-radius: 50%;
+            margin-right: 12px;
+            margin-top: 6px;
+            flex-shrink: 0;
+        }
+
+        .notification-text {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-weight: bold;
+            margin-bottom: 4px;
+            color: #333;
+        }
+
+        .notification-desc {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .trash-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        /* 프로필 설정 페이지 스타일 */
+        .profile-settings-page {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #f5f5f5;
+            z-index: 1000;
+            display: none;
+            flex-direction: column;
+        }
+
+        .profile-settings-content {
+            margin-top: 60px;
+            padding: 20px;
+            overflow-y: auto;
+            height: calc(100vh - 60px);
+        }
+
+        .profile-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .profile-image-large {
+            width: 80px;
+            height: 80px;
+            background: #e3f2fd;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            position: relative;
+            background-image: url('images/PROFILE.png');
+            background-size: cover;
+            background-position: center;
+        }
+
+        .camera-icon {
+            position: absolute;
+            bottom: -5px;
+            right: -5px;
+            background: #333;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .profile-info-section {
+            flex: 1;
+        }
+
+        .profile-badge {
+            display: inline-block;
+            background: #333;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .profile-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .profile-id {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .edit-icon {
+            color: #666;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .settings-section {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+        }
+
+        .settings-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .setting-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+
+        .setting-label {
+            font-size: 14px;
+            color: #333;
+        }
+
+        .setting-toggle {
+            background: #4CAF50;
+            width: 60px;
+            height: 30px;
+            border-radius: 15px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .setting-toggle.off {
+            background: #ff6b6b;
+        }
+
+        .toggle-circle {
+            position: absolute;
+            top: 3px;
+            right: 3px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+
+        .setting-toggle.off .toggle-circle {
+            transform: translateX(-30px);
+        }
+
+        .toggle-text {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 10px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .toggle-text.on {
+            left: 8px;
+        }
+
+        .toggle-text.off {
+            right: 8px;
+        }
+
         /* 하단 네비게이션 */
 .bottom-nav {
     position: fixed;
@@ -521,7 +774,7 @@
         <div class="fine-u-logo">
             <img src="images/레이어 1.png" alt="FINE U 로고" class="logo-image">
         </div>
-        <i class="fas fa-bell notification-icon" onclick="showNotifications()"></i>
+        <i class="fas fa-bell notification-icon" onclick="showNotificationPage()"></i>
     </div>
 
     <!-- 메인 콘텐츠 -->
@@ -543,7 +796,7 @@
                         <p>FINE U와 함께한지 <span id="daysWithFineU" class="days-number">30</span>일</p>
                     </div>
                 </div>
-                <i class="fas fa-cog settings-icon" onclick="showSettings()"></i>
+                <i class="fas fa-cog settings-icon" onclick="showProfileSettings()"></i>
             </div>
         </div>
 
@@ -605,6 +858,114 @@
         </div>
     </div>
 
+    <!-- 알림 페이지 -->
+    <div class="notification-page" id="notificationPage">
+        <div class="notification-header">
+            <span class="back-arrow" onclick="closeNotificationPage()">←</span>
+            <div class="fine-u-logo">
+                <img src="images/레이어 1.png" alt="FINE U 로고" class="logo-image">
+            </div>
+            <div style="width: 24px;"></div>
+        </div>
+        <div class="notification-content">
+            <div class="notification-item" onclick="viewNotification(1)">
+                <div class="notification-dot"></div>
+                <div class="notification-text">
+                    <div class="notification-title">FINE U 1주년 맞이 이벤트</div>
+                    <div class="notification-desc">특별한 혜택을 확인하세요!</div>
+                </div>
+                <i class="fas fa-trash trash-icon" onclick="deleteNotification(event, 1)"></i>
+            </div>
+            <div class="notification-item" onclick="viewNotification(2)">
+                <div class="notification-dot"></div>
+                <div class="notification-text">
+                    <div class="notification-title">이찬진 금융감독원장 취임</div>
+                    <div class="notification-desc">새로운 금융 정책 방향</div>
+                </div>
+                <i class="fas fa-trash trash-icon" onclick="deleteNotification(event, 2)"></i>
+            </div>
+            <div class="notification-item" onclick="viewNotification(3)">
+                <div class="notification-dot"></div>
+                <div class="notification-text">
+                    <div class="notification-title">친구 초대 시 3,000 포인트 지급</div>
+                    <div class="notification-desc">친구와 함께 투자하세요</div>
+                </div>
+                <i class="fas fa-trash trash-icon" onclick="deleteNotification(event, 3)"></i>
+            </div>
+            <div class="notification-item" onclick="viewNotification(4)">
+                <div class="notification-dot"></div>
+                <div class="notification-text">
+                    <div class="notification-title">신규 회원 1,000 포인트 지급</div>
+                    <div class="notification-desc">지금 바로 확인하세요</div>
+                </div>
+                <i class="fas fa-trash trash-icon" onclick="deleteNotification(event, 4)"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- 프로필 설정 페이지 -->
+    <div class="profile-settings-page" id="profileSettingsPage">
+        <div class="notification-header">
+            <span class="back-arrow" onclick="closeProfileSettings()">←</span>
+            <div class="fine-u-logo">
+                <img src="images/레이어 1.png" alt="FINE U 로고" class="logo-image">
+            </div>
+            <i class="fas fa-bell notification-icon" onclick="showNotificationPage()"></i>
+        </div>
+        <div class="profile-settings-content">
+            <div style="font-size: 18px; font-weight: bold; margin-bottom: 15px;">PROFILE</div>
+            <div class="profile-card">
+                <div class="profile-image-large">
+                    <div class="camera-icon" onclick="changeProfileImage()">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                </div>
+                <div class="profile-info-section">
+                    <div class="profile-badge" id="profileBadge">BLACK</div>
+                    <div class="profile-name" id="profileName">뚝부리</div>
+                    <div class="profile-id">FINE U와 함께한 지 <span id="profileDays">일</span></div>
+                </div>
+                <i class="fas fa-edit edit-icon" onclick="editProfile()"></i>
+            </div>
+
+            <div style="font-size: 18px; font-weight: bold; margin: 20px 0 15px 0;">SETTING</div>
+            <div class="settings-section">
+                <div class="setting-item">
+                    <span class="setting-label">알림</span>
+                    <div class="setting-toggle" id="alarmToggle" onclick="toggleSetting('alarm')">
+                        <span class="toggle-text on">켜짐</span>
+                        <span class="toggle-text off" style="display: none;">꺼짐</span>
+                        <div class="toggle-circle"></div>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <span class="setting-label">암호</span>
+                    <div class="setting-toggle off" id="passwordToggle" onclick="toggleSetting('password')">
+                        <span class="toggle-text on" style="display: none;">켜짐</span>
+                        <span class="toggle-text off">꺼짐</span>
+                        <div class="toggle-circle"></div>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <span class="setting-label">글자 크기</span>
+                    <div class="setting-toggle" id="fontToggle" onclick="toggleSetting('font')">
+                        <span class="toggle-text on">보통</span>
+                        <span class="toggle-text off" style="display: none;">크게</span>
+                        <div class="toggle-circle"></div>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <span class="setting-label">언어</span>
+                    <div class="setting-toggle" id="languageToggle" onclick="toggleSetting('language')">
+                        <span class="toggle-text on">한국어</span>
+                        <span class="toggle-text off" style="display: none;">English</span>
+                        <div class="toggle-circle"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- 하단 네비게이션 -->
     <div class="bottom-nav">
         <div class="nav-item active" onclick="goToPage('a1.html')">
@@ -638,6 +999,12 @@
         let portfolioChart = null;
         let userAssets = {};
         let realTimeData = {};
+        let userSettings = {
+            alarm: true,
+            password: false,
+            font: 'normal',
+            language: 'ko'
+        };
 
         // 등급 시스템 설정
         const levelSystem = {
@@ -647,6 +1014,128 @@
             RED: { name: 'RED', exp: 30000, max: 50000, image: 'RED ㅁ.png', nav: 'RED ㅇ', navImage: 'RED ㅇ.png' },
             BLACK: { name: 'BLACK', exp: 50000, max: 999999, image: 'BLACK ㅁ.png', nav: 'BLACK ㅇ', navImage: 'BLACK ㅇ.png' }
         };
+
+        // 알림 관련 함수
+        function showNotificationPage() {
+            document.getElementById('notificationPage').style.display = 'flex';
+        }
+
+        function closeNotificationPage() {
+            document.getElementById('notificationPage').style.display = 'none';
+        }
+
+        function viewNotification(id) {
+            const notifications = {
+                1: 'FINE U 1주년을 맞아 특별한 이벤트를 준비했습니다!\n\n• 신규 가입 고객 5,000포인트 지급\n• 친구 추천시 추가 3,000포인트\n• 첫 투자시 수수료 면제\n\n지금 바로 참여하세요!',
+                2: '이찬진 금융감독원장이 새롭게 취임했습니다.\n\n새로운 금융정책 방향:\n• 디지털 금융 혁신 가속화\n• 소비자 보호 강화\n• 금융 접근성 확대\n\n더 나은 금융환경을 만들어가겠습니다.',
+                3: '친구를 FINE U에 초대하면 3,000포인트를 드립니다!\n\n초대 방법:\n1. 더보기 메뉴에서 친구초대 선택\n2. 초대 링크 공유\n3. 친구 가입 완료시 포인트 지급\n\n많은 친구들과 함께 투자하세요!',
+                4: '신규 회원 가입 축하드립니다!\n\n1,000포인트가 지급되었습니다.\n포인트는 다양한 혜택으로 사용 가능합니다.\n\nFINE U와 함께 성공적인 투자 시작하세요!'
+            };
+            alert(notifications[id] || '알림 내용을 불러올 수 없습니다.');
+        }
+
+        function deleteNotification(event, id) {
+            event.stopPropagation();
+            if (confirm('이 알림을 삭제하시겠습니까?')) {
+                event.target.closest('.notification-item').remove();
+            }
+        }
+
+        // 프로필 설정 관련 함수
+        function showProfileSettings() {
+            document.getElementById('profileSettingsPage').style.display = 'flex';
+            
+            // 현재 사용자 정보 표시
+            const userLevel = (userAssets.level || 'yellow').toUpperCase();
+            document.getElementById('profileBadge').textContent = userLevel;
+            document.getElementById('profileName').textContent = userAssets.name || userAssets.id || 'userId';
+            document.getElementById('profileDays').textContent = calculateDaysSinceJoin(userAssets.joinDate) + '일';
+        }
+
+        function closeProfileSettings() {
+            document.getElementById('profileSettingsPage').style.display = 'none';
+        }
+
+        function changeProfileImage() {
+            alert('프로필 이미지 변경 기능은 준비 중입니다.');
+        }
+
+        function editProfile() {
+            const newName = prompt('새로운 닉네임을 입력하세요:', userAssets.name || '');
+            if (newName && newName.trim()) {
+                userAssets.name = newName.trim();
+                document.getElementById('profileName').textContent = newName.trim();
+                document.getElementById('userName').textContent = newName.trim();
+                saveUserDataToFirebase();
+                alert('프로필이 수정되었습니다.');
+            }
+        }
+
+        function toggleSetting(setting) {
+            const toggle = document.getElementById(setting + 'Toggle');
+            const isOn = !toggle.classList.contains('off');
+            
+            if (isOn) {
+                toggle.classList.add('off');
+                toggle.querySelector('.toggle-text.on').style.display = 'none';
+                toggle.querySelector('.toggle-text.off').style.display = 'block';
+            } else {
+                toggle.classList.remove('off');
+                toggle.querySelector('.toggle-text.on').style.display = 'block';
+                toggle.querySelector('.toggle-text.off').style.display = 'none';
+            }
+            
+            // 설정 저장
+            userSettings[setting] = !isOn;
+            
+            // 설정별 동작
+            switch(setting) {
+                case 'alarm':
+                    alert(userSettings.alarm ? '알림이 켜졌습니다.' : '알림이 꺼졌습니다.');
+                    break;
+                case 'password':
+                    if (userSettings.password) {
+                        const password = prompt('사용할 비밀번호를 입력하세요:');
+                        if (password) {
+                            localStorage.setItem('fineu_password', password);
+                            alert('비밀번호가 설정되었습니다.');
+                        } else {
+                            userSettings.password = false;
+                            toggle.classList.add('off');
+                            toggle.querySelector('.toggle-text.on').style.display = 'none';
+                            toggle.querySelector('.toggle-text.off').style.display = 'block';
+                        }
+                    } else {
+                        localStorage.removeItem('fineu_password');
+                        alert('비밀번호가 해제되었습니다.');
+                    }
+                    break;
+                case 'font':
+                    if (!isOn) {
+                        document.body.style.fontSize = '18px';
+                        toggle.querySelector('.toggle-text.on').textContent = '크게';
+                    } else {
+                        document.body.style.fontSize = '16px';
+                        toggle.querySelector('.toggle-text.on').textContent = '보통';
+                    }
+                    break;
+                case 'language':
+                    alert(userSettings.language ? '언어가 한국어로 설정되었습니다.' : 'Language set to English (준비 중)');
+                    if (!userSettings.language) {
+                        userSettings.language = true;
+                        toggle.classList.remove('off');
+                        toggle.querySelector('.toggle-text.on').style.display = 'block';
+                        toggle.querySelector('.toggle-text.off').style.display = 'none';
+                    }
+                    break;
+            }
+            
+            // Firebase에 설정 저장
+            if (userAssets) {
+                userAssets.settings = userSettings;
+                saveUserDataToFirebase();
+            }
+        }
 
         // 사용자 등급 계산
         function calculateUserLevel(exp) {
@@ -703,6 +1192,12 @@
             isSpecialAccount: false,
             specialType: '',
             portfolio: {},
+            settings: {
+                alarm: true,
+                password: false,
+                font: 'normal',
+                language: 'ko'
+            },
             lastUpdated: new Date().toISOString(),
             saveTimestamp: Date.now(),
             lastSavedFrom: 'a1'
@@ -755,9 +1250,16 @@
                         loginMethod: firebaseData.loginMethod || 'realtime_db',
                         isSpecialAccount: firebaseData.isSpecialAccount || false,
                         specialType: firebaseData.specialType || '',
+                        settings: firebaseData.settings || userSettings,
                         lastSavedFrom: firebaseData.lastSavedFrom || 'a1',
                         saveTimestamp: firebaseData.saveTimestamp || Date.now()
                     };
+                    
+                    // 설정 로드
+                    if (firebaseData.settings) {
+                        userSettings = firebaseData.settings;
+                        applySettings();
+                    }
                     
                     console.log('✅ userAssets 설정 완료:', userAssets);
                     
@@ -783,6 +1285,13 @@
             }
         }
 
+        // 설정 적용
+        function applySettings() {
+            if (userSettings.font === 'large') {
+                document.body.style.fontSize = '18px';
+            }
+        }
+
         // 새 사용자 데이터 생성
         async function createNewUserData(userId) {
             console.log('🆕 새 사용자 데이터 생성:', userId);
@@ -801,6 +1310,7 @@
                 loginMethod: 'realtime_db',
                 isSpecialAccount: false,
                 specialType: '',
+                settings: userSettings,
                 lastSavedFrom: 'a1',
                 saveTimestamp: Date.now()
             };
@@ -835,6 +1345,7 @@
                 userAssets.lastUpdated = new Date().toISOString();
                 userAssets.saveTimestamp = Date.now();
                 userAssets.lastSavedFrom = 'a1';
+                userAssets.settings = userSettings;
                 
                 // Firebase에 저장
                 const userRef = window.firebaseRef(window.firebaseDB, `users/${userId}`);
