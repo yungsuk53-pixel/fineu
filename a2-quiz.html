@@ -112,6 +112,12 @@
             margin-bottom: 8px;
         }
         
+        .quiz-info {
+            font-size: 12px;
+            color: #2c5aa0;
+            margin-top: 8px;
+        }
+        
         .star-icon {
             position: absolute;
             top: 20px;
@@ -250,6 +256,13 @@
             margin-bottom: 8px;
         }
         
+        .question-type {
+            font-size: 12px;
+            color: #2c5aa0;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
         .question-text {
             font-size: 18px;
             font-weight: 600;
@@ -358,6 +371,7 @@
         <i class="fas fa-star star-icon" id="beginnerStar"></i>
         <div class="quiz-title">초급</div>
         <div class="quiz-desc">기본적인 금융 개념을 테스트합니다</div>
+        <div class="quiz-info">뉴스 2문제 + 트렌드 2문제 + 재미있는 문제 1개</div>
     </div>
     
     <div id="intermediateQuiz" class="quiz-card locked">
@@ -403,6 +417,7 @@
     <div class="modal-content">
         <div class="question-box">
             <div class="question-number">문제 <span id="currentQ">1</span>/5</div>
+            <div class="question-type" id="questionType">뉴스 관련 문제</div>
             <div class="question-text" id="questionText">문제 내용</div>
         </div>
         
@@ -438,6 +453,15 @@ let selectedIndex = -1;
 let score = 0;
 let userAssets = {};
 let isAnswered = false;
+
+// 문제 유형 표시
+const questionTypes = [
+    '📰 뉴스 관련 문제',
+    '📰 뉴스 관련 문제',
+    '📈 경제 트렌드 문제',
+    '📈 경제 트렌드 문제',
+    '🎯 재미있는 금융 문제'
+];
 
 function getTodayDate() {
     const now = new Date();
@@ -510,6 +534,7 @@ function checkQuizAccess() {
             <i class="fas fa-star star-icon" id="intermediateStar"></i>
             <div class="quiz-title">중급</div>
             <div class="quiz-desc">심화된 금융 지식을 테스트합니다</div>
+            <div class="quiz-info">투자 전략과 금융 상품 이해</div>
         `;
     }
     
@@ -521,6 +546,7 @@ function checkQuizAccess() {
             <i class="fas fa-star star-icon" id="advancedStar"></i>
             <div class="quiz-title">고급</div>
             <div class="quiz-desc">전문가 수준의 금융 지식을 테스트합니다</div>
+            <div class="quiz-info">파생상품과 고급 투자 이론</div>
         `;
     }
 }
@@ -535,85 +561,79 @@ function loadQuizData() {
     const data = JSON.parse(savedData);
     quizData = data.quizzes;
     
-    // 중급, 고급 퀴즈가 없으면 생성
+    // 중급 퀴즈 생성
     if (!quizData.intermediate) {
-        quizData.intermediate = generateIntermediateQuiz();
+        quizData.intermediate = [
+            {
+                question: "PER이 낮은 주식의 일반적인 특징은?",
+                options: ["고평가 상태", "저평가 가능성", "배당금이 높음", "성장성이 높음"],
+                correct: 1,
+                explanation: "PER이 낮다는 것은 주가가 수익 대비 저평가되어 있을 가능성을 의미합니다."
+            },
+            {
+                question: "금리 인상 시 일반적으로 하락하는 자산은?",
+                options: ["예금", "채권 가격", "대출 이자", "원화 가치"],
+                correct: 1,
+                explanation: "금리가 오르면 기존 채권의 매력도가 떨어져 채권 가격이 하락합니다."
+            },
+            {
+                question: "분산투자의 핵심 원리는?",
+                options: ["수익 극대화", "위험 분산", "세금 절감", "거래 비용 절감"],
+                correct: 1,
+                explanation: "분산투자는 여러 자산에 투자하여 전체 포트폴리오의 위험을 줄이는 전략입니다."
+            },
+            {
+                question: "환율이 상승(원화 약세)하면 유리한 기업은?",
+                options: ["수입 기업", "수출 기업", "내수 기업", "금융 기업"],
+                correct: 1,
+                explanation: "원화 약세는 수출 기업의 가격 경쟁력을 높여 수익성을 개선시킵니다."
+            },
+            {
+                question: "복리의 마법이 가장 크게 작용하는 요소는?",
+                options: ["원금 크기", "이자율", "투자 기간", "세금"],
+                correct: 2,
+                explanation: "복리는 시간이 지날수록 기하급수적으로 증가하므로 투자 기간이 가장 중요합니다."
+            }
+        ];
     }
+    
+    // 고급 퀴즈 생성
     if (!quizData.advanced) {
-        quizData.advanced = generateAdvancedQuiz();
+        quizData.advanced = [
+            {
+                question: "옵션의 시간가치가 가장 빠르게 감소하는 시기는?",
+                options: ["만기 6개월 전", "만기 3개월 전", "만기 1개월 전", "만기 당일"],
+                correct: 2,
+                explanation: "옵션의 시간가치는 만기가 가까워질수록 가속도적으로 감소합니다(세타 decay)."
+            },
+            {
+                question: "헤지펀드가 사용하는 '롱숏 전략'의 목적은?",
+                options: ["레버리지 극대화", "시장 중립적 수익", "배당 수익", "환차익"],
+                correct: 1,
+                explanation: "롱숏 전략은 시장 방향과 관계없이 수익을 추구하는 시장 중립 전략입니다."
+            },
+            {
+                question: "채권의 듀레이션이 의미하는 것은?",
+                options: ["만기", "신용등급", "금리 민감도", "유동성"],
+                correct: 2,
+                explanation: "듀레이션은 금리 변동에 대한 채권 가격의 민감도를 나타내는 지표입니다."
+            },
+            {
+                question: "VIX 지수가 급등한다는 것은?",
+                options: ["주가 상승 예상", "시장 변동성 증가", "금리 인상", "달러 강세"],
+                correct: 1,
+                explanation: "VIX는 '공포지수'로 불리며, 시장의 변동성과 불확실성을 나타냅니다."
+            },
+            {
+                question: "알파(Alpha) 수익률이 양수라는 의미는?",
+                options: ["손실 발생", "시장 평균 이하", "시장 대비 초과 수익", "무위험 수익률"],
+                correct: 2,
+                explanation: "알파는 벤치마크 대비 초과 수익률로, 양수면 시장을 이긴 것입니다."
+            }
+        ];
     }
     
     checkCompletionStatus();
-}
-
-function generateIntermediateQuiz() {
-    return [
-        {
-            question: "PER(주가수익비율)이 10인 주식의 의미는?",
-            options: ["주가가 10원", "투자금 회수에 10년", "수익률이 10%", "배당금이 10원"],
-            correct: 1,
-            explanation: "PER 10은 현재 주가 수준에서 투자금을 회수하는데 10년이 걸린다는 의미입니다."
-        },
-        {
-            question: "채권 가격과 금리의 관계는?",
-            options: ["비례 관계", "반비례 관계", "무관계", "불규칙"],
-            correct: 1,
-            explanation: "금리가 오르면 채권 가격은 하락하고, 금리가 내리면 채권 가격은 상승합니다."
-        },
-        {
-            question: "환헤지의 목적은?",
-            options: ["환차익 극대화", "환율 변동 위험 제거", "수수료 절감", "세금 절약"],
-            correct: 1,
-            explanation: "환헤지는 환율 변동으로 인한 손실 위험을 줄이기 위한 전략입니다."
-        },
-        {
-            question: "ROE(자기자본수익률)가 높은 기업의 특징은?",
-            options: ["부채가 많음", "자본 효율성이 높음", "주가가 높음", "배당금이 많음"],
-            correct: 1,
-            explanation: "ROE가 높다는 것은 자기자본을 효율적으로 활용해 수익을 창출한다는 의미입니다."
-        },
-        {
-            question: "달러 코스트 평균법의 장점은?",
-            options: ["최고 수익률 보장", "평균 매입단가 하락", "거래 수수료 면제", "원금 보장"],
-            correct: 1,
-            explanation: "정기적으로 일정 금액을 투자하여 평균 매입단가를 낮추는 효과가 있습니다."
-        }
-    ];
-}
-
-function generateAdvancedQuiz() {
-    return [
-        {
-            question: "샤프지수(Sharpe Ratio)가 측정하는 것은?",
-            options: ["절대 수익률", "위험 대비 수익률", "변동성", "최대 손실"],
-            correct: 1,
-            explanation: "샤프지수는 위험 한 단위당 초과수익률을 측정하는 지표입니다."
-        },
-        {
-            question: "옵션의 내재가치와 시간가치의 관계는?",
-            options: ["옵션 가격 = 내재가치 + 시간가치", "옵션 가격 = 내재가치 - 시간가치", "옵션 가격 = 내재가치 × 시간가치", "옵션 가격 = 내재가치 ÷ 시간가치"],
-            correct: 0,
-            explanation: "옵션 프리미엄은 내재가치와 시간가치의 합으로 구성됩니다."
-        },
-        {
-            question: "베타(Beta) 값이 1.5인 주식의 특징은?",
-            options: ["시장보다 안정적", "시장과 동일한 변동성", "시장보다 1.5배 변동성", "변동성 없음"],
-            correct: 2,
-            explanation: "베타 1.5는 시장이 1% 움직일 때 해당 주식은 1.5% 움직인다는 의미입니다."
-        },
-        {
-            question: "듀레이션(Duration)이 긴 채권의 특징은?",
-            options: ["금리 민감도가 낮음", "금리 민감도가 높음", "만기가 짧음", "신용등급이 높음"],
-            correct: 1,
-            explanation: "듀레이션이 길수록 금리 변동에 대한 채권 가격의 민감도가 높습니다."
-        },
-        {
-            question: "VaR(Value at Risk)의 의미는?",
-            options: ["최대 수익 가능성", "평균 수익률", "최대 손실 가능성", "변동성 지표"],
-            correct: 2,
-            explanation: "VaR는 특정 신뢰수준에서 일정 기간 동안 발생할 수 있는 최대 손실을 나타냅니다."
-        }
-    ];
 }
 
 function checkCompletionStatus() {
@@ -668,6 +688,14 @@ function loadQuestion() {
     const question = questions[currentIndex];
     
     document.getElementById('currentQ').textContent = currentIndex + 1;
+    
+    // 문제 유형 표시
+    if (currentLevel === 'beginner') {
+        document.getElementById('questionType').textContent = questionTypes[currentIndex];
+    } else {
+        document.getElementById('questionType').textContent = currentLevel === 'intermediate' ? '📊 중급 문제' : '🎓 고급 문제';
+    }
+    
     document.getElementById('questionText').textContent = question.question;
     
     question.options.forEach((opt, idx) => {
@@ -787,7 +815,7 @@ function showRewardAnimation(cash, exp) {
 
 function showCalendar() {
     const today = getTodayDate();
-    alert(`📅 오늘 날짜: ${today}\n\n매일 새로운 퀴즈가 업데이트됩니다!`);
+    alert(`📅 오늘 날짜: ${today}\n\n매일 새로운 퀴즈가 업데이트됩니다!\n\n• 뉴스 관련 2문제\n• 경제 트렌드 2문제\n• 재미있는 문제 1개`);
 }
 
 document.addEventListener('DOMContentLoaded', async function() {
