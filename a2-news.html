@@ -243,7 +243,30 @@
             text-decoration: none;
             font-weight: 600;
         }
+        <!-- 기존 모달의 complete-btn 위에 스크랩 버튼 추가 -->
+<div id="newsModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-title" id="modalTitle">뉴스 제목</div>
+            <button class="close-btn" onclick="closeModal()">×</button>
+        </div>
         
+        <div class="news-content" id="modalContent">
+            뉴스 내용
+        </div>
+        
+        <a id="newsLink" class="news-link" target="_blank">원문 보기 →</a>
+        
+        <!-- 스크랩 버튼 추가 -->
+        <button class="scrap-btn" onclick="addToScrap()">
+            <i class="fas fa-bookmark"></i> 스크랩하기
+        </button>
+        
+        <button class="complete-btn" id="completeBtn" onclick="completeReading()">
+            읽기 완료 (+30,000원 + 50 EXP)
+        </button>
+    </div>
+</div>
         .complete-btn {
             width: 100%;
             padding: 16px;
