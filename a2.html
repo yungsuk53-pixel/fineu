@@ -621,8 +621,17 @@ function calculateLevelFromExp(exp) {
                         studyProgress: firebaseData.studyProgress || {},
                         scrappedItems: firebaseData.scrappedItems || []
                     };
-                    
-                    updateGradeButton(userAssets.level);
+                     // 이 부분을 추가
+// EXP에 따른 레벨 자동 계산 및 업데이트
+const calculatedLevel = calculateLevelFromExp(userAssets.exp);
+if (calculatedLevel !== userAssets.level) {
+    userAssets.level = calculatedLevel;
+    // Firebase에 업데이트된 레벨 저장
+    const userRef2 = window.firebaseRef(window.firebaseDB, `users/${userId}`);
+    await window.firebaseSet(userRef2, userAssets);
+}
+
+updateGradeButton(userAssets.level);  // 기존 코드
                 } else {
                     userAssets = {
                         id: userId,
@@ -639,17 +648,6 @@ function calculateLevelFromExp(exp) {
                         studyProgress: {},
                         scrappedItems: []
                     };
-                    // 이 부분을 추가
-// EXP에 따른 레벨 자동 계산 및 업데이트
-const calculatedLevel = calculateLevelFromExp(userAssets.exp);
-if (calculatedLevel !== userAssets.level) {
-    userAssets.level = calculatedLevel;
-    // Firebase에 업데이트된 레벨 저장
-    const userRef2 = window.firebaseRef(window.firebaseDB, `users/${userId}`);
-    await window.firebaseSet(userRef2, userAssets);
-}
-
-updateGradeButton(userAssets.level);  // 기존 코드
                     updateGradeButton('yellow');
                 }
                 
