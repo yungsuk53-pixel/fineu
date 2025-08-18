@@ -194,6 +194,7 @@
             font-weight: 600;
         }
 
+        /* 하단 네비게이션 - a1과 동일 */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -211,6 +212,7 @@
             z-index: 100;
         }
 
+        /* 중앙 반원 돌출 부분 - a1과 동일 */
         .bottom-nav::before {
             content: '';
             position: absolute;
@@ -220,6 +222,9 @@
             width: 65px;
             height: 65px;
             background: white;
+            background-image: url('images/배경.png');
+            background-size: cover;
+            background-position: center;
             border-radius: 50%;
             box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
             z-index: -1;
@@ -257,7 +262,7 @@
         .grade-button {
             width: 55px;
             height: 55px;
-            background: transparent;
+            background: #fafaf8;
             border-radius: 50%;
             border: none;
             display: flex;
@@ -362,6 +367,7 @@
         </div>
     </div>
 
+    <!-- 하단 네비게이션 - a1과 동일한 구조 -->
     <div class="bottom-nav">
         <div class="nav-item" onclick="goToPage('a1.html')">
             <div class="nav-icon">
@@ -403,6 +409,14 @@
             BLACK: { name: 'BLACK', exp: 50000, max: 999999, navImage: 'BLACK ㅇ.png' }
         };
 
+        function calculateLevelFromExp(exp) {
+            if (exp >= 50000) return 'black';
+            if (exp >= 30000) return 'red';
+            if (exp >= 15000) return 'blue';
+            if (exp >= 5000) return 'green';
+            return 'yellow';
+        }
+        
         function getTodayDate() {
             const now = new Date();
             const koreaTime = new Date(now.toLocaleString("en-US", {timeZone: "Asia/Seoul"}));
@@ -410,37 +424,6 @@
             const month = String(koreaTime.getMonth() + 1).padStart(2, '0');
             const day = String(koreaTime.getDate()).padStart(2, '0');
             return `${year}-${month}-${day}`;
-        }
-
-        // 다른 페이지들처럼 레벨 업데이트 함수 추가
-        function updateLevelBadge() {
-            // exp 기반으로 레벨 계산
-            const exp = userAssets.exp || userAssets.experience || 0;
-            let level = 'yellow';
-            
-            if (exp >= 50000) {
-                level = 'black';
-            } else if (exp >= 30000) {
-                level = 'red';
-            } else if (exp >= 15000) {
-                level = 'blue';
-            } else if (exp >= 5000) {
-                level = 'green';
-            }
-            
-            userAssets.level = level;
-            
-            // 그레이드 버튼 업데이트
-            const upperLevel = level.toUpperCase();
-            const levelData = levelSystem[upperLevel];
-            
-            if (levelData) {
-                const gradeButtonImage = document.getElementById('gradeButtonImage');
-                if (gradeButtonImage && levelData.navImage) {
-                    gradeButtonImage.src = `images/${levelData.navImage}`;
-                    gradeButtonImage.alt = levelData.name;
-                }
-            }
         }
 
         async function cleanOldData() {
@@ -642,6 +625,21 @@
                         studyProgress: firebaseData.studyProgress || {},
                         scrappedItems: firebaseData.scrappedItems || []
                     };
+
+                    // 경험치 기반 레벨 결정
+                    const exp = userAssets.exp || 0;
+                    let determinedLevel = 'yellow';
+                    if (exp >= 50000) {
+                        determinedLevel = 'black';
+                    } else if (exp >= 30000) {
+                        determinedLevel = 'red';
+                    } else if (exp >= 15000) {
+                        determinedLevel = 'blue';
+                    } else if (exp >= 5000) {
+                        determinedLevel = 'green';
+                    }
+                    userAssets.level = determinedLevel;
+                    updateGradeButton(determinedLevel);
                 } else {
                     userAssets = {
                         id: userId,
@@ -658,10 +656,8 @@
                         studyProgress: {},
                         scrappedItems: []
                     };
+                    updateGradeButton('yellow');
                 }
-                
-                // 다른 페이지들처럼 updateLevelBadge 호출
-                updateLevelBadge();
                 
                 localStorage.setItem('fineu_user_assets', JSON.stringify(userAssets));
                 checkTodayCompletion();
@@ -680,7 +676,7 @@
                     studyProgress: {},
                     scrappedItems: []
                 };
-                updateLevelBadge();
+                updateGradeButton('yellow');
             }
         }
 
@@ -709,6 +705,39 @@
                 card.classList.remove('completed');
                 star.classList.remove('completed');
             }
+        }
+
+        function updateGradeButton(grade) {
+            const upperGrade = (grade || 'yellow').toUpperCase();
+            const levelData = levelSystem[upperGrade];
+            
+            if (levelData) {
+                const gradeButtonImage = document.getElementById('gradeButtonImage');
+                if (gradeButtonImage && levelData.navImage) {
+                    gradeButtonImage.src = `images/${levelData.navImage}`;
+                    gradeButtonImage.alt = levelData.name;
+                    console.log('✅ 그레이드 버튼 업데이트:', levelData.name);
+                }
+            }
+        }
+        
+        function updateLevelFromExp() {
+            const exp = userAssets.exp || userAssets.experience || 0;
+            let level = 'yellow';
+            
+            if (exp >= 50000) {
+                level = 'black';
+            } else if (exp >= 30000) {
+                level = 'red';
+            } else if (exp >= 15000) {
+                level = 'blue';
+            } else if (exp >= 5000) {
+                level = 'green';
+            }
+            
+            userAssets.level = level;
+            updateGradeButton(level);
+            return level;
         }
 
         async function getLatestFinanceNews() {
