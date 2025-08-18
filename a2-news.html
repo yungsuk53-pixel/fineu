@@ -436,7 +436,140 @@ function loadNewsData() {
     
     displayNews();
 }
+async function addToScrap() {
+    if (!userAssets.scrappedItems) {
+        userAssets.scrappedItems = [];
+    }
+    
+    let scrapItem = {};
+    
+    // a2-news.html용
+    if (window.location.pathname.includes('news')) {
+        const news = newsData.find(n => n.id === currentNewsId);
+        if (!news) {
+            alert('뉴스 정보를 찾을 수 없습니다.');
+            return;
+        }
+        scrapItem = {
+            type: 'news',
+            title: news.title,
+            content: news.content || news.description,
+            date: new Date().toISOString(),
+            originalId: news.id
+        };
+    }
+    
+    // a2-terms.html용
+    else if (window.location.pathname.includes('terms')) {
+        if (!currentTermData) {
+            alert('용어 정보를 찾을 수 없습니다.');
+            return;
+        }
+        scrapItem = {
+            type: 'terms',
+            title: currentTermData.term,
+            content: currentTermData.definition,
+            explanation: currentTermData.example,
+            date: new Date().toISOString(),
+            originalId: currentTermData.id
+        };
+    }
+    
+    // a2-quiz.html용
+    else if (window.location.pathname.includes('quiz')) {
+        const question = quizData[currentLevel][currentIndex];
+        if (!question) {
+            alert('퀴즈 정보를 찾을 수 없습니다.');
+            return;
+        }
+        scrapItem = {
+            type: 'quiz',
+            title: `[${currentLevel === 'beginner' ? '초급' : currentLevel === 'intermediate' ? '중급' : '고급'}] ${question.question}`,
+            content: `정답: ${question.options[question.correct]}`,
+            explanation: question.explanation,
+            date: new Date().toISOString(),
+            level: currentLevel,
+            index: currentIndex
+        };
+    }
+    
+    // 중복 체크
+    const isDuplicate = userAssets.scrappedItems.some(item => 
+        item.title === scrapItem.title && item.type === scrapItem.type
+    );
+    
+    if (isDuplicate) {
+        alert('이미 스크랩한 항목입니다.');
+        return;
+    }
+    
+    userAssets.scrappedItems.push(scrapItem);
+    
+    try {
+        const currentUser = JSON.parse(localStorage.getItem('fineu_current_user') || '{}');
+        const userId = currentUser.id || currentUser.username || 'Test';
+        
+        if (window.firebaseDB) {
+            const userRef = window.firebaseRef(window.firebaseDB, `users/${userId}`);
+            await window.firebaseSet(userRef, userAssets);
+        }
+        
+        localStorage.setItem('fineu_user_assets', JSON.stringify(userAssets));
+        
+        showScrapAnimation();
+        
+    } catch (error) {
+        console.error('스크랩 저장 실패:', error);
+        alert('스크랩 저장에 실패했습니다.');
+    }
+}
 
+function showScrapAnimation() {
+    const scrapDiv = document.createElement('div');
+    scrapDiv.className = 'scrap-animation';
+    scrapDiv.innerHTML = '📌 스크랩 완료!';
+    document.body.appendChild(scrapDiv);
+    
+    // 애니메이션 스타일 추가
+    const style = document.createElement('style');
+    style.textContent = `
+        .scrap-animation {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #ffd700;
+            color: #333;
+            padding: 20px 30px;
+            border-radius: 16px;
+            font-size: 18px;
+            font-weight: bold;
+            z-index: 2000;
+            box-shadow: 0 8px 24px rgba(255, 215, 0, 0.4);
+            animation: scrapPop 1.5s ease-in-out forwards;
+        }
+        
+        @keyframes scrapPop {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.5);
+            }
+            50% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1.1);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -50%) translateY(-50px) scale(0.8);
+            }
+        }
+    `;
+    document.head.appendChild(style);
+    
+    setTimeout(() => {
+        document.body.removeChild(scrapDiv);
+    }, 1500);
+}
 function displayNews() {
     const container = document.getElementById('newsContainer');
     const today = getTodayDate();
