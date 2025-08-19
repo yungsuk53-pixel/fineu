@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FINE U - 금융 퀴즈</title>
+    <title>FINE U - 금융 뉴스</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
     
@@ -79,43 +79,36 @@
             margin: 0 auto;
         }
         
-        .quiz-card {
+        .news-card {
             background: white;
             border-radius: 12px;
             padding: 20px;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
             position: relative;
             cursor: pointer;
             transition: all 0.2s ease;
         }
         
-        .quiz-card:active:not(.locked) {
+        .news-card:active {
             transform: scale(0.98);
         }
         
-        .quiz-card.locked {
+        .news-card.read {
             opacity: 0.7;
-            cursor: not-allowed;
         }
         
-        .quiz-title {
+        .news-title {
             font-size: 16px;
             font-weight: 600;
             color: #000;
             margin-bottom: 8px;
+            padding-right: 30px;
         }
         
-        .quiz-desc {
+        .news-desc {
             font-size: 14px;
             color: #666;
             line-height: 1.4;
-            margin-bottom: 8px;
-        }
-        
-        .quiz-info {
-            font-size: 12px;
-            color: #2c5aa0;
-            margin-top: 8px;
         }
         
         .star-icon {
@@ -128,33 +121,6 @@
         
         .star-icon.completed {
             color: #4CAF50;
-        }
-        
-        .lock-icon {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            color: #999;
-            font-size: 20px;
-        }
-        
-        .badge-tag {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
-            margin-top: 4px;
-        }
-        
-        .badge-red {
-            background: #ffebee;
-            color: #f44336;
-        }
-        
-        .badge-blue {
-            background: #e3f2fd;
-            color: #2196f3;
         }
         
         /* 하단 네비게이션 - a1과 완전히 동일 */
@@ -225,7 +191,7 @@
         .grade-button {
             width: 55px;
             height: 55px;
-            background: #fafaf8;
+            background: #FFE99E; /* 기본 YELLOW 색상 */
             border-radius: 50%;
             border: none;
             display: flex;
@@ -275,83 +241,43 @@
             background: white;
             border-radius: 20px 20px 0 0;
             padding: 24px;
-            max-height: 90vh;
+            max-height: 80vh;
             overflow-y: auto;
         }
         
-        .question-box {
-            background: #f0f4ff;
-            border-radius: 12px;
-            padding: 20px;
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 20px;
         }
         
-        .question-number {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 8px;
+        .modal-title {
+            font-size: 20px;
+            font-weight: bold;
         }
         
-        .question-type {
-            font-size: 12px;
-            color: #2c5aa0;
-            margin-bottom: 8px;
-            font-weight: 600;
-        }
-        
-        .question-text {
-            font-size: 18px;
-            font-weight: 600;
-            color: #000;
-        }
-        
-        .option {
-            background: #f5f5f5;
-            border: 2px solid transparent;
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 12px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        
-        .option:hover {
-            background: #e8e8e8;
-        }
-        
-        .option.selected {
-            border-color: #2196f3;
-            background: #e3f2fd;
-        }
-        
-        .option.correct {
-            border-color: #4caf50;
-            background: #e8f5e9;
-        }
-        
-        .option.incorrect {
-            border-color: #f44336;
-            background: #ffebee;
-        }
-        
-        .submit-btn {
-            width: 100%;
-            padding: 16px;
-            background: #2c5aa0;
-            color: white;
+        .close-btn {
+            background: none;
             border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
+            font-size: 24px;
+            color: #666;
             cursor: pointer;
         }
         
-        .explanation-box {
-            background: #f0f8ff;
-            border-left: 4px solid #2196f3;
-            padding: 12px;
-            margin-top: 12px;
-            border-radius: 4px;
+        .news-content {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .news-link {
+            display: inline-block;
+            margin-top: 10px;
+            color: #2c5aa0;
+            text-decoration: none;
+            font-weight: 600;
         }
         
         .scrap-btn {
@@ -364,11 +290,28 @@
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            margin-top: 12px;
-            display: none;
+            margin-bottom: 12px;
+            display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
+        }
+        
+        .complete-btn {
+            width: 100%;
+            padding: 16px;
+            background: #2c5aa0;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .complete-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
         }
         
         .reward-animation {
@@ -413,33 +356,14 @@
     <button class="back-btn" onclick="location.href='a2.html'">
         <i class="fas fa-arrow-left"></i>
     </button>
-    <div class="header-title">금융 퀴즈</div>
+    <div class="header-title">금융 뉴스</div>
     <button class="calendar-btn" onclick="showCalendar()">
         <i class="fas fa-calendar-alt"></i>
     </button>
 </div>
 
-<div class="content" style="padding-bottom: 100px;">
-    <div id="beginnerQuiz" class="quiz-card">
-        <i class="fas fa-star star-icon" id="beginnerStar"></i>
-        <div class="quiz-title">초급</div>
-        <div class="quiz-desc">기본적인 금융 개념을 테스트합니다</div>
-        <div class="quiz-info">뉴스 2문제 + 트렌드 2문제 + 재미있는 문제 1개</div>
-    </div>
-    
-    <div id="intermediateQuiz" class="quiz-card locked">
-        <i class="fas fa-lock lock-icon"></i>
-        <div class="quiz-title">중급</div>
-        <div class="quiz-desc">심화된 금융 지식을 테스트합니다</div>
-        <span class="badge-tag badge-red">RED 등급 달성 시 열람 가능</span>
-    </div>
-    
-    <div id="advancedQuiz" class="quiz-card locked">
-        <i class="fas fa-lock lock-icon"></i>
-        <div class="quiz-title">고급</div>
-        <div class="quiz-desc">전문가 수준의 금융 지식을 테스트합니다</div>
-        <span class="badge-tag badge-blue">BLACK 등급 달성 시 열람 가능</span>
-    </div>
+<div class="content" style="padding-bottom: 100px;" id="newsContainer">
+    <!-- 뉴스 아이템들이 여기에 동적으로 추가됩니다 -->
 </div>
 
 <!-- 하단 네비게이션 - a1과 완전히 동일한 구조 -->
@@ -469,60 +393,35 @@
     </div>
 </div>
 
-<div id="quizModal" class="modal">
+<!-- 뉴스 상세 모달 -->
+<div id="newsModal" class="modal">
     <div class="modal-content">
-        <div class="question-box">
-            <div class="question-number">문제 <span id="currentQ">1</span>/5</div>
-            <div class="question-type" id="questionType">뉴스 관련 문제</div>
-            <div class="question-text" id="questionText">문제 내용</div>
+        <div class="modal-header">
+            <div class="modal-title" id="modalTitle">뉴스 제목</div>
+            <button class="close-btn" onclick="closeModal()">×</button>
         </div>
         
-        <div id="options">
-            <div class="option" onclick="selectOption(0)">
-                <span id="option0">옵션 1</span>
-            </div>
-            <div class="option" onclick="selectOption(1)">
-                <span id="option1">옵션 2</span>
-            </div>
-            <div class="option" onclick="selectOption(2)">
-                <span id="option2">옵션 3</span>
-            </div>
-            <div class="option" onclick="selectOption(3)">
-                <span id="option3">옵션 4</span>
-            </div>
+        <div class="news-content" id="modalContent">
+            뉴스 내용
         </div>
         
-        <div id="explanationBox" class="explanation-box" style="display: none;">
-            <strong>💡 설명:</strong>
-            <div id="explanationText"></div>
-        </div>
+        <a id="newsLink" class="news-link" target="_blank">원문 보기 →</a>
         
-        <!-- 스크랩 버튼 추가 (정답 확인 후에만 표시) -->
-        <button class="scrap-btn" id="scrapBtn" onclick="addToScrap()">
-            <i class="fas fa-bookmark"></i> 이 문제 스크랩하기
+        <!-- 스크랩 버튼 추가 -->
+        <button class="scrap-btn" onclick="addToScrap()">
+            <i class="fas fa-bookmark"></i> 스크랩하기
         </button>
         
-        <button class="submit-btn" id="submitBtn" onclick="submitAnswer()">답변 제출</button>
+        <button class="complete-btn" id="completeBtn" onclick="completeReading()">
+            읽기 완료 (+30,000원 + 50 EXP)
+        </button>
     </div>
 </div>
 
 <script>
-let quizData = null;
-let currentLevel = '';
-let currentIndex = 0;
-let selectedIndex = -1;
-let score = 0;
+let newsData = [];
+let currentNewsId = null;
 let userAssets = {};
-let isAnswered = false;
-
-// 문제 유형 표시
-const questionTypes = [
-    '📰 뉴스 관련 문제',
-    '📰 뉴스 관련 문제',
-    '📈 경제 트렌드 문제',
-    '📈 경제 트렌드 문제',
-    '🎯 재미있는 금융 문제'
-];
 
 const levelSystem = {
     YELLOW: { name: 'YELLOW', exp: 0, max: 5000, navImage: 'YELLOW ㅇ.png' },
@@ -531,6 +430,18 @@ const levelSystem = {
     RED: { name: 'RED', exp: 30000, max: 50000, navImage: 'RED ㅇ.png' },
     BLACK: { name: 'BLACK', exp: 50000, max: 999999, navImage: 'BLACK ㅇ.png' }
 };
+
+// 등급별 색상 반환 함수 추가
+function getUserLevelColor(level) {
+    const colors = {
+        'YELLOW': '#FFE99E',
+        'GREEN': '#C1EDB3',
+        'BLUE': '#ADD9FA',
+        'RED': '#FAABAD',
+        'BLACK': '#333333'
+    };
+    return colors[level] || colors['YELLOW'];
+}
 
 function getTodayDate() {
     const now = new Date();
@@ -541,25 +452,104 @@ function getTodayDate() {
     return `${year}-${month}-${day}`;
 }
 
+async function loadUserData() {
+    const savedUser = localStorage.getItem('fineu_current_user');
+    if (!savedUser) {
+        location.href = 'index.html';
+        return;
+    }
+    
+    const currentUser = JSON.parse(savedUser);
+    const userId = currentUser.id || currentUser.username || 'Test';
+    
+    try {
+        if (window.firebaseDB) {
+            const userRef = window.firebaseRef(window.firebaseDB, `users/${userId}`);
+            const snapshot = await window.firebaseGet(userRef);
+            
+            if (snapshot.exists()) {
+                userAssets = snapshot.val();
+            } else {
+                userAssets = JSON.parse(localStorage.getItem('fineu_user_assets') || '{}');
+            }
+        } else {
+            userAssets = JSON.parse(localStorage.getItem('fineu_user_assets') || '{}');
+        }
+        
+        // 경험치 기반 레벨 결정
+        const exp = userAssets.exp || 0;
+        let determinedLevel = 'yellow';
+        if (exp >= 50000) {
+            determinedLevel = 'black';
+        } else if (exp >= 30000) {
+            determinedLevel = 'red';
+        } else if (exp >= 15000) {
+            determinedLevel = 'blue';
+        } else if (exp >= 5000) {
+            determinedLevel = 'green';
+        }
+        userAssets.level = determinedLevel;
+        updateGradeButton(determinedLevel);
+        
+    } catch (error) {
+        console.error('사용자 데이터 로드 실패:', error);
+        userAssets = JSON.parse(localStorage.getItem('fineu_user_assets') || '{}');
+    }
+}
+
+// updateGradeButton 함수 수정 - 배경색 설정 추가
+function updateGradeButton(grade) {
+    const upperGrade = (grade || 'yellow').toUpperCase();
+    const levelData = levelSystem[upperGrade];
+    
+    if (levelData) {
+        const gradeButtonImage = document.getElementById('gradeButtonImage');
+        const gradeButton = document.getElementById('gradeButton');
+        
+        if (gradeButtonImage && levelData.navImage) {
+            gradeButtonImage.src = `images/${levelData.navImage}`;
+            gradeButtonImage.alt = levelData.name;
+        }
+        
+        // 배경색 설정 추가
+        if (gradeButton) {
+            gradeButton.style.background = getUserLevelColor(upperGrade);
+        }
+        
+        console.log('✅ 그레이드 버튼 업데이트:', levelData.name);
+    }
+}
+
+function loadNewsData() {
+    const savedData = localStorage.getItem('todayFinancialData');
+    if (!savedData) {
+        location.href = 'a2.html';
+        return;
+    }
+    
+    const data = JSON.parse(savedData);
+    newsData = data.news;
+    
+    displayNews();
+}
+
 async function addToScrap() {
     if (!userAssets.scrappedItems) {
         userAssets.scrappedItems = [];
     }
     
-    const question = quizData[currentLevel][currentIndex];
-    if (!question) {
-        alert('퀴즈 정보를 찾을 수 없습니다.');
+    const news = newsData.find(n => n.id === currentNewsId);
+    if (!news) {
+        alert('뉴스 정보를 찾을 수 없습니다.');
         return;
     }
     
     const scrapItem = {
-        type: 'quiz',
-        title: `[${currentLevel === 'beginner' ? '초급' : currentLevel === 'intermediate' ? '중급' : '고급'}] ${question.question}`,
-        content: `정답: ${question.options[question.correct]}`,
-        explanation: question.explanation,
+        type: 'news',
+        title: news.title,
+        content: news.content || news.description,
         date: new Date().toISOString(),
-        level: currentLevel,
-        index: currentIndex
+        originalId: news.id
     };
     
     // 중복 체크
@@ -640,326 +630,82 @@ function showScrapAnimation() {
     }, 1500);
 }
 
-async function loadUserData() {
-    const savedUser = localStorage.getItem('fineu_current_user');
-    if (!savedUser) {
-        location.href = 'index.html';
-        return;
-    }
-    
-    const currentUser = JSON.parse(savedUser);
-    const userId = currentUser.id || currentUser.username || 'Test';
-    
-    try {
-        if (window.firebaseDB) {
-            const userRef = window.firebaseRef(window.firebaseDB, `users/${userId}`);
-            const snapshot = await window.firebaseGet(userRef);
-            
-            if (snapshot.exists()) {
-                userAssets = snapshot.val();
-            } else {
-                userAssets = JSON.parse(localStorage.getItem('fineu_user_assets') || '{}');
-            }
-        } else {
-            userAssets = JSON.parse(localStorage.getItem('fineu_user_assets') || '{}');
-        }
-        
-        // 경험치 기반 레벨 결정
-        const exp = userAssets.exp || 0;
-        let determinedLevel = 'yellow';
-        if (exp >= 50000) {
-            determinedLevel = 'black';
-        } else if (exp >= 30000) {
-            determinedLevel = 'red';
-        } else if (exp >= 15000) {
-            determinedLevel = 'blue';
-        } else if (exp >= 5000) {
-            determinedLevel = 'green';
-        }
-        userAssets.level = determinedLevel;
-        updateGradeButton(determinedLevel);
-        checkQuizAccess();
-        
-    } catch (error) {
-        console.error('사용자 데이터 로드 실패:', error);
-        userAssets = JSON.parse(localStorage.getItem('fineu_user_assets') || '{}');
-    }
-}
-
-function updateGradeButton(grade) {
-    const upperGrade = (grade || 'yellow').toUpperCase();
-    const levelData = levelSystem[upperGrade];
-    
-    if (levelData) {
-        const gradeButtonImage = document.getElementById('gradeButtonImage');
-        if (gradeButtonImage && levelData.navImage) {
-            gradeButtonImage.src = `images/${levelData.navImage}`;
-            gradeButtonImage.alt = levelData.name;
-        }
-    }
-}
-
-function checkQuizAccess() {
-    const level = (userAssets.level || 'yellow').toUpperCase();
-    const exp = userAssets.exp || 0;
-    
-    // RED 등급 이상이면 중급 잠금 해제
-    if (exp >= 30000) {
-        const intermediateCard = document.getElementById('intermediateQuiz');
-        intermediateCard.classList.remove('locked');
-        intermediateCard.innerHTML = `
-            <i class="fas fa-star star-icon" id="intermediateStar"></i>
-            <div class="quiz-title">중급</div>
-            <div class="quiz-desc">심화된 금융 지식을 테스트합니다</div>
-            <div class="quiz-info">투자 전략과 금융 상품 이해</div>
-        `;
-        // 클릭 이벤트 추가
-        intermediateCard.onclick = function() { startQuiz('intermediate'); };
-    }
-    
-    // BLACK 등급이면 고급 잠금 해제
-    if (exp >= 50000) {
-        const advancedCard = document.getElementById('advancedQuiz');
-        advancedCard.classList.remove('locked');
-        advancedCard.innerHTML = `
-            <i class="fas fa-star star-icon" id="advancedStar"></i>
-            <div class="quiz-title">고급</div>
-            <div class="quiz-desc">전문가 수준의 금융 지식을 테스트합니다</div>
-            <div class="quiz-info">파생상품과 고급 투자 이론</div>
-        `;
-        // 클릭 이벤트 추가
-        advancedCard.onclick = function() { startQuiz('advanced'); };
-    }
-}
-
-// 초급 퀴즈 클릭 이벤트 추가
-document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('beginnerQuiz').onclick = function() { startQuiz('beginner'); };
-});
-
-function loadQuizData() {
-    const savedData = localStorage.getItem('todayFinancialData');
-    if (!savedData) {
-        location.href = 'a2.html';
-        return;
-    }
-    
-    const data = JSON.parse(savedData);
-    quizData = data.quizzes || {};
-    
-    // 중급 퀴즈 생성
-    if (!quizData.intermediate) {
-        quizData.intermediate = [
-            {
-                question: "PER이 낮은 주식의 일반적인 특징은?",
-                options: ["고평가 상태", "저평가 가능성", "배당금이 높음", "성장성이 높음"],
-                correct: 1,
-                explanation: "PER이 낮다는 것은 주가가 수익 대비 저평가되어 있을 가능성을 의미합니다."
-            },
-            {
-                question: "금리 인상 시 일반적으로 하락하는 자산은?",
-                options: ["예금", "채권 가격", "대출 이자", "원화 가치"],
-                correct: 1,
-                explanation: "금리가 오르면 기존 채권의 매력도가 떨어져 채권 가격이 하락합니다."
-            },
-            {
-                question: "분산투자의 핵심 원리는?",
-                options: ["수익 극대화", "위험 분산", "세금 절감", "거래 비용 절감"],
-                correct: 1,
-                explanation: "분산투자는 여러 자산에 투자하여 전체 포트폴리오의 위험을 줄이는 전략입니다."
-            },
-            {
-                question: "환율이 상승(원화 약세)하면 유리한 기업은?",
-                options: ["수입 기업", "수출 기업", "내수 기업", "금융 기업"],
-                correct: 1,
-                explanation: "원화 약세는 수출 기업의 가격 경쟁력을 높여 수익성을 개선시킵니다."
-            },
-            {
-                question: "복리의 마법이 가장 크게 작용하는 요소는?",
-                options: ["원금 크기", "이자율", "투자 기간", "세금"],
-                correct: 2,
-                explanation: "복리는 시간이 지날수록 기하급수적으로 증가하므로 투자 기간이 가장 중요합니다."
-            }
-        ];
-    }
-    
-    // 고급 퀴즈 생성
-    if (!quizData.advanced) {
-        quizData.advanced = [
-            {
-                question: "옵션의 시간가치가 가장 빠르게 감소하는 시기는?",
-                options: ["만기 6개월 전", "만기 3개월 전", "만기 1개월 전", "만기 당일"],
-                correct: 2,
-                explanation: "옵션의 시간가치는 만기가 가까워질수록 가속도적으로 감소합니다(세타 decay)."
-            },
-            {
-                question: "헤지펀드가 사용하는 '롱숏 전략'의 목적은?",
-                options: ["레버리지 극대화", "시장 중립적 수익", "배당 수익", "환차익"],
-                correct: 1,
-                explanation: "롱숏 전략은 시장 방향과 관계없이 수익을 추구하는 시장 중립 전략입니다."
-            },
-            {
-                question: "채권의 듀레이션이 의미하는 것은?",
-                options: ["만기", "신용등급", "금리 민감도", "유동성"],
-                correct: 2,
-                explanation: "듀레이션은 금리 변동에 대한 채권 가격의 민감도를 나타내는 지표입니다."
-            },
-            {
-                question: "VIX 지수가 급등한다는 것은?",
-                options: ["주가 상승 예상", "시장 변동성 증가", "금리 인상", "달러 강세"],
-                correct: 1,
-                explanation: "VIX는 '공포지수'로 불리며, 시장의 변동성과 불확실성을 나타냅니다."
-            },
-            {
-                question: "알파(Alpha) 수익률이 양수라는 의미는?",
-                options: ["손실 발생", "시장 평균 이하", "시장 대비 초과 수익", "무위험 수익률"],
-                correct: 2,
-                explanation: "알파는 벤치마크 대비 초과 수익률로, 양수면 시장을 이긴 것입니다."
-            }
-        ];
-    }
-    
-    checkCompletionStatus();
-}
-
-function checkCompletionStatus() {
+function displayNews() {
+    const container = document.getElementById('newsContainer');
     const today = getTodayDate();
     const studyProgress = userAssets.studyProgress || {};
     const todayProgress = studyProgress[today] || {};
+    const readNews = todayProgress.readNews || [];
     
-    if (todayProgress.financialQuiz) {
-        document.getElementById('beginnerStar').classList.add('completed');
+    let html = '';
+    
+    if (newsData.length > 0) {
+        const featured = newsData[0];
+        const isRead = readNews.includes(featured.id);
+        
+        html += `
+            <div class="news-card ${isRead ? 'read' : ''}" onclick="showNewsDetail('${featured.id}')">
+                <i class="fas fa-star star-icon ${isRead ? 'completed' : ''}"></i>
+                <div class="news-title">${featured.title}</div>
+                <div class="news-desc">${featured.description}</div>
+            </div>
+        `;
     }
-    if (todayProgress.intermediateQuiz) {
-        const star = document.getElementById('intermediateStar');
-        if (star) star.classList.add('completed');
-    }
-    if (todayProgress.advancedQuiz) {
-        const star = document.getElementById('advancedStar');
-        if (star) star.classList.add('completed');
-    }
+    
+    newsData.slice(1).forEach(news => {
+        const isRead = readNews.includes(news.id);
+        
+        html += `
+            <div class="news-card ${isRead ? 'read' : ''}" onclick="showNewsDetail('${news.id}')">
+                ${!isRead ? '<i class="fas fa-star star-icon"></i>' : '<i class="fas fa-star star-icon completed"></i>'}
+                <div class="news-title">${news.title}</div>
+            </div>
+        `;
+    });
+    
+    container.innerHTML = html;
 }
 
-function startQuiz(level) {
-    const userLevel = (userAssets.level || 'yellow').toUpperCase();
-    const exp = userAssets.exp || 0;
+function showNewsDetail(newsId) {
+    const news = newsData.find(n => n.id === newsId);
+    if (!news) return;
     
-    if (level === 'intermediate' && exp < 30000) {
-        alert('RED 등급(30,000 EXP) 달성 시 플레이 가능합니다.');
-        return;
-    }
+    currentNewsId = newsId;
     
-    if (level === 'advanced' && exp < 50000) {
-        alert('BLACK 등급(50,000 EXP) 달성 시 플레이 가능합니다.');
-        return;
-    }
+    document.getElementById('modalTitle').textContent = news.title;
+    document.getElementById('modalContent').textContent = news.content || news.description;
     
-    currentLevel = level;
-    currentIndex = 0;
-    score = 0;
-    selectedIndex = -1;
-    isAnswered = false;
-    
-    loadQuestion();
-    document.getElementById('quizModal').classList.add('show');
-}
-
-function loadQuestion() {
-    const questions = quizData[currentLevel];
-    if (!questions || currentIndex >= questions.length) {
-        completeQuiz();
-        return;
-    }
-    
-    const question = questions[currentIndex];
-    
-    document.getElementById('currentQ').textContent = currentIndex + 1;
-    
-    // 문제 유형 표시
-    if (currentLevel === 'beginner') {
-        document.getElementById('questionType').textContent = questionTypes[currentIndex];
+    const newsLink = document.getElementById('newsLink');
+    if (news.url) {
+        newsLink.href = news.url;
+        newsLink.style.display = 'inline-block';
     } else {
-        document.getElementById('questionType').textContent = currentLevel === 'intermediate' ? '📊 중급 문제' : '🎓 고급 문제';
+        newsLink.style.display = 'none';
     }
     
-    document.getElementById('questionText').textContent = question.question;
+    const today = getTodayDate();
+    const studyProgress = userAssets.studyProgress || {};
+    const todayProgress = studyProgress[today] || {};
+    const readNews = todayProgress.readNews || [];
     
-    // 옵션 초기화 및 설정
-    const optionElements = document.querySelectorAll('.option');
-    question.options.forEach((opt, idx) => {
-        // 텍스트 업데이트
-        document.getElementById('option' + idx).textContent = opt;
-        // 클래스 초기화 - 모든 스타일 클래스 제거
-        optionElements[idx].className = 'option';
-        // 클릭 이벤트 재설정
-        optionElements[idx].onclick = function() { selectOption(idx); };
-    });
-    
-    // 상태 초기화
-    selectedIndex = -1;
-    isAnswered = false;
-    
-    // 설명 박스 숨기기
-    document.getElementById('explanationBox').style.display = 'none';
-    
-    // 스크랩 버튼 숨기기
-    const scrapBtn = document.getElementById('scrapBtn');
-    if (scrapBtn) {
-        scrapBtn.style.display = 'none';
+    if (readNews.includes(newsId)) {
+        document.getElementById('completeBtn').textContent = '이미 읽음';
+        document.getElementById('completeBtn').disabled = true;
+    } else {
+        document.getElementById('completeBtn').textContent = '읽기 완료 (+30,000원 + 50 EXP)';
+        document.getElementById('completeBtn').disabled = false;
     }
     
-    // 제출 버튼 텍스트 초기화
-    document.getElementById('submitBtn').textContent = '답변 제출';
-    
-    // 제출 버튼 활성화
-    document.getElementById('submitBtn').disabled = false;
+    document.getElementById('newsModal').classList.add('show');
 }
 
-function selectOption(index) {
-    if (isAnswered) return;
-    
-    document.querySelectorAll('.option').forEach(opt => {
-        opt.classList.remove('selected');
-    });
-    document.querySelectorAll('.option')[index].classList.add('selected');
-    selectedIndex = index;
+function closeModal() {
+    document.getElementById('newsModal').classList.remove('show');
 }
 
-function submitAnswer() {
-    if (isAnswered) {
-        document.getElementById('scrapBtn').style.display = 'none';
-        currentIndex++;
-        loadQuestion();
-        return;
-    }
+async function completeReading() {
+    if (!currentNewsId) return;
     
-    if (selectedIndex === -1) {
-        alert('답을 선택해주세요.');
-        return;
-    }
-    
-    const question = quizData[currentLevel][currentIndex];
-    const isCorrect = selectedIndex === question.correct;
-    
-    document.querySelectorAll('.option')[selectedIndex].classList.add(isCorrect ? 'correct' : 'incorrect');
-    if (!isCorrect) {
-        document.querySelectorAll('.option')[question.correct].classList.add('correct');
-    }
-    
-    if (isCorrect) score++;
-    
-    // 설명 표시
-    document.getElementById('explanationText').textContent = question.explanation;
-    document.getElementById('explanationBox').style.display = 'block';
-    
-    // 스크랩 버튼 표시 (정답 확인 후)
-    document.getElementById('scrapBtn').style.display = 'flex';
-    
-    isAnswered = true;
-    document.getElementById('submitBtn').textContent = currentIndex < 4 ? '다음 문제' : '퀴즈 완료';
-}
-
-async function completeQuiz() {
     const today = getTodayDate();
     
     if (!userAssets.studyProgress) {
@@ -968,82 +714,71 @@ async function completeQuiz() {
     if (!userAssets.studyProgress[today]) {
         userAssets.studyProgress[today] = {};
     }
-    
-    const quizKey = currentLevel === 'beginner' ? 'financialQuiz' : 
-                    currentLevel === 'intermediate' ? 'intermediateQuiz' : 'advancedQuiz';
-    
-    // 정답률 계산
-    const scoreRate = score / 5;
-    
-    if (!userAssets.studyProgress[today][quizKey]) {
-        userAssets.studyProgress[today][quizKey] = true;
-        
-        // 70% 이상일 때만 보상 지급
-        if (scoreRate >= 0.7) {
-            const baseReward = currentLevel === 'beginner' ? 50000 : 
-                              currentLevel === 'intermediate' ? 75000 : 100000;
-            const baseExp = currentLevel === 'beginner' ? 100 : 
-                           currentLevel === 'intermediate' ? 150 : 200;
-            
-            const cashReward = Math.floor(baseReward * scoreRate);
-            const expReward = Math.floor(baseExp * scoreRate);
-            
-            userAssets.cash = (userAssets.cash || 0) + cashReward;
-            userAssets.totalAssets = (userAssets.totalAssets || 0) + cashReward;
-            userAssets.virtualBalance = (userAssets.virtualBalance || 0) + cashReward;
-            userAssets.exp = (userAssets.exp || 0) + expReward;
-            
-            // 레벨 업데이트 체크
-            const exp = userAssets.exp || 0;
-            let newLevel = 'yellow';
-            if (exp >= 50000) {
-                newLevel = 'black';
-            } else if (exp >= 30000) {
-                newLevel = 'red';
-            } else if (exp >= 15000) {
-                newLevel = 'blue';
-            } else if (exp >= 5000) {
-                newLevel = 'green';
-            }
-            
-            if (userAssets.level !== newLevel) {
-                userAssets.level = newLevel;
-                updateGradeButton(newLevel);
-                alert(`🎉 축하합니다! ${newLevel.toUpperCase()} 등급으로 승급하셨습니다!`);
-            }
-            
-            try {
-                const savedUser = JSON.parse(localStorage.getItem('fineu_current_user'));
-                const userId = savedUser.id || savedUser.username || 'Test';
-                
-                if (window.firebaseDB) {
-                    const userRef = window.firebaseRef(window.firebaseDB, `users/${userId}`);
-                    await window.firebaseSet(userRef, userAssets);
-                }
-                
-                localStorage.setItem('fineu_user_assets', JSON.stringify(userAssets));
-                
-                showRewardAnimation(cashReward, expReward);
-                
-            } catch (error) {
-                console.error('데이터 저장 실패:', error);
-            }
-        } else {
-            // 70% 미만일 경우 보상 없음
-            alert(`퀴즈 완료!\n정답: ${score}/5 (${Math.floor(scoreRate * 100)}%)\n\n70% 이상 정답률이 필요합니다.\n다음에 다시 도전해보세요!`);
-        }
-    } else {
-        alert(`퀴즈 완료!\n정답: ${score}/5\n이미 오늘 완료한 퀴즈입니다.`);
+    if (!userAssets.studyProgress[today].readNews) {
+        userAssets.studyProgress[today].readNews = [];
     }
     
-    document.getElementById('quizModal').classList.remove('show');
-    checkCompletionStatus();
+    if (!userAssets.studyProgress[today].readNews.includes(currentNewsId)) {
+        userAssets.studyProgress[today].readNews.push(currentNewsId);
+        
+        userAssets.cash = (userAssets.cash || 0) + 30000;
+        userAssets.totalAssets = (userAssets.totalAssets || 0) + 30000;
+        userAssets.virtualBalance = (userAssets.virtualBalance || 0) + 30000;
+        userAssets.exp = (userAssets.exp || 0) + 50;
+        
+        const allNewsRead = newsData.every(news => 
+            userAssets.studyProgress[today].readNews.includes(news.id)
+        );
+        
+        if (allNewsRead) {
+            userAssets.studyProgress[today].financialNews = true;
+        }
+        
+        // 레벨 업데이트 체크
+        const exp = userAssets.exp || 0;
+        let newLevel = 'yellow';
+        if (exp >= 50000) {
+            newLevel = 'black';
+        } else if (exp >= 30000) {
+            newLevel = 'red';
+        } else if (exp >= 15000) {
+            newLevel = 'blue';
+        } else if (exp >= 5000) {
+            newLevel = 'green';
+        }
+        
+        if (userAssets.level !== newLevel) {
+            userAssets.level = newLevel;
+            updateGradeButton(newLevel);
+            alert(`🎉 축하합니다! ${newLevel.toUpperCase()} 등급으로 승급하셨습니다!`);
+        }
+        
+        try {
+            const savedUser = JSON.parse(localStorage.getItem('fineu_current_user'));
+            const userId = savedUser.id || savedUser.username || 'Test';
+            
+            if (window.firebaseDB) {
+                const userRef = window.firebaseRef(window.firebaseDB, `users/${userId}`);
+                await window.firebaseSet(userRef, userAssets);
+            }
+            
+            localStorage.setItem('fineu_user_assets', JSON.stringify(userAssets));
+            
+            showRewardAnimation();
+            displayNews();
+            
+        } catch (error) {
+            console.error('데이터 저장 실패:', error);
+        }
+    }
+    
+    closeModal();
 }
 
-function showRewardAnimation(cash, exp) {
+function showRewardAnimation() {
     const rewardDiv = document.createElement('div');
     rewardDiv.className = 'reward-animation';
-    rewardDiv.innerHTML = `🎉 퀴즈 완료!<br>정답: ${score}/5<br>💰 ${cash.toLocaleString()}원<br>⭐ ${exp} EXP`;
+    rewardDiv.innerHTML = '🎉 뉴스 읽기 완료!<br>💰 30,000원<br>⭐ 50 EXP';
     document.body.appendChild(rewardDiv);
     
     setTimeout(() => {
@@ -1053,7 +788,7 @@ function showRewardAnimation(cash, exp) {
 
 function showCalendar() {
     const today = getTodayDate();
-    alert(`📅 오늘 날짜: ${today}\n\n매일 새로운 퀴즈가 업데이트됩니다!\n\n• 뉴스 관련 2문제\n• 경제 트렌드 2문제\n• 재미있는 문제 1개\n\n※ 70% 이상 정답 시 보상 지급`);
+    alert(`📅 오늘 날짜: ${today}\n\n매일 새로운 금융 뉴스가 업데이트됩니다!`);
 }
 
 function goToPage(page) {
@@ -1062,7 +797,7 @@ function goToPage(page) {
 
 document.addEventListener('DOMContentLoaded', async function() {
     await loadUserData();
-    loadQuizData();
+    loadNewsData();
 });
 </script>
 
