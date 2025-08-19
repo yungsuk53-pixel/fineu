@@ -157,63 +157,99 @@
             color: #2196f3;
         }
         
-        .bottom-navigation {
+        /* 하단 네비게이션 - a1과 완전히 동일 */
+        .bottom-nav {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
+            height: 70px;
             background: white;
-            border-top: 1px solid #e0e0e0;
-            padding: 8px 0 20px 0;
-        }
-        
-        .nav-container {
+            background-image: url('images/배경.png');
+            background-size: cover;
+            background-position: center;
             display: flex;
             justify-content: space-around;
             align-items: center;
-            max-width: 480px;
-            margin: 0 auto;
+            box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+            z-index: 100;
+        }
+
+        /* 중앙 반원 돌출 부분 - a1과 완전히 동일 */
+        .bottom-nav::before {
+            content: '';
+            position: absolute;
+            top: -32px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 65px;
+            height: 65px;
+            background: white;
+            background-image: url('images/배경.png');
+            background-size: cover;
+            background-position: center;
+            border-radius: 50%;
+            box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+            z-index: -1;
         }
         
         .nav-item {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 4px;
-            padding: 8px;
-            background: none;
-            border: none;
             cursor: pointer;
-            color: #999;
-            position: relative;
+            transition: all 0.3s ease;
+            padding: 8px;
         }
         
         .nav-item.active {
-            color: #000;
+            color: #7cb9e8;
         }
         
-        .nav-item i {
-            font-size: 24px;
-        }
-        
-        .nav-item span {
-            font-size: 11px;
-        }
-        
-        .level-badge {
-            position: absolute;
-            top: -20px;
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            background: #FFE99E;
-            color: #333;
+        .nav-icon {
+            font-size: 18px;
+            margin-bottom: 4px;
+            width: 24px;
+            height: 24px;
             display: flex;
             align-items: center;
             justify-content: center;
+        }
+        
+        .nav-icon img {
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
+        }
+        
+        .grade-button {
+            width: 55px;
+            height: 55px;
+            background: #fafaf8;
+            border-radius: 50%;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
             font-weight: bold;
-            font-size: 11px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            top: -35px;
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .grade-button:hover {
+            transform: scale(1.1);
+        }
+
+        .grade-button img {
+            width: 45px;
+            height: 45px;
+            object-fit: contain;
         }
         
         .modal {
@@ -318,6 +354,23 @@
             border-radius: 4px;
         }
         
+        .scrap-btn {
+            width: 100%;
+            padding: 16px;
+            background: #ffd700;
+            color: #333;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 12px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
         .reward-animation {
             position: fixed;
             top: 50%;
@@ -389,27 +442,30 @@
     </div>
 </div>
 
-<div class="bottom-navigation">
-    <div class="nav-container">
-        <button class="nav-item" onclick="location.href='a1.html'">
-            <i class="fas fa-home"></i>
-            <span>홈</span>
-        </button>
-        <button class="nav-item active" onclick="location.href='a2.html'">
-            <i class="fas fa-file-alt"></i>
-            <span>학습</span>
-        </button>
-        <button class="nav-item" style="position: relative;">
-            <div class="level-badge" id="levelBadge">YELLOW</div>
-        </button>
-        <button class="nav-item" onclick="location.href='a4.html'">
-            <i class="fas fa-comment-dots"></i>
-            <span>채팅</span>
-        </button>
-        <button class="nav-item" onclick="location.href='a5.html'">
-            <i class="fas fa-ellipsis-h"></i>
-            <span>더보기</span>
-        </button>
+<!-- 하단 네비게이션 - a1과 완전히 동일한 구조 -->
+<div class="bottom-nav">
+    <div class="nav-item" onclick="goToPage('a1.html')">
+        <div class="nav-icon">
+            <img src="images/집.png" alt="홈">
+        </div>
+    </div>
+    <div class="nav-item active" onclick="goToPage('a2.html')">
+        <div class="nav-icon">
+            <img src="images/문서.png" alt="문서">
+        </div>
+    </div>
+    <div class="grade-button" id="gradeButton" onclick="goToPage('a3.html')">
+        <img id="gradeButtonImage" src="images/YELLOW ㅇ.png" alt="YELLOW">
+    </div>
+    <div class="nav-item" onclick="goToPage('a4.html')">
+        <div class="nav-icon">
+            <img src="images/채팅.png" alt="채팅">
+        </div>
+    </div>
+    <div class="nav-item" onclick="goToPage('a5.html')">
+        <div class="nav-icon">
+            <img src="images/더보기.png" alt="더보기">
+        </div>
     </div>
 </div>
 
@@ -440,10 +496,12 @@
             <strong>💡 설명:</strong>
             <div id="explanationText"></div>
         </div>
+        
         <!-- 스크랩 버튼 추가 (정답 확인 후에만 표시) -->
-        <button class="scrap-btn" id="scrapBtn" style="display: none;" onclick="addToScrap()">
+        <button class="scrap-btn" id="scrapBtn" onclick="addToScrap()">
             <i class="fas fa-bookmark"></i> 이 문제 스크랩하기
         </button>
+        
         <button class="submit-btn" id="submitBtn" onclick="submitAnswer()">답변 제출</button>
     </div>
 </div>
@@ -466,6 +524,14 @@ const questionTypes = [
     '🎯 재미있는 금융 문제'
 ];
 
+const levelSystem = {
+    YELLOW: { name: 'YELLOW', exp: 0, max: 5000, navImage: 'YELLOW ㅇ.png' },
+    GREEN: { name: 'GREEN', exp: 5000, max: 15000, navImage: 'GREEN ㅇ.png' },
+    BLUE: { name: 'BLUE', exp: 15000, max: 30000, navImage: 'BLUE ㅇ.png' },
+    RED: { name: 'RED', exp: 30000, max: 50000, navImage: 'RED ㅇ.png' },
+    BLACK: { name: 'BLACK', exp: 50000, max: 999999, navImage: 'BLACK ㅇ.png' }
+};
+
 function getTodayDate() {
     const now = new Date();
     const koreaTime = new Date(now.toLocaleString("en-US", {timeZone: "Asia/Seoul"}));
@@ -474,62 +540,27 @@ function getTodayDate() {
     const day = String(koreaTime.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
 }
+
 async function addToScrap() {
     if (!userAssets.scrappedItems) {
         userAssets.scrappedItems = [];
     }
     
-    let scrapItem = {};
-    
-    // a2-news.html용
-    if (window.location.pathname.includes('news')) {
-        const news = newsData.find(n => n.id === currentNewsId);
-        if (!news) {
-            alert('뉴스 정보를 찾을 수 없습니다.');
-            return;
-        }
-        scrapItem = {
-            type: 'news',
-            title: news.title,
-            content: news.content || news.description,
-            date: new Date().toISOString(),
-            originalId: news.id
-        };
+    const question = quizData[currentLevel][currentIndex];
+    if (!question) {
+        alert('퀴즈 정보를 찾을 수 없습니다.');
+        return;
     }
     
-    // a2-terms.html용
-    else if (window.location.pathname.includes('terms')) {
-        if (!currentTermData) {
-            alert('용어 정보를 찾을 수 없습니다.');
-            return;
-        }
-        scrapItem = {
-            type: 'terms',
-            title: currentTermData.term,
-            content: currentTermData.definition,
-            explanation: currentTermData.example,
-            date: new Date().toISOString(),
-            originalId: currentTermData.id
-        };
-    }
-    
-    // a2-quiz.html용
-    else if (window.location.pathname.includes('quiz')) {
-        const question = quizData[currentLevel][currentIndex];
-        if (!question) {
-            alert('퀴즈 정보를 찾을 수 없습니다.');
-            return;
-        }
-        scrapItem = {
-            type: 'quiz',
-            title: `[${currentLevel === 'beginner' ? '초급' : currentLevel === 'intermediate' ? '중급' : '고급'}] ${question.question}`,
-            content: `정답: ${question.options[question.correct]}`,
-            explanation: question.explanation,
-            date: new Date().toISOString(),
-            level: currentLevel,
-            index: currentIndex
-        };
-    }
+    const scrapItem = {
+        type: 'quiz',
+        title: `[${currentLevel === 'beginner' ? '초급' : currentLevel === 'intermediate' ? '중급' : '고급'}] ${question.question}`,
+        content: `정답: ${question.options[question.correct]}`,
+        explanation: question.explanation,
+        date: new Date().toISOString(),
+        level: currentLevel,
+        index: currentIndex
+    };
     
     // 중복 체크
     const isDuplicate = userAssets.scrappedItems.some(item => 
@@ -608,6 +639,7 @@ function showScrapAnimation() {
         document.body.removeChild(scrapDiv);
     }, 1500);
 }
+
 async function loadUserData() {
     const savedUser = localStorage.getItem('fineu_current_user');
     if (!savedUser) {
@@ -632,29 +664,38 @@ async function loadUserData() {
             userAssets = JSON.parse(localStorage.getItem('fineu_user_assets') || '{}');
         }
         
-        updateLevelBadge();
+        // 경험치 기반 레벨 결정
+        const exp = userAssets.exp || 0;
+        let determinedLevel = 'yellow';
+        if (exp >= 50000) {
+            determinedLevel = 'black';
+        } else if (exp >= 30000) {
+            determinedLevel = 'red';
+        } else if (exp >= 15000) {
+            determinedLevel = 'blue';
+        } else if (exp >= 5000) {
+            determinedLevel = 'green';
+        }
+        userAssets.level = determinedLevel;
+        updateGradeButton(determinedLevel);
         checkQuizAccess();
+        
     } catch (error) {
         console.error('사용자 데이터 로드 실패:', error);
         userAssets = JSON.parse(localStorage.getItem('fineu_user_assets') || '{}');
     }
 }
 
-function updateLevelBadge() {
-    const level = (userAssets.level || 'yellow').toUpperCase();
-    const badge = document.getElementById('levelBadge');
-    if (badge) {
-        badge.textContent = level;
-        
-        const colors = {
-            'YELLOW': '#FFE99E',
-            'GREEN': '#C1EDB3',
-            'BLUE': '#ADD9FA',
-            'RED': '#FAABAD',
-            'BLACK': '#333333'
-        };
-        badge.style.background = colors[level] || colors['YELLOW'];
-        badge.style.color = level === 'BLACK' ? 'white' : '#333';
+function updateGradeButton(grade) {
+    const upperGrade = (grade || 'yellow').toUpperCase();
+    const levelData = levelSystem[upperGrade];
+    
+    if (levelData) {
+        const gradeButtonImage = document.getElementById('gradeButtonImage');
+        if (gradeButtonImage && levelData.navImage) {
+            gradeButtonImage.src = `images/${levelData.navImage}`;
+            gradeButtonImage.alt = levelData.name;
+        }
     }
 }
 
@@ -843,14 +884,14 @@ function loadQuestion() {
     
     document.getElementById('questionText').textContent = question.question;
     
-    // 옵션 초기화 및 설정 (이 부분이 중요!)
+    // 옵션 초기화 및 설정
     const optionElements = document.querySelectorAll('.option');
     question.options.forEach((opt, idx) => {
         // 텍스트 업데이트
         document.getElementById('option' + idx).textContent = opt;
         // 클래스 초기화 - 모든 스타일 클래스 제거
         optionElements[idx].className = 'option';
-        // 클릭 이벤트 재설정 (필요한 경우)
+        // 클릭 이벤트 재설정
         optionElements[idx].onclick = function() { selectOption(idx); };
     });
     
@@ -861,7 +902,7 @@ function loadQuestion() {
     // 설명 박스 숨기기
     document.getElementById('explanationBox').style.display = 'none';
     
-    // 스크랩 버튼 숨기기 (스크랩 기능 추가한 경우)
+    // 스크랩 버튼 숨기기
     const scrapBtn = document.getElementById('scrapBtn');
     if (scrapBtn) {
         scrapBtn.style.display = 'none';
@@ -873,7 +914,6 @@ function loadQuestion() {
     // 제출 버튼 활성화
     document.getElementById('submitBtn').disabled = false;
 }
-
 
 function selectOption(index) {
     if (isAnswered) return;
@@ -887,7 +927,7 @@ function selectOption(index) {
 
 function submitAnswer() {
     if (isAnswered) {
-         document.getElementById('scrapBtn').style.display = 'none';
+        document.getElementById('scrapBtn').style.display = 'none';
         currentIndex++;
         loadQuestion();
         return;
@@ -908,7 +948,7 @@ function submitAnswer() {
     
     if (isCorrect) score++;
     
-     // 설명 표시
+    // 설명 표시
     document.getElementById('explanationText').textContent = question.explanation;
     document.getElementById('explanationBox').style.display = 'block';
     
@@ -953,6 +993,25 @@ async function completeQuiz() {
             userAssets.virtualBalance = (userAssets.virtualBalance || 0) + cashReward;
             userAssets.exp = (userAssets.exp || 0) + expReward;
             
+            // 레벨 업데이트 체크
+            const exp = userAssets.exp || 0;
+            let newLevel = 'yellow';
+            if (exp >= 50000) {
+                newLevel = 'black';
+            } else if (exp >= 30000) {
+                newLevel = 'red';
+            } else if (exp >= 15000) {
+                newLevel = 'blue';
+            } else if (exp >= 5000) {
+                newLevel = 'green';
+            }
+            
+            if (userAssets.level !== newLevel) {
+                userAssets.level = newLevel;
+                updateGradeButton(newLevel);
+                alert(`🎉 축하합니다! ${newLevel.toUpperCase()} 등급으로 승급하셨습니다!`);
+            }
+            
             try {
                 const savedUser = JSON.parse(localStorage.getItem('fineu_current_user'));
                 const userId = savedUser.id || savedUser.username || 'Test';
@@ -995,6 +1054,10 @@ function showRewardAnimation(cash, exp) {
 function showCalendar() {
     const today = getTodayDate();
     alert(`📅 오늘 날짜: ${today}\n\n매일 새로운 퀴즈가 업데이트됩니다!\n\n• 뉴스 관련 2문제\n• 경제 트렌드 2문제\n• 재미있는 문제 1개\n\n※ 70% 이상 정답 시 보상 지급`);
+}
+
+function goToPage(page) {
+    window.location.href = page;
 }
 
 document.addEventListener('DOMContentLoaded', async function() {
