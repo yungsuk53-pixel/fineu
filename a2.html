@@ -465,7 +465,17 @@
                 }
             }
         }
-
+        // 등급별 색상 반환 함수 추가
+function getUserLevelColor(level) {
+    const colors = {
+        'YELLOW': '#FFE99E',
+        'GREEN': '#C1EDB3',
+        'BLUE': '#ADD9FA',
+        'RED': '#FAABAD',
+        'BLACK': '#333333'
+    };
+    return colors[level] || colors['YELLOW'];
+}
         function validateTodayData(data) {
             if (!data) return false;
             
@@ -718,6 +728,10 @@
                     gradeButtonImage.alt = levelData.name;
                     console.log('✅ 그레이드 버튼 업데이트:', levelData.name);
                 }
+                 // 배경색 설정 추가
+        if (gradeButton) {
+            gradeButton.style.background = getUserLevelColor(upperGrade);
+        }
             }
         }
         
