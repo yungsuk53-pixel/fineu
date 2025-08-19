@@ -646,7 +646,7 @@
     background-size: cover;
     background-position: center;
     display: flex;
-    justify-content: space-around;
+        justify-content: space-around;
     align-items: center;
     box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
     z-index: 100;
@@ -1015,6 +1015,123 @@
             BLACK: { name: 'BLACK', exp: 50000, max: 999999, image: 'BLACK ㅁ.png', nav: 'BLACK ㅇ', navImage: 'BLACK ㅇ.png' }
         };
 
+        // ETF 심볼 매핑 (a1에 추가)
+        const etfSymbolMap = {
+            'KODEX_200': '069500.KS',
+            'TIGER_200': '102110.KS',
+            'KODEX_코스닥150': '229200.KS',
+            'TIGER_나스닥100': '133690.KS',
+            'KODEX_미국S&P500': '360750.KS',
+            'TIGER_차이나전기차SOLACTIVE': '371460.KS',
+            'KODEX_2차전지산업': '305720.KS',
+            'TIGER_반도체': '091230.KS',
+            'KODEX_골드선물': '132030.KS',
+            'TIGER_원유선물Enhanced': '130680.KS',
+            'KODEX_인버스': '114800.KS',
+            'TIGER_미국채10년선물': '305080.KS',
+            'KOSEF_200': '069660.KS',
+            'KODEX_MSCI_Korea': '278530.KS',
+            'KINDEX_중국본토CSI300': '143460.KS',
+            'TIGER_K-뉴딜': '300950.KS',
+            'KODEX_바이오': '276650.KS',
+            'TIGER_차이나전기차': '315270.KS',
+            'TIGER_소프트웨어': '157490.KS',
+            'KODEX_미국달러선물': '364970.KS'
+        };
+
+        // Yahoo Finance API로 실시간 가격 가져오기 (ETF 지원 추가)
+        async function getYahooStockPrice(symbol) {
+            // 타임아웃 기능이 있는 fetch 함수
+            const fetchWithTimeout = async (url, timeout = 5000) => {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), timeout);
+                
+                try {
+                    const response = await fetch(url, { signal: controller.signal });
+                    clearTimeout(timeoutId);
+                    return response;
+                } catch (error) {
+                    clearTimeout(timeoutId);
+                    throw error;
+                }
+            };
+
+            // 여러 프록시 서버 목록 (순서대로 시도)
+            const proxyServers = [
+                { url: 'https://cors-anywhere.herokuapp.com/', type: 'direct' },
+                { url: 'https://api.allorigins.win/get?url=', type: 'allorigins' },
+                { url: 'https://corsproxy.io/?', type: 'direct' }
+            ];
+            
+            const yahooUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}`;
+            
+            for (let i = 0; i < proxyServers.length; i++) {
+                try {
+                    console.log(`🔄 ${symbol} 프록시 ${i + 1} 시도`);
+                    
+                    let response;
+                    let chartData;
+                    
+                    if (proxyServers[i].type === 'allorigins') {
+                        // AllOrigins 방식
+                        const proxyUrl = `${proxyServers[i].url}${encodeURIComponent(yahooUrl)}`;
+                        response = await fetchWithTimeout(proxyUrl, 3000);
+                        
+                        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                        
+                        const data = await response.json();
+                        if (!data.contents) throw new Error('No contents in response');
+                        
+                        chartData = JSON.parse(data.contents);
+                    } else {
+                        // 직접 프록시 방식
+                        const proxyUrl = `${proxyServers[i].url}${yahooUrl}`;
+                        response = await fetchWithTimeout(proxyUrl, 3000);
+                        
+                        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                        
+                        chartData = await response.json();
+                    }
+                    
+                    // 데이터 파싱
+                    if (chartData.chart && chartData.chart.result && chartData.chart.result[0]) {
+                        const result = chartData.chart.result[0];
+                        const meta = result.meta;
+                        const quote = result.indicators.quote[0];
+                        
+                        const currentPrice = meta.regularMarketPrice || quote.close[quote.close.length - 1];
+                        const previousClose = meta.previousClose || meta.chartPreviousClose;
+                        const change = currentPrice - previousClose;
+                        const changePercent = (change / previousClose) * 100;
+                        
+                        const currency = meta.currency || 'KRW';
+                        const isUSD = currency === 'USD';
+                        
+                        console.log(`✅ ${symbol} 실제 데이터 로드 성공:`, currentPrice, currency);
+                        
+                        return {
+                            price: isUSD ? parseFloat(currentPrice.toFixed(2)) : Math.round(currentPrice),
+                            change: change,
+                            changePercent: changePercent,
+                            volume: quote.volume ? quote.volume[quote.volume.length - 1] : 0,
+                            high: meta.regularMarketDayHigh,
+                            low: meta.regularMarketDayLow,
+                            currency: currency,
+                            source: 'yahoo_api'
+                        };
+                    }
+                    
+                } catch (error) {
+                    // 마지막 프록시가 아닌 경우에만 간단한 로그
+                    if (i === proxyServers.length - 1) {
+                        console.log(`❌ ${symbol} 모든 프록시 실패`);
+                        throw new Error(`모든 프록시 서버 실패: ${error.message}`);
+                    }
+                    continue;
+                }
+            }
+        }
+
         // 알림 관련 함수
         function showNotificationPage() {
             document.getElementById('notificationPage').style.display = 'flex';
@@ -1261,7 +1378,7 @@
                     
                     console.log('✅ userAssets 설정 완료:', userAssets);
                     
-                    // ⭐ 페이지 로드 시 포트폴리오 가격 업데이트
+                    // ⭐ 페이지 로드 시 포트폴리오 가격 업데이트 (ETF 포함)
                     await updateAllPortfolioPrices();
                     
                 } else {
@@ -1286,7 +1403,7 @@
             }
         }
 
-        // ⭐ 새로운 함수: 모든 포트폴리오 자산의 가격 업데이트
+        // ⭐ 새로운 함수: 모든 포트폴리오 자산의 가격 업데이트 (ETF 지원 추가)
         async function updateAllPortfolioPrices() {
             console.log('📈 포트폴리오 가격 업데이트 시작');
             
@@ -1303,22 +1420,47 @@
                 
                 // 주식과 펀드만 가격 변동 적용 (예적금과 대출은 고정)
                 if (assetType === 'stock' || assetType === 'fund') {
-                    const oldPrice = holding.currentPrice || holding.avgPrice || 0;
-                    
-                    if (oldPrice > 0) {
-                        // 랜덤 가격 변동 생성 (-3% ~ +3%)
-                        const changePercent = (Math.random() - 0.5) * 0.06;
-                        const newPrice = Math.max(1, Math.round(oldPrice * (1 + changePercent)));
+                    try {
+                        let yahooSymbol = symbol;
                         
-                        // 가격 업데이트
-                        holding.currentPrice = newPrice;
-                        holding.lastPriceUpdate = new Date().toISOString();
+                        // ETF/펀드의 경우 Yahoo Finance 심볼 처리
+                        if (assetType === 'fund') {
+                            // ETF 심볼 매핑 확인
+                            yahooSymbol = etfSymbolMap[symbol] || symbol;
+                            
+                            // .KS가 없으면 추가
+                            if (!yahooSymbol.includes('.')) {
+                                yahooSymbol += '.KS';
+                            }
+                        } else if (!yahooSymbol.includes('.')) {
+                            // 주식도 .KS 추가
+                            yahooSymbol += '.KS';
+                        }
                         
-                        const priceChange = newPrice - oldPrice;
-                        const priceChangePercent = ((priceChange / oldPrice) * 100).toFixed(2);
+                        console.log(`📊 ${holding.name || symbol} 가격 업데이트 시도 (${yahooSymbol})`);
                         
-                        console.log(`📊 ${holding.name || symbol}: ${oldPrice}원 → ${newPrice}원 (${priceChangePercent >= 0 ? '+' : ''}${priceChangePercent}%)`);
-                        hasUpdates = true;
+                        // Yahoo Finance에서 실시간 가격 가져오기
+                        const priceData = await getYahooStockPrice(yahooSymbol);
+                        
+                        if (priceData && priceData.price) {
+                            const oldPrice = holding.currentPrice || holding.avgPrice || 0;
+                            const newPrice = priceData.price;
+                            
+                            // 가격 업데이트
+                            holding.currentPrice = newPrice;
+                            holding.lastPriceUpdate = new Date().toISOString();
+                            
+                            const priceChange = newPrice - oldPrice;
+                            const priceChangePercent = oldPrice > 0 ? ((priceChange / oldPrice) * 100).toFixed(2) : 0;
+                            
+                            console.log(`✅ ${holding.name || symbol}: ${oldPrice}원 → ${newPrice}원 (${priceChangePercent >= 0 ? '+' : ''}${priceChangePercent}%)`);
+                            hasUpdates = true;
+                        } else {
+                            // API 실패 시 기존 가격 유지 또는 약간의 변동 적용
+                            console.log(`⚠️ ${holding.name || symbol}: API 실패, 기존 가격 유지`);
+                        }
+                    } catch (error) {
+                        console.log(`❌ ${holding.name || symbol} 가격 업데이트 실패:`, error.message);
                     }
                 }
             }
@@ -1331,8 +1473,6 @@
                 
                 // Firebase에 저장
                 await saveUserDataToFirebase();
-                
-                // 화면 업데이트는 loadUserDataFromFirebase에서 처리하므로 여기서는 생략
             }
         }
 
@@ -1432,7 +1572,7 @@
             }
         }
 
-        // 실시간 주식 가격 업데이트 (다양한 자산 유형 지원)
+        // 실시간 주식 가격 업데이트 (다양한 자산 유형 지원 - ETF 포함)
         function updateRealTimePrices() {
             if (!userAssets.portfolio) return;
 
@@ -1532,7 +1672,7 @@
             }
         }
 
-        // 자산 목록 업데이트 (실제 포트폴리오 데이터 반영)
+        // 자산 목록 업데이트 (실제 포트폴리오 데이터 반영 - ETF 포함)
         function updateAssetList() {
             const assetListElement = document.getElementById('assetList');
             if (!assetListElement) return;
@@ -1558,6 +1698,15 @@
                         profitLoss = currentValue - totalInvested;
                         profitLossPercent = totalInvested > 0 ? ((profitLoss / totalInvested) * 100).toFixed(2) : '0.00';
                         detailText = `${(holding.quantity || 0).toLocaleString()}주 (현재가: ${currentPrice.toLocaleString()}원)`;
+                    } else if (assetType === 'fund') {
+                        // ETF/펀드 표시
+                        const currentPrice = holding.currentPrice || holding.price || holding.avgPrice || 0;
+                        currentValue = (holding.quantity || 0) * currentPrice;
+                        const totalInvested = holding.totalInvested || ((holding.quantity || 0) * (holding.avgPrice || 0));
+                        profitLoss = currentValue - totalInvested;
+                        profitLossPercent = totalInvested > 0 ? ((profitLoss / totalInvested) * 100).toFixed(2) : '0.00';
+                        detailText = `${(holding.quantity || 0).toLocaleString()}좌 (현재가: ${currentPrice.toLocaleString()}원)`;
+                        displayName += ' (ETF)'; // ETF 표시 추가
                     } else if (assetType === 'savings') {
                         // 예적금 표시
                         currentValue = holding.avgPrice || 0;
@@ -1569,14 +1718,6 @@
                         detailText = `대출 상품 (금액: ${Math.abs(currentValue).toLocaleString()}원)`;
                         profitLoss = 0; // 대출은 수익률 표시 안함
                         displayName += ' (부채)';
-                    } else if (assetType === 'fund') {
-                        // 펀드 표시
-                        const currentPrice = holding.currentPrice || holding.price || holding.avgPrice || 0;
-                        currentValue = (holding.quantity || 0) * currentPrice;
-                        const totalInvested = holding.totalInvested || ((holding.quantity || 0) * (holding.avgPrice || 0));
-                        profitLoss = currentValue - totalInvested;
-                        profitLossPercent = totalInvested > 0 ? ((profitLoss / totalInvested) * 100).toFixed(2) : '0.00';
-                        detailText = `${(holding.quantity || 0).toLocaleString()}좌 (현재가: ${currentPrice.toLocaleString()}원)`;
                     }
                     
                     const isProfit = profitLoss >= 0;
@@ -1659,16 +1800,13 @@
 
             return cash; // 화면에는 현금만 표시
         }
-        
-
-        // 포트폴리오 차트 생성
 
         // 총 자산 계산 (백업용 - 실제로는 Firebase의 totalAssets 사용)
         function calculateTotalAssets() {
             return userAssets.totalAssets || userAssets.virtualBalance || userAssets.cash || 0;
         }
 
-        // 포트폴리오 차트 생성 (실제 Firebase 데이터 기반)
+        // 포트폴리오 차트 생성 (실제 Firebase 데이터 기반 - ETF 포함)
         function createPortfolioChart() {
             const ctx = document.getElementById('portfolioChart').getContext('2d');
             
@@ -1724,14 +1862,14 @@
                             // 주식들은 분홍색 계열 사용 (legend stock 색상 기반)
                             const stockColors = ['#ffb3ba', '#ff9aa8', '#ff8196', '#ff6884', '#ff4f72'];
                             chartColors.push(stockColors[index % stockColors.length]);
+                        } else if (assetType === 'fund') {
+                            // ETF/펀드는 초록색 계열 사용 (legend other 색상 기반)
+                            const fundColors = ['#baffc9', '#a8f5b7', '#96f1a5', '#84ed93', '#72e981'];
+                            chartColors.push(fundColors[index % fundColors.length]);
                         } else if (assetType === 'savings') {
                             // 예적금은 노란색 계열 사용 (legend savings 색상 기반)
-                            const savingsColors = ['#fff3cd', '#ffecb3', '#ffe596', '#ffde7a', '#ffd85e'];
+                            const savingsColors = ['#ffffba', '#fff3a8', '#ffe796', '#ffdb84', '#ffcf72'];
                             chartColors.push(savingsColors[index % savingsColors.length]);
-                        } else if (assetType === 'fund') {
-                            // 펀드는 초록색 계열 사용 (legend other 색상 기반)
-                            const fundColors = ['#d4edda', '#c3e6cb', '#b8dfbc', '#aed8ad', '#a4d19e'];
-                            chartColors.push(fundColors[index % fundColors.length]);
                         } else {
                             // 기타 자산은 회색 계열
                             chartColors.push('#e9ecef');
