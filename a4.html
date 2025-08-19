@@ -138,6 +138,12 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
+        .message.system .message-bubble {
+            background: #fffbf0;
+            color: #666;
+            border: 1px solid #ffd700;
+        }
+
         /* 타이핑 인디케이터 */
         .typing-indicator {
             display: none;
@@ -373,6 +379,8 @@
             z-index: 1000;
             max-width: 350px;
             width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
         }
 
         .education-modal.active {
@@ -450,21 +458,55 @@
             opacity: 0.8;
         }
 
+        .modal-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
         .education-list {
             background: #f9f9f9;
             padding: 10px;
             border-radius: 5px;
             margin-bottom: 10px;
-            max-height: 200px;
+            max-height: 300px;
             overflow-y: auto;
         }
 
         .education-item {
-            padding: 5px;
-            margin-bottom: 5px;
+            padding: 8px;
+            margin-bottom: 8px;
             background: white;
-            border-radius: 3px;
+            border-radius: 5px;
             font-size: 13px;
+            border-left: 3px solid #7cb9e8;
+        }
+
+        .education-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .education-item-number {
+            font-weight: bold;
+            color: #7cb9e8;
+        }
+
+        .education-item-date {
+            font-size: 11px;
+            color: #999;
+        }
+
+        .education-item-content {
+            color: #333;
+            line-height: 1.4;
+        }
+
+        .loading-message {
+            text-align: center;
+            color: #999;
+            padding: 20px;
         }
 
         /* 반응형 수정 */
@@ -656,17 +698,43 @@
         let chatHistory = [];
         let isProcessing = false;
 
-        // 교육 데이터 저장소
-        let educationData = JSON.parse(localStorage.getItem('fineu_education_data')) || [];
+        // 교육 데이터 (Firebase에서 로드)
+        let educationData = [];
         let educationMode = null;
-        let educationContent = '';
+        let isLoadingEducation = false;
 
         // 페이지 로드 시 초기화
         document.addEventListener('DOMContentLoaded', function() {
             loadUserDataFromFirebase();
+            loadEducationDataFromFirebase(); // Firebase에서 교육 데이터 로드
             loadChatHistory();
             initializeWelcomeMessage();
         });
+
+        // Firebase에서 교육 데이터 로드
+        async function loadEducationDataFromFirebase() {
+            try {
+                console.log('📚 교육 데이터 로드 시작...');
+                const snapshot = await database.ref('education_data').once('value');
+                const data = snapshot.val();
+                
+                if (data) {
+                    educationData = Object.entries(data).map(([key, value]) => ({
+                        id: key,
+                        ...value
+                    }));
+                    // 시간순 정렬
+                    educationData.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+                    console.log(`✅ ${educationData.length}개의 교육 데이터 로드 완료`);
+                } else {
+                    educationData = [];
+                    console.log('📚 저장된 교육 데이터 없음');
+                }
+            } catch (error) {
+                console.error('❌ 교육 데이터 로드 실패:', error);
+                educationData = [];
+            }
+        }
 
         // Firebase에서 사용자 데이터 가져오기
         async function loadUserDataFromFirebase() {
@@ -784,12 +852,12 @@
                 return;
             } else if (message === '/교육목록') {
                 input.value = '';
-                showEducationList();
+                await showEducationList();
                 return;
             } else if (message.startsWith('/교육삭제 ')) {
                 const index = parseInt(message.split(' ')[1]) - 1;
                 input.value = '';
-                deleteEducation(index);
+                await deleteEducation(index);
                 return;
             }
             
@@ -833,10 +901,12 @@
                 title.textContent = '관리자 인증';
                 content.innerHTML = '<input type="password" class="modal-input" id="adminPassword" placeholder="비밀번호를 입력하세요">';
                 confirmBtn.onclick = handleEducationAuth;
+                confirmBtn.disabled = false;
             } else if (mode === 'content') {
                 title.textContent = '교육 내용 입력';
-                content.innerHTML = '<textarea class="modal-textarea" id="educationContent" placeholder="교육할 내용을 입력하세요"></textarea>';
+                content.innerHTML = '<textarea class="modal-textarea" id="educationContent" placeholder="교육할 내용을 입력하세요\n예: 금융감독원장 이름은 홍길동입니다."></textarea>';
                 confirmBtn.onclick = saveEducation;
+                confirmBtn.disabled = false;
             }
             
             modal.classList.add('active');
@@ -855,7 +925,7 @@
         // 관리자 인증 처리
         function handleEducationAuth() {
             const password = document.getElementById('adminPassword').value;
-            if (password === '0317') {
+            if (password === 'admin123') {
                 closeEducationModal();
                 setTimeout(() => {
                     showEducationModal('content');
@@ -865,48 +935,97 @@
             }
         }
 
-        // 교육 내용 저장
-        function saveEducation() {
+        // 교육 내용 저장 (Firebase에 저장)
+        async function saveEducation() {
             const content = document.getElementById('educationContent').value.trim();
-            if (content) {
-                educationData.push({
-                    content: content,
-                    timestamp: Date.now()
-                });
-                localStorage.setItem('fineu_education_data', JSON.stringify(educationData));
-                addMessage('교육 내용이 저장되었습니다.', 'bot', false);
-                closeEducationModal();
-            } else {
+            if (!content) {
                 alert('교육 내용을 입력해주세요.');
+                return;
+            }
+
+            const confirmBtn = document.getElementById('modalConfirmBtn');
+            confirmBtn.disabled = true;
+            confirmBtn.textContent = '저장 중...';
+
+            try {
+                // Firebase에 저장
+                const newEducationRef = database.ref('education_data').push();
+                await newEducationRef.set({
+                    content: content,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP,
+                    createdBy: currentUser.id || 'admin',
+                    createdAt: new Date().toISOString()
+                });
+
+                // 로컬 배열에도 추가
+                educationData.push({
+                    id: newEducationRef.key,
+                    content: content,
+                    timestamp: Date.now(),
+                    createdBy: currentUser.id || 'admin',
+                    createdAt: new Date().toISOString()
+                });
+
+                addMessage('✅ 교육 내용이 성공적으로 저장되었습니다.', 'system', false);
+                closeEducationModal();
+                
+                console.log('✅ 교육 데이터 Firebase 저장 완료');
+            } catch (error) {
+                console.error('❌ 교육 데이터 저장 실패:', error);
+                alert('저장 중 오류가 발생했습니다. 다시 시도해주세요.');
+                confirmBtn.disabled = false;
+                confirmBtn.textContent = '확인';
             }
         }
 
         // 교육 목록 표시
-        function showEducationList() {
+        async function showEducationList() {
+            // Firebase에서 최신 데이터 다시 로드
+            await loadEducationDataFromFirebase();
+            
             if (educationData.length === 0) {
-                addMessage('저장된 교육 내용이 없습니다.', 'bot', false);
+                addMessage('📚 저장된 교육 내용이 없습니다.', 'system', false);
                 return;
             }
             
-            let listMessage = '📚 교육 목록:\n\n';
+            let listMessage = '📚 교육 목록 (총 ' + educationData.length + '개):\n\n';
             educationData.forEach((item, index) => {
-                const preview = item.content.length > 30 ? 
-                    item.content.substring(0, 30) + '...' : item.content;
-                listMessage += `${index + 1}. ${preview}\n`;
+                const date = item.createdAt ? new Date(item.createdAt).toLocaleDateString() : '날짜 없음';
+                const preview = item.content.length > 50 ? 
+                    item.content.substring(0, 50) + '...' : item.content;
+                listMessage += `[${index + 1}] ${preview}\n   (${date})\n\n`;
             });
-            listMessage += '\n삭제하려면 /교육삭제 [번호]를 입력하세요.';
+            listMessage += '💡 삭제하려면 /교육삭제 [번호]를 입력하세요.';
             
-            addMessage(listMessage, 'bot', false);
+            addMessage(listMessage, 'system', false);
         }
 
-        // 교육 삭제
-        function deleteEducation(index) {
-            if (index >= 0 && index < educationData.length) {
+        // 교육 삭제 (Firebase에서 삭제)
+        async function deleteEducation(index) {
+            if (index < 0 || index >= educationData.length) {
+                addMessage('❌ 올바른 번호를 입력해주세요.', 'system', false);
+                return;
+            }
+
+            const itemToDelete = educationData[index];
+            const confirmDelete = confirm(`정말로 "${itemToDelete.content.substring(0, 30)}..."를 삭제하시겠습니까?`);
+            
+            if (!confirmDelete) {
+                return;
+            }
+
+            try {
+                // Firebase에서 삭제
+                await database.ref(`education_data/${itemToDelete.id}`).remove();
+                
+                // 로컬 배열에서도 삭제
                 educationData.splice(index, 1);
-                localStorage.setItem('fineu_education_data', JSON.stringify(educationData));
-                addMessage(`교육 내용 ${index + 1}번이 삭제되었습니다.`, 'bot', false);
-            } else {
-                addMessage('올바른 번호를 입력해주세요.', 'bot', false);
+                
+                addMessage(`✅ 교육 내용 ${index + 1}번이 삭제되었습니다.`, 'system', false);
+                console.log('✅ 교육 데이터 삭제 완료');
+            } catch (error) {
+                console.error('❌ 교육 데이터 삭제 실패:', error);
+                addMessage('❌ 삭제 중 오류가 발생했습니다.', 'system', false);
             }
         }
 
@@ -915,6 +1034,9 @@
             try {
                 const snapshot = await database.ref(`users/${currentUser.id}/financial`).once('value');
                 const data = snapshot.val() || {};
+                
+                // Firebase에서 최신 교육 데이터 로드
+                await loadEducationDataFromFirebase();
                 
                 return {
                     level: currentUser.level || 'yellow',
@@ -953,11 +1075,12 @@
 
             // 교육 데이터를 시스템 프롬프트에 추가
             let educationContext = '';
-            if (educationData.length > 0) {
-                educationContext = '\n\n추가 교육 내용:\n';
+            if (educationData && educationData.length > 0) {
+                educationContext = '\n\n=== 중요: 다음 교육 내용을 최우선으로 참고하여 답변하세요 ===\n';
                 educationData.forEach((item, index) => {
-                    educationContext += `${index + 1}. ${item.content}\n`;
+                    educationContext += `[교육 ${index + 1}] ${item.content}\n`;
                 });
+                educationContext += '=== 교육 내용 끝 ===\n';
             }
 
             const systemPrompt = `당신은 '똑부리'라는 이름의 친근한 금융 교육 AI 챗봇입니다.
@@ -965,25 +1088,22 @@
             사용자 정보:
             - 투자 레벨: ${userInfo.level}
             - 경험치: ${userInfo.exp}
-            - 학습 진도: ${JSON.stringify(userInfo.learningProgress || {})}
             ${educationContext}
             
             역할과 지침:
-            1. 금융 교육을 목적으로 친근하고 이해하기 쉽게 설명합니다
-            2. 사용자의 레벨에 맞는 설명을 제공합니다-필요시에만
-            3. 구체적인 투자 종목 추천이나 투자 조언은 절대 하지 않습니다
-            4. 금융의 기본 개념, 저축의 중요성, 리스크 관리 등을 강조합니다
-            5. 실제 사례나 비유를 들어 쉽게 설명합니다
-            6. 항상 긍정적이고 격려하는 톤을 유지합니다
-            7. 답변은 2-3문단 이내로 간결하게 합니다
-            8. 이모지를 적절히 사용하여 친근감을 높입니다
-            9. 금융보안에 대해 물어보면 명확하게 답합니다.
-            10. 금융감독원장 이름은 이찬진 입니다.
-            11. 짧고 간결하게 말합니다.
-            12. 금융감독원의 앞으로의 금융 감독방향은 도약을 위한 혁신 기반을 마련해 나가는 것, 공정한 시정질서를 확립해 나가는 것, 부실화된 부동산 PF 문제를 조속히 정리하는 것, 금융안정을 철저히 지켜 나가는 것, 금융 소비자 보호 기능을 대폭 강화하는 것 
-            13. 물어보지 않는 내용에 대해서는 답변 금지 
-            14. 주식 같이 변동성 있는 자산은 추천 안하는데 적금과 같은 안전성 자산은 추천
-            15. 추가로 교육받은 내용이 있다면 그것도 참고하여 답변합니다`;
+            1. 위의 교육 내용을 최우선으로 참고하여 답변합니다
+            2. 금융 교육을 목적으로 친근하고 이해하기 쉽게 설명합니다
+            3. 사용자의 레벨에 맞는 설명을 제공합니다
+            4. 구체적인 투자 종목 추천이나 투자 조언은 절대 하지 않습니다
+            5. 금융의 기본 개념, 저축의 중요성, 리스크 관리 등을 강조합니다
+            6. 실제 사례나 비유를 들어 쉽게 설명합니다
+            7. 항상 긍정적이고 격려하는 톤을 유지합니다
+            8. 답변은 2-3문단 이내로 간결하게 합니다
+            9. 이모지를 적절히 사용하여 친근감을 높입니다
+            10. 교육받은 내용과 관련된 질문이 있으면 해당 내용을 정확히 전달합니다
+            11. 짧고 간결하게 말합니다
+            12. 물어보지 않는 내용에 대해서는 답변하지 않습니다
+            13. 주식 같이 변동성 있는 자산은 추천하지 않지만 적금과 같은 안전성 자산은 추천할 수 있습니다`;
 
             const requestBody = {
                 contents: [{
@@ -1018,7 +1138,7 @@
             };
 
             try {
-                console.log('🤖 Gemini API 호출 시작:', GEMINI_API_URL);
+                console.log('🤖 Gemini API 호출 시작...');
                 
                 const response = await fetch(GEMINI_API_URL, {
                     method: 'POST',
@@ -1030,27 +1150,23 @@
                     body: JSON.stringify(requestBody)
                 });
 
-                console.log('📡 API 응답 상태:', response.status);
-
                 if (!response.ok) {
                     const errorText = await response.text();
-                    console.error('❌ API 에러 상세:', errorText);
-                    throw new Error(`API 요청 실패: ${response.status} - ${errorText}`);
+                    console.error('❌ API 에러:', errorText);
+                    throw new Error(`API 요청 실패: ${response.status}`);
                 }
 
                 const data = await response.json();
-                console.log('📊 API 응답 데이터:', data);
                 
                 if (data.candidates && data.candidates.length > 0) {
                     const candidate = data.candidates[0];
                     if (candidate.content && candidate.content.parts && candidate.content.parts.length > 0) {
                         const responseText = candidate.content.parts[0].text;
-                        console.log('✅ Gemini 응답 성공:', responseText.substring(0, 100) + '...');
+                        console.log('✅ Gemini 응답 성공');
                         return responseText;
                     }
                 }
                 
-                console.warn('⚠️ 예상과 다른 응답 구조:', data);
                 throw new Error('응답에서 텍스트를 찾을 수 없습니다');
                 
             } catch (error) {
@@ -1062,6 +1178,16 @@
         // 폴백 응답 생성
         function getFallbackResponse(message) {
             const lowerMessage = message.toLowerCase();
+            
+            // 교육 데이터에서 관련 내용 찾기
+            for (const item of educationData) {
+                const keywords = item.content.toLowerCase().split(' ');
+                for (const keyword of keywords) {
+                    if (keyword.length > 2 && lowerMessage.includes(keyword)) {
+                        return `📚 교육 내용 참고:\n\n${item.content}`;
+                    }
+                }
+            }
             
             const keywordResponses = {
                 '투자': '📈 투자는 미래를 준비하는 중요한 방법입니다! \n\n기본 원칙을 알려드릴게요:\n• 여유자금으로만 투자하기\n• 분산투자로 리스크 관리\n• 장기적인 관점 유지\n• 충분한 공부와 분석 후 결정\n\n투자에 대해 더 궁금한 점이 있으시면 언제든 물어보세요!',
@@ -1139,7 +1265,7 @@
             
             chatArea.scrollTop = chatArea.scrollHeight;
             
-            if (save) {
+            if (save && sender !== 'system') {
                 saveChatMessage(text, sender);
             }
             
