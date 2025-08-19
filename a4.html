@@ -142,6 +142,7 @@
             background: #fffbf0;
             color: #666;
             border: 1px solid #ffd700;
+            max-width: 90%;
         }
 
         /* 타이핑 인디케이터 */
@@ -463,52 +464,6 @@
             cursor: not-allowed;
         }
 
-        .education-list {
-            background: #f9f9f9;
-            padding: 10px;
-            border-radius: 5px;
-            margin-bottom: 10px;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .education-item {
-            padding: 8px;
-            margin-bottom: 8px;
-            background: white;
-            border-radius: 5px;
-            font-size: 13px;
-            border-left: 3px solid #7cb9e8;
-        }
-
-        .education-item-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 5px;
-        }
-
-        .education-item-number {
-            font-weight: bold;
-            color: #7cb9e8;
-        }
-
-        .education-item-date {
-            font-size: 11px;
-            color: #999;
-        }
-
-        .education-item-content {
-            color: #333;
-            line-height: 1.4;
-        }
-
-        .loading-message {
-            text-align: center;
-            color: #999;
-            padding: 20px;
-        }
-
         /* 반응형 수정 */
         @media (max-width: 480px) {
             .main-content {
@@ -673,6 +628,12 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
+        // Firebase 연결 테스트
+        database.ref('.info/connected').on('value', (snapshot) => {
+            const connected = snapshot.val();
+            console.log('🔥 Firebase 연결 상태:', connected ? '연결됨' : '연결 끊김');
+        });
+
         // Gemini API 설정
         const GEMINI_API_KEY = 'AIzaSyDMawZDEzBrAvAJt8ZrZxvvq2aZIRnbObk';
         const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`;
@@ -698,16 +659,16 @@
         let chatHistory = [];
         let isProcessing = false;
 
-        // 교육 데이터 (Firebase에서 로드)
+        // 교육 데이터
         let educationData = [];
         let educationMode = null;
-        let isLoadingEducation = false;
 
         // 페이지 로드 시 초기화
-        document.addEventListener('DOMContentLoaded', function() {
-            loadUserDataFromFirebase();
-            loadEducationDataFromFirebase(); // Firebase에서 교육 데이터 로드
-            loadChatHistory();
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🚀 페이지 초기화 시작');
+            await loadUserDataFromFirebase();
+            await loadEducationDataFromFirebase();
+            await loadChatHistory();
             initializeWelcomeMessage();
         });
 
@@ -715,7 +676,7 @@
         async function loadEducationDataFromFirebase() {
             try {
                 console.log('📚 교육 데이터 로드 시작...');
-                const snapshot = await database.ref('education_data').once('value');
+                const snapshot = await database.ref('educations').once('value');
                 const data = snapshot.val();
                 
                 if (data) {
@@ -723,8 +684,7 @@
                         id: key,
                         ...value
                     }));
-                    // 시간순 정렬
-                    educationData.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+                    educationData.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
                     console.log(`✅ ${educationData.length}개의 교육 데이터 로드 완료`);
                 } else {
                     educationData = [];
@@ -738,7 +698,7 @@
 
         // Firebase에서 사용자 데이터 가져오기
         async function loadUserDataFromFirebase() {
-            console.log('=== A4 데이터 로드 시작 ===');
+            console.log('=== 사용자 데이터 로드 시작 ===');
             
             try {
                 const savedUser = localStorage.getItem('fineu_current_user');
@@ -749,14 +709,13 @@
                 
                 currentUser = JSON.parse(savedUser);
                 const userId = currentUser.id || currentUser.username || 'Test';
-                console.log('👤 A4 사용자 ID:', userId);
+                console.log('👤 사용자 ID:', userId);
                 
                 const snapshot = await database.ref(`users/${userId}`).once('value');
-                console.log('📊 A4 데이터 스냅샷 확인:', snapshot.exists());
-
+                
                 if (snapshot.exists()) {
                     const firebaseData = snapshot.val();
-                    console.log('✅ A4 Firebase 데이터 로드 성공:', firebaseData);
+                    console.log('✅ Firebase 데이터 로드 성공');
                     
                     const exp = firebaseData.exp || firebaseData.experience || 0;
                     const userLevel = calculateUserLevel(exp);
@@ -765,14 +724,13 @@
                     currentUser.level = userLevel.toLowerCase();
                     
                     updateGradeButton(currentUser.level);
-                    
                 } else {
-                    console.log('❌ A4 Firebase에 데이터 없음 - 기본값 사용');
+                    console.log('❌ Firebase에 데이터 없음');
                     updateGradeButton('yellow');
                 }
                 
             } catch (error) {
-                console.error('❌ A4 데이터 로드 오류:', error);
+                console.error('❌ 데이터 로드 오류:', error);
                 updateGradeButton('yellow');
             }
         }
@@ -812,7 +770,6 @@
                     gradeButtonImage.src = `images/${levelData.navImage}`;
                     gradeButtonImage.alt = levelData.name;
                     gradeButton.style.background = getUserLevelColor(upperGrade);
-                    console.log('🎖️ A4 등급 버튼 업데이트:', upperGrade, levelData.navImage);
                 }
             }
         }
@@ -899,18 +856,29 @@
             
             if (mode === 'auth') {
                 title.textContent = '관리자 인증';
-                content.innerHTML = '<input type="password" class="modal-input" id="adminPassword" placeholder="비밀번호를 입력하세요">';
+                content.innerHTML = '<input type="password" class="modal-input" id="adminPassword" placeholder="비밀번호를 입력하세요" onkeypress="if(event.key===\'Enter\') handleEducationAuth()">';
                 confirmBtn.onclick = handleEducationAuth;
                 confirmBtn.disabled = false;
+                confirmBtn.textContent = '확인';
             } else if (mode === 'content') {
                 title.textContent = '교육 내용 입력';
-                content.innerHTML = '<textarea class="modal-textarea" id="educationContent" placeholder="교육할 내용을 입력하세요\n예: 금융감독원장 이름은 홍길동입니다."></textarea>';
+                content.innerHTML = '<textarea class="modal-textarea" id="educationContent" placeholder="교육할 내용을 입력하세요\n예: 금융감독원장 이름은 이찬진입니다."></textarea>';
                 confirmBtn.onclick = saveEducation;
                 confirmBtn.disabled = false;
+                confirmBtn.textContent = '저장';
             }
             
             modal.classList.add('active');
             overlay.classList.add('active');
+            
+            // 포커스 설정
+            setTimeout(() => {
+                if (mode === 'auth') {
+                    document.getElementById('adminPassword')?.focus();
+                } else if (mode === 'content') {
+                    document.getElementById('educationContent')?.focus();
+                }
+            }, 100);
         }
 
         // 교육 모달 닫기
@@ -932,10 +900,12 @@
                 }, 300);
             } else {
                 alert('비밀번호가 틀렸습니다.');
+                document.getElementById('adminPassword').value = '';
+                document.getElementById('adminPassword').focus();
             }
         }
 
-        // 교육 내용 저장 (Firebase에 저장)
+        // 교육 내용 저장
         async function saveEducation() {
             const content = document.getElementById('educationContent').value.trim();
             if (!content) {
@@ -949,83 +919,73 @@
 
             try {
                 // Firebase에 저장
-                const newEducationRef = database.ref('education_data').push();
-                await newEducationRef.set({
-                    content: content,
-                    timestamp: firebase.database.ServerValue.TIMESTAMP,
-                    createdBy: currentUser.id || 'admin',
-                    createdAt: new Date().toISOString()
-                });
-
-                // 로컬 배열에도 추가
-                educationData.push({
-                    id: newEducationRef.key,
+                const educationRef = database.ref('educations').push();
+                const educationData = {
                     content: content,
                     timestamp: Date.now(),
                     createdBy: currentUser.id || 'admin',
                     createdAt: new Date().toISOString()
-                });
-
+                };
+                
+                await educationRef.set(educationData);
+                
+                console.log('✅ 교육 데이터 저장 성공:', educationRef.key);
+                
+                // 로컬 배열 업데이트
+                await loadEducationDataFromFirebase();
+                
                 addMessage('✅ 교육 내용이 성공적으로 저장되었습니다.', 'system', false);
                 closeEducationModal();
                 
-                console.log('✅ 교육 데이터 Firebase 저장 완료');
             } catch (error) {
                 console.error('❌ 교육 데이터 저장 실패:', error);
-                alert('저장 중 오류가 발생했습니다. 다시 시도해주세요.');
+                alert('저장 중 오류가 발생했습니다: ' + error.message);
                 confirmBtn.disabled = false;
-                confirmBtn.textContent = '확인';
+                confirmBtn.textContent = '저장';
             }
         }
 
         // 교육 목록 표시
         async function showEducationList() {
-            // Firebase에서 최신 데이터 다시 로드
             await loadEducationDataFromFirebase();
             
             if (educationData.length === 0) {
-                addMessage('📚 저장된 교육 내용이 없습니다.', 'system', false);
+                addMessage('📚 저장된 교육 내용이 없습니다.\n\n/교육하기 명령어로 새로운 교육 내용을 추가할 수 있습니다.', 'system', false);
                 return;
             }
             
-            let listMessage = '📚 교육 목록 (총 ' + educationData.length + '개):\n\n';
+            let listMessage = `📚 교육 목록 (총 ${educationData.length}개)\n━━━━━━━━━━━━━━━━━━━━\n\n`;
             educationData.forEach((item, index) => {
-                const date = item.createdAt ? new Date(item.createdAt).toLocaleDateString() : '날짜 없음';
-                const preview = item.content.length > 50 ? 
-                    item.content.substring(0, 50) + '...' : item.content;
-                listMessage += `[${index + 1}] ${preview}\n   (${date})\n\n`;
+                const date = item.createdAt ? new Date(item.createdAt).toLocaleDateString('ko-KR') : '날짜 없음';
+                const preview = item.content.length > 40 ? 
+                    item.content.substring(0, 40) + '...' : item.content;
+                listMessage += `[${index + 1}] ${preview}\n   📅 ${date}\n\n`;
             });
-            listMessage += '💡 삭제하려면 /교육삭제 [번호]를 입력하세요.';
+            listMessage += '━━━━━━━━━━━━━━━━━━━━\n💡 삭제: /교육삭제 [번호]\n💡 추가: /교육하기';
             
             addMessage(listMessage, 'system', false);
         }
 
-        // 교육 삭제 (Firebase에서 삭제)
+        // 교육 삭제
         async function deleteEducation(index) {
             if (index < 0 || index >= educationData.length) {
-                addMessage('❌ 올바른 번호를 입력해주세요.', 'system', false);
+                addMessage('❌ 올바른 번호를 입력해주세요. (1부터 ' + educationData.length + '까지)', 'system', false);
                 return;
             }
 
             const itemToDelete = educationData[index];
-            const confirmDelete = confirm(`정말로 "${itemToDelete.content.substring(0, 30)}..."를 삭제하시겠습니까?`);
             
-            if (!confirmDelete) {
-                return;
-            }
-
             try {
-                // Firebase에서 삭제
-                await database.ref(`education_data/${itemToDelete.id}`).remove();
+                await database.ref(`educations/${itemToDelete.id}`).remove();
                 
-                // 로컬 배열에서도 삭제
-                educationData.splice(index, 1);
+                console.log('✅ 교육 데이터 삭제 성공:', itemToDelete.id);
+                
+                await loadEducationDataFromFirebase();
                 
                 addMessage(`✅ 교육 내용 ${index + 1}번이 삭제되었습니다.`, 'system', false);
-                console.log('✅ 교육 데이터 삭제 완료');
             } catch (error) {
                 console.error('❌ 교육 데이터 삭제 실패:', error);
-                addMessage('❌ 삭제 중 오류가 발생했습니다.', 'system', false);
+                addMessage('❌ 삭제 중 오류가 발생했습니다: ' + error.message, 'system', false);
             }
         }
 
@@ -1035,7 +995,6 @@
                 const snapshot = await database.ref(`users/${currentUser.id}/financial`).once('value');
                 const data = snapshot.val() || {};
                 
-                // Firebase에서 최신 교육 데이터 로드
                 await loadEducationDataFromFirebase();
                 
                 return {
@@ -1073,7 +1032,6 @@
                 return '죄송하지만 특정 투자 종목을 추천하거나 수익을 보장하는 조언은 드릴 수 없습니다. 대신 투자의 기본 원칙, 분산투자의 중요성, 리스크 관리 방법 등에 대해 알려드릴 수 있어요. 건전한 투자 습관을 기르는 것이 가장 중요합니다!';
             }
 
-            // 교육 데이터를 시스템 프롬프트에 추가
             let educationContext = '';
             if (educationData && educationData.length > 0) {
                 educationContext = '\n\n=== 중요: 다음 교육 내용을 최우선으로 참고하여 답변하세요 ===\n';
@@ -1138,21 +1096,15 @@
             };
 
             try {
-                console.log('🤖 Gemini API 호출 시작...');
-                
                 const response = await fetch(GEMINI_API_URL, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'Origin': window.location.origin
                     },
                     body: JSON.stringify(requestBody)
                 });
 
                 if (!response.ok) {
-                    const errorText = await response.text();
-                    console.error('❌ API 에러:', errorText);
                     throw new Error(`API 요청 실패: ${response.status}`);
                 }
 
@@ -1161,9 +1113,7 @@
                 if (data.candidates && data.candidates.length > 0) {
                     const candidate = data.candidates[0];
                     if (candidate.content && candidate.content.parts && candidate.content.parts.length > 0) {
-                        const responseText = candidate.content.parts[0].text;
-                        console.log('✅ Gemini 응답 성공');
-                        return responseText;
+                        return candidate.content.parts[0].text;
                     }
                 }
                 
@@ -1190,21 +1140,10 @@
             }
             
             const keywordResponses = {
-                '투자': '📈 투자는 미래를 준비하는 중요한 방법입니다! \n\n기본 원칙을 알려드릴게요:\n• 여유자금으로만 투자하기\n• 분산투자로 리스크 관리\n• 장기적인 관점 유지\n• 충분한 공부와 분석 후 결정\n\n투자에 대해 더 궁금한 점이 있으시면 언제든 물어보세요!',
-                
-                '저축': '💰 저축은 금융 안정의 첫 걸음이에요!\n\n효과적인 저축 방법:\n• 선저축 후소비 원칙\n• 자동이체로 강제 저축\n• 목표 금액과 기간 설정\n• 비상금 먼저 준비하기\n\n작은 금액이라도 꾸준히 하는 것이 가장 중요합니다!',
-                
-                '주식': '📊 주식 투자를 고려하고 계시는군요!\n\n시작하기 전 준비사항:\n• 기업 분석 방법 학습\n• 재무제표 읽기 연습\n• 투자 철학 정립\n• 손실 각오와 위험 관리\n\n무작정 시작하기보다는 충분한 공부가 선행되어야 해요!',
-                
-                '예산': '📝 예산 관리는 건전한 금융 생활의 기초입니다!\n\n예산 관리 단계:\n• 수입과 지출 파악\n• 필수/선택 지출 분류\n• 저축 목표 설정\n• 정기적인 점검과 조정\n\n가계부 앱을 활용하시면 더 쉽게 관리할 수 있어요!',
-                
-                '은퇴': '🏖️ 은퇴 준비는 빠를수록 좋아요!\n\n은퇴 준비 방법:\n• 복리 효과 활용한 장기 투자\n• 연금저축, IRP 등 세제혜택 상품\n• 다양한 자산에 분산 투자\n• 정기적인 계획 점검\n\n시간이 가장 큰 무기이니 지금부터 시작하세요!',
-                
-                '복리': '✨ 복리는 정말 마법 같은 힘을 가지고 있어요!\n\n복리의 힘:\n• 시간이 길수록 효과 극대화\n• 원금과 이자가 함께 재투자\n• 작은 차이가 큰 결과로\n• 꾸준함이 가장 중요\n\n"복리는 세상에서 가장 강한 힘이다" - 아인슈타인',
-                
-                '부채': '⚠️ 부채 관리는 매우 중요한 문제예요!\n\n부채 정리 방법:\n• 고금리 부채부터 우선 상환\n• 최소 납입금액 이상 납부\n• 추가 대출 자제\n• 가계부로 지출 관리\n\n부채를 줄이는 것도 수익률 높은 투자라고 생각하세요!',
-                
-                'etf': '📈 ETF는 초보자에게 좋은 투자 방법이에요!\n\nETF의 장점:\n• 분산투자 효과\n• 낮은 운용비용\n• 높은 유동성\n• 투명한 운용\n\n하지만 여전히 투자이므로 충분한 공부가 필요해요!'
+                '투자': '📈 투자는 미래를 준비하는 중요한 방법입니다!',
+                '저축': '💰 저축은 금융 안정의 첫 걸음이에요!',
+                '주식': '📊 주식 투자를 고려하고 계시는군요!',
+                '안녕': '👋 안녕하세요! 저는 똑부리예요!'
             };
             
             for (const [keyword, response] of Object.entries(keywordResponses)) {
@@ -1213,19 +1152,7 @@
                 }
             }
             
-            if (lowerMessage.includes('어떻게') || lowerMessage.includes('방법')) {
-                return '🤔 구체적인 방법을 알고 싶으시는군요! 투자, 저축, 예산관리 등 어떤 분야의 방법이 궁금하신지 좀 더 구체적으로 말씀해주시면 더 정확한 답변을 드릴 수 있어요!';
-            }
-            
-            if (lowerMessage.includes('추천') || lowerMessage.includes('종목')) {
-                return '⚠️ 죄송하지만 특정 투자 종목이나 금융상품 추천은 드릴 수 없어요. 대신 투자 원칙, 분산투자의 중요성, 상품 선택 기준 등에 대해 알려드릴 수 있습니다!';
-            }
-            
-            if (lowerMessage.includes('안녕') || lowerMessage.includes('하이') || lowerMessage.includes('hello')) {
-                return '👋 안녕하세요! 저는 똑부리예요! 금융에 대한 궁금한 점이 있으시면 언제든 물어보세요. 투자, 저축, 예산관리 등 다양한 주제로 도움을 드릴 수 있어요! 😊';
-            }
-            
-            return '🤖 금융에 대해 궁금한 점이 있으시군요! 더 구체적으로 알려주시면 정확한 답변을 드릴 수 있어요.\n\n이런 주제들로 도움드릴 수 있습니다:\n• 투자 기초와 원칙\n• 저축과 예산 관리\n• 복리와 자산 증식\n• 은퇴 준비 방법\n• 부채 관리 전략\n\n어떤 것이 궁금하세요? 😊';
+            return '🤖 금융에 대해 궁금한 점이 있으시면 언제든 물어보세요!';
         }
 
         // 메시지 추가
