@@ -400,6 +400,11 @@
         let currentUser = null;
         let userAssets = {};
         let isTodayDataReady = false;
+        let contentHistory = {
+            news: [],
+            terms: [],
+            quizzes: []
+        };
         
         const levelSystem = {
             YELLOW: { name: 'YELLOW', exp: 0, max: 5000, navImage: 'YELLOW ㅇ.png' },
@@ -424,6 +429,93 @@
             const month = String(koreaTime.getMonth() + 1).padStart(2, '0');
             const day = String(koreaTime.getDate()).padStart(2, '0');
             return `${year}-${month}-${day}`;
+        }
+
+        // 콘텐츠 히스토리 로드
+        async function loadContentHistory() {
+            try {
+                if (!window.firebaseDB) return;
+                
+                const historyRef = window.firebaseRef(window.firebaseDB, 'contentHistory');
+                const snapshot = await window.firebaseGet(historyRef);
+                
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    contentHistory = {
+                        news: data.news || [],
+                        terms: data.terms || [],
+                        quizzes: data.quizzes || []
+                    };
+                    console.log('📚 콘텐츠 히스토리 로드:', {
+                        뉴스: contentHistory.news.length,
+                        용어: contentHistory.terms.length,
+                        퀴즈: contentHistory.quizzes.length
+                    });
+                }
+            } catch (error) {
+                console.error('히스토리 로드 실패:', error);
+            }
+        }
+
+        // 콘텐츠 히스토리 저장
+        async function saveContentHistory(type, items) {
+            try {
+                if (!window.firebaseDB) return;
+                
+                // 기존 히스토리에 추가
+                if (type === 'news') {
+                    items.forEach(item => {
+                        if (!contentHistory.news.some(n => n.title === item.title)) {
+                            contentHistory.news.push({
+                                title: item.title,
+                                date: getTodayDate()
+                            });
+                        }
+                    });
+                } else if (type === 'terms') {
+                    items.forEach(item => {
+                        if (!contentHistory.terms.some(t => t.term === item.term)) {
+                            contentHistory.terms.push({
+                                term: item.term,
+                                date: getTodayDate()
+                            });
+                        }
+                    });
+                } else if (type === 'quizzes') {
+                    items.forEach(item => {
+                        if (!contentHistory.quizzes.some(q => q.question === item.question)) {
+                            contentHistory.quizzes.push({
+                                question: item.question,
+                                date: getTodayDate()
+                            });
+                        }
+                    });
+                }
+                
+                // 최근 100개만 유지 (메모리 관리)
+                contentHistory.news = contentHistory.news.slice(-100);
+                contentHistory.terms = contentHistory.terms.slice(-100);
+                contentHistory.quizzes = contentHistory.quizzes.slice(-300); // 퀴즈는 더 많이 유지
+                
+                const historyRef = window.firebaseRef(window.firebaseDB, 'contentHistory');
+                await window.firebaseSet(historyRef, contentHistory);
+                
+                console.log('✅ 콘텐츠 히스토리 업데이트');
+            } catch (error) {
+                console.error('히스토리 저장 실패:', error);
+            }
+        }
+
+        // 중복 체크 함수
+        function isContentDuplicate(type, item) {
+            if (type === 'news') {
+                return contentHistory.news.some(n => n.title === item.title);
+            } else if (type === 'terms') {
+                return contentHistory.terms.some(t => t.term === item.term);
+            } else if (type === 'quiz') {
+                return contentHistory.quizzes.some(q => q.question === item.question);
+            }
+            return false;
         }
 
         async function cleanOldData() {
@@ -465,17 +557,18 @@
                 }
             }
         }
-        // 등급별 색상 반환 함수 추가
-function getUserLevelColor(level) {
-    const colors = {
-        'YELLOW': '#FFE99E',
-        'GREEN': '#C1EDB3',
-        'BLUE': '#ADD9FA',
-        'RED': '#FAABAD',
-        'BLACK': '#333333'
-    };
-    return colors[level] || colors['YELLOW'];
-}
+
+        function getUserLevelColor(level) {
+            const colors = {
+                'YELLOW': '#FFE99E',
+                'GREEN': '#C1EDB3',
+                'BLUE': '#ADD9FA',
+                'RED': '#FAABAD',
+                'BLACK': '#333333'
+            };
+            return colors[level] || colors['YELLOW'];
+        }
+
         function validateTodayData(data) {
             if (!data) return false;
             
@@ -636,7 +729,6 @@ function getUserLevelColor(level) {
                         scrappedItems: firebaseData.scrappedItems || []
                     };
 
-                    // 경험치 기반 레벨 결정
                     const exp = userAssets.exp || 0;
                     let determinedLevel = 'yellow';
                     if (exp >= 50000) {
@@ -671,6 +763,9 @@ function getUserLevelColor(level) {
                 
                 localStorage.setItem('fineu_user_assets', JSON.stringify(userAssets));
                 checkTodayCompletion();
+                
+                // 히스토리 로드 후 콘텐츠 생성
+                await loadContentHistory();
                 await cleanOldData();
                 await generateTodayContent();
 
@@ -728,10 +823,10 @@ function getUserLevelColor(level) {
                     gradeButtonImage.alt = levelData.name;
                     console.log('✅ 그레이드 버튼 업데이트:', levelData.name);
                 }
-                 // 배경색 설정 추가
-        if (gradeButton) {
-            gradeButton.style.background = getUserLevelColor(upperGrade);
-        }
+                const gradeButton = document.getElementById('gradeButton');
+                if (gradeButton) {
+                    gradeButton.style.background = getUserLevelColor(upperGrade);
+                }
             }
         }
         
@@ -796,14 +891,14 @@ function getUserLevelColor(level) {
                     }
                 }
                 
-                if (allNews.length > 0) {
-                    const uniqueNews = allNews
-                        .filter((item, index, self) => 
-                            index === self.findIndex(t => t.title === item.title)
-                        )
-                        .slice(0, 5)
-                        .map((item, index) => ({
-                            id: `news-${index}`,
+                // 중복 제거 및 필터링
+                const uniqueNews = [];
+                const seenTitles = new Set();
+                
+                for (const item of allNews) {
+                    if (!seenTitles.has(item.title) && !isContentDuplicate('news', item)) {
+                        uniqueNews.push({
+                            id: `news-${uniqueNews.length}`,
                             title: item.title.replace(/<[^>]*>/g, ''),
                             description: item.description.replace(/<[^>]*>/g, '').substring(0, 200) + '...',
                             content: item.description.replace(/<[^>]*>/g, ''),
@@ -811,9 +906,16 @@ function getUserLevelColor(level) {
                             source: item.source || 'Google News',
                             category: '금융뉴스',
                             publishedAt: item.publishedAt || koreaTime.toISOString()
-                        }));
+                        });
+                        seenTitles.add(item.title);
+                        
+                        if (uniqueNews.length >= 5) break;
+                    }
+                }
                 
-                    console.log(`✅ 실제 뉴스 ${uniqueNews.length}건 가져오기 성공`);
+                if (uniqueNews.length > 0) {
+                    console.log(`✅ 새로운 뉴스 ${uniqueNews.length}건 가져오기 성공`);
+                    await saveContentHistory('news', uniqueNews);
                     return uniqueNews;
                 }
                 
@@ -839,7 +941,7 @@ function getUserLevelColor(level) {
                 
                 const newsItems = [];
                 items.forEach((item, index) => {
-                    if (index < 5) {
+                    if (index < 10) { // 더 많은 아이템 파싱
                         const title = item.querySelector('title')?.textContent;
                         const description = item.querySelector('description')?.textContent || '';
                         const link = item.querySelector('link')?.textContent;
@@ -877,7 +979,7 @@ function getUserLevelColor(level) {
             const kospiPrice = 2650 + Math.floor(Math.random() * 100);
             const usdRate = 1320 + Math.floor(Math.random() * 50);
             
-            return [
+            const fallbackNewsList = [
                 {
                     id: 'news-0',
                     title: `한국은행, 기준금리 3.50% 동결 결정`,
@@ -907,28 +1009,15 @@ function getUserLevelColor(level) {
                     source: "한국수출입은행",
                     category: "환율동향",
                     publishedAt: today.toISOString()
-                },
-                {
-                    id: 'news-3',
-                    title: `삼성전자 실적 전망 - 메모리 반도체 수요 회복`,
-                    description: `삼성전자의 ${today.getMonth() + 1}월 실적에 대한 시장 관심이 높아지고 있습니다.`,
-                    content: `삼성전자의 ${today.getMonth() + 1}월 실적에 대한 시장 관심이 높아지고 있습니다. 메모리 반도체 업황 개선과 스마트폰 사업 부문의 안정적 성장이 주요 포인트로 분석됩니다.`,
-                    url: "https://news.samsung.com/kr/",
-                    source: "삼성전자",
-                    category: "기업실적",
-                    publishedAt: today.toISOString()
-                },
-                {
-                    id: 'news-4',
-                    title: `청년층 투자 트렌드 변화 - 안정성 중시`,
-                    description: `최근 청년층 투자자들 사이에서 고위험 자산보다 안정적인 배당주와 채권에 대한 관심이 높아지고 있습니다.`,
-                    content: `최근 청년층 투자자들 사이에서 고위험 자산보다 안정적인 배당주와 채권에 대한 관심이 높아지고 있습니다. 금융당국은 건전한 투자문화 정착을 위한 교육을 확대하고 있습니다.`,
-                    url: "https://www.fss.or.kr/",
-                    source: "금융감독원",
-                    category: "투자동향",
-                    publishedAt: today.toISOString()
                 }
             ];
+            
+            // 중복되지 않은 뉴스만 반환
+            const uniqueFallback = fallbackNewsList.filter(news => !isContentDuplicate('news', news));
+            if (uniqueFallback.length > 0) {
+                saveContentHistory('news', uniqueFallback);
+            }
+            return uniqueFallback;
         }
 
         async function callGeminiAPI(prompt) {
@@ -973,7 +1062,7 @@ function getUserLevelColor(level) {
         }
 
         function generateIntermediateQuiz() {
-            return [
+            const quizPool = [
                 {
                     question: "PER이 낮은 주식의 일반적인 특징은?",
                     options: ["고평가 상태", "저평가 가능성", "배당금이 높음", "성장성이 높음"],
@@ -993,22 +1082,34 @@ function getUserLevelColor(level) {
                     explanation: "분산투자는 여러 자산에 투자하여 전체 포트폴리오의 위험을 줄이는 전략입니다."
                 },
                 {
-                    question: "환율이 상승(원화 약세)하면 유리한 기업은?",
-                    options: ["수입 기업", "수출 기업", "내수 기업", "금융 기업"],
+                    question: "ROE가 높은 기업의 특징은?",
+                    options: ["부채가 많음", "자기자본 수익률이 높음", "매출이 적음", "성장성이 낮음"],
                     correct: 1,
-                    explanation: "원화 약세는 수출 기업의 가격 경쟁력을 높여 수익성을 개선시킵니다."
+                    explanation: "ROE는 자기자본 대비 순이익 비율로, 높을수록 효율적으로 수익을 창출합니다."
                 },
                 {
-                    question: "복리의 마법이 가장 크게 작용하는 요소는?",
-                    options: ["원금 크기", "이자율", "투자 기간", "세금"],
-                    correct: 2,
-                    explanation: "복리는 시간이 지날수록 기하급수적으로 증가하므로 투자 기간이 가장 중요합니다."
+                    question: "인플레이션 헤지에 유리한 자산은?",
+                    options: ["현금", "부동산", "장기채권", "정기예금"],
+                    correct: 1,
+                    explanation: "부동산은 물가상승과 함께 가치가 오르는 경향이 있어 인플레이션 헤지에 유리합니다."
                 }
             ];
+            
+            // 중복되지 않은 퀴즈 선택
+            const uniqueQuizzes = quizPool.filter(quiz => !isContentDuplicate('quiz', quiz));
+            const selectedQuizzes = uniqueQuizzes.slice(0, 5);
+            
+            // 부족하면 기본 퀴즈 추가
+            while (selectedQuizzes.length < 5) {
+                selectedQuizzes.push(quizPool[selectedQuizzes.length]);
+            }
+            
+            saveContentHistory('quizzes', selectedQuizzes);
+            return selectedQuizzes;
         }
 
         function generateAdvancedQuiz() {
-            return [
+            const quizPool = [
                 {
                     question: "옵션의 시간가치가 가장 빠르게 감소하는 시기는?",
                     options: ["만기 6개월 전", "만기 3개월 전", "만기 1개월 전", "만기 당일"],
@@ -1028,18 +1129,30 @@ function getUserLevelColor(level) {
                     explanation: "듀레이션은 금리 변동에 대한 채권 가격의 민감도를 나타내는 지표입니다."
                 },
                 {
-                    question: "VIX 지수가 급등한다는 것은?",
-                    options: ["주가 상승 예상", "시장 변동성 증가", "금리 인상", "달러 강세"],
+                    question: "샤프 비율(Sharpe Ratio)이 측정하는 것은?",
+                    options: ["절대 수익률", "위험 조정 수익률", "변동성", "최대 손실"],
                     correct: 1,
-                    explanation: "VIX는 '공포지수'로 불리며, 시장의 변동성과 불확실성을 나타냅니다."
+                    explanation: "샤프 비율은 위험 단위당 초과 수익률을 측정하는 지표입니다."
                 },
                 {
-                    question: "알파(Alpha) 수익률이 양수라는 의미는?",
-                    options: ["손실 발생", "시장 평균 이하", "시장 대비 초과 수익", "무위험 수익률"],
-                    correct: 2,
-                    explanation: "알파는 벤치마크 대비 초과 수익률로, 양수면 시장을 이긴 것입니다."
+                    question: "컨탱고(Contango) 시장의 특징은?",
+                    options: ["현물가격 > 선물가격", "선물가격 > 현물가격", "가격 동일", "변동성 없음"],
+                    correct: 1,
+                    explanation: "컨탱고는 선물가격이 현물가격보다 높은 정상적인 시장 상황입니다."
                 }
             ];
+            
+            // 중복되지 않은 퀴즈 선택
+            const uniqueQuizzes = quizPool.filter(quiz => !isContentDuplicate('quiz', quiz));
+            const selectedQuizzes = uniqueQuizzes.slice(0, 5);
+            
+            // 부족하면 기본 퀴즈 추가
+            while (selectedQuizzes.length < 5) {
+                selectedQuizzes.push(quizPool[selectedQuizzes.length]);
+            }
+            
+            saveContentHistory('quizzes', selectedQuizzes);
+            return selectedQuizzes;
         }
 
         async function generateTodayContent() {
@@ -1092,10 +1205,14 @@ function getUserLevelColor(level) {
                     const newsData = await getLatestFinanceNews();
                     console.log(`📰 뉴스 ${newsData.length}건 수집 완료`);
                     
+                    // 이미 본 용어 제외하고 프롬프트 생성
+                    const excludedTerms = contentHistory.terms.map(t => t.term).join(', ');
                     const termsPrompt = `오늘의 금융 뉴스를 바탕으로 중요한 금융 용어 3개를 선정하고 JSON 형식으로 반환해주세요:
                     ${newsData.map(n => n.title).join('\n')}
                     
-                    다음 형식으로 정확히 3개의 용어를 반환:
+                    다음 용어들은 이미 학습했으므로 제외해주세요: ${excludedTerms}
+                    
+                    다음 형식으로 정확히 3개의 새로운 용어를 반환:
                     [
                         {
                             "id": "term-0",
@@ -1120,8 +1237,12 @@ function getUserLevelColor(level) {
                         }
                     ]`;
                     
+                    // 이미 본 퀴즈 문제 제외
+                    const excludedQuestions = contentHistory.quizzes.slice(-20).map(q => q.question).join(', ');
                     const quizPrompt = `다음 금융 뉴스를 바탕으로 초급 퀴즈 5문제를 JSON 형식으로 만들어주세요:
                     ${newsData.map(n => n.title + '\n' + n.description).join('\n\n')}
+                    
+                    다음 문제들과 유사한 문제는 제외해주세요: ${excludedQuestions}
                     
                     문제 구성:
                     1. 뉴스 관련 문제 2개 (위 뉴스 내용 직접 활용)
@@ -1151,42 +1272,47 @@ function getUserLevelColor(level) {
                         try {
                             const jsonMatch = termsResponse.match(/\[[\s\S]*\]/);
                             if (jsonMatch) {
-                                terms = JSON.parse(jsonMatch[0]);
+                                const parsedTerms = JSON.parse(jsonMatch[0]);
+                                // 중복 체크
+                                terms = parsedTerms.filter(term => !isContentDuplicate('terms', term));
                             }
                         } catch (e) {
                             console.error('Terms 파싱 실패:', e);
                         }
                     }
                     
+                    // 용어가 부족하면 기본 용어 추가
                     if (terms.length < 3) {
                         const defaultTerms = [
                             {
                                 id: "term-0",
-                                term: "복리 (Compound Interest)",
-                                definition: "원금에 붙은 이자가 다시 원금이 되어 이자가 붙는 방식입니다. 시간이 지날수록 자산이 기하급수적으로 증가합니다.",
-                                example: "100만원을 연 10% 복리로 투자하면 1년 후 110만원, 2년 후 121만원, 10년 후에는 약 259만원이 됩니다.",
+                                term: "ETF (Exchange Traded Fund)",
+                                definition: "거래소에서 주식처럼 거래되는 펀드입니다. 여러 종목을 한 번에 투자할 수 있습니다.",
+                                example: "KODEX 200 ETF를 사면 코스피 200 기업에 분산투자하는 효과가 있습니다.",
                                 isToday: true
                             },
                             {
                                 id: "term-1",
-                                term: "분산투자 (Diversification)",
-                                definition: "여러 종목이나 자산에 나누어 투자하여 위험을 줄이는 전략입니다. '계란을 한 바구니에 담지 마라'는 격언이 이를 잘 설명합니다.",
-                                example: "주식 50%, 채권 30%, 현금 20%로 포트폴리오를 구성하면 한 자산의 손실을 다른 자산이 보완할 수 있습니다.",
+                                term: "배당수익률 (Dividend Yield)",
+                                definition: "주가 대비 배당금의 비율입니다. 안정적인 현금흐름을 원하는 투자자가 선호합니다.",
+                                example: "주가 10만원, 연 배당 3천원이면 배당수익률은 3%입니다.",
                                 isToday: true
                             },
                             {
                                 id: "term-2",
-                                term: "PER (Price Earnings Ratio)",
-                                definition: "주가수익비율로, 주가를 주당순이익으로 나눈 값입니다. 기업의 수익 대비 주가가 적정한지 판단하는 지표입니다.",
-                                example: "PER이 10이면 현재 수익 수준이 유지될 때 투자금을 회수하는데 10년이 걸린다는 의미입니다.",
+                                term: "매매차익 (Capital Gain)",
+                                definition: "자산을 매입한 가격보다 높은 가격에 매도하여 얻는 이익입니다.",
+                                example: "100만원에 산 주식을 150만원에 팔면 50만원의 매매차익이 발생합니다.",
                                 isToday: true
                             }
-                        ];
+                        ].filter(term => !isContentDuplicate('terms', term));
                         
-                        while (terms.length < 3) {
-                            terms.push(defaultTerms[terms.length]);
+                        while (terms.length < 3 && defaultTerms.length > 0) {
+                            terms.push(defaultTerms.shift());
                         }
                     }
+                    
+                    await saveContentHistory('terms', terms);
                     
                     const quizResponse = await callGeminiAPI(quizPrompt);
                     if (quizResponse) {
@@ -1195,7 +1321,8 @@ function getUserLevelColor(level) {
                             if (jsonMatch) {
                                 const parsed = JSON.parse(jsonMatch[0]);
                                 if (parsed.beginner && Array.isArray(parsed.beginner)) {
-                                    quizzes.beginner = parsed.beginner;
+                                    // 중복 체크
+                                    quizzes.beginner = parsed.beginner.filter(quiz => !isContentDuplicate('quiz', quiz));
                                 }
                             }
                         } catch (e) {
@@ -1203,44 +1330,47 @@ function getUserLevelColor(level) {
                         }
                     }
                     
+                    // 초급 퀴즈가 부족하면 기본 퀴즈 추가
                     if (quizzes.beginner.length < 5) {
                         const defaultQuizzes = [
                             {
-                                question: "한국은행이 기준금리를 올리면 일반적으로 어떤 일이 발생하나요?",
-                                options: ["예금 이자가 오른다", "예금 이자가 내린다", "환율이 고정된다", "주식이 무조건 오른다"],
-                                correct: 0,
-                                explanation: "기준금리가 오르면 시중 은행의 예금과 대출 금리도 함께 오르는 경향이 있습니다."
-                            },
-                            {
-                                question: "주식시장에서 '코스피'는 무엇을 의미하나요?",
-                                options: ["외국 주식", "한국 주식시장 지수", "채권 지수", "환율"],
+                                question: "ISA 계좌의 가장 큰 장점은?",
+                                options: ["높은 수익률", "세금 혜택", "무제한 입금", "해외투자 전용"],
                                 correct: 1,
-                                explanation: "코스피(KOSPI)는 한국 종합주가지수로, 우리나라 주식시장의 전반적인 상황을 나타냅니다."
+                                explanation: "ISA는 개인종합자산관리계좌로, 일정 한도 내에서 세금 혜택을 받을 수 있습니다."
                             },
                             {
-                                question: "물가가 계속 오르는 현상을 무엇이라고 하나요?",
-                                options: ["디플레이션", "인플레이션", "스태그플레이션", "리세션"],
+                                question: "코스닥은 주로 어떤 기업들이 상장되어 있나요?",
+                                options: ["대기업", "중소·벤처기업", "외국기업", "공기업"],
                                 correct: 1,
-                                explanation: "인플레이션은 물가가 지속적으로 상승하는 현상으로, 화폐 가치가 하락합니다."
+                                explanation: "코스닥은 주로 성장 가능성이 높은 중소·벤처기업들이 상장되어 있습니다."
                             },
                             {
-                                question: "청년들이 주식 투자를 시작하는 가장 좋은 방법은?",
-                                options: ["전 재산 투자", "소액으로 분산 투자", "빚내서 투자", "친구 따라 투자"],
+                                question: "펀드 투자의 장점은?",
+                                options: ["보장된 수익", "전문가 운용", "세금 면제", "원금 보장"],
                                 correct: 1,
-                                explanation: "투자는 여유 자금으로 소액부터 시작하고, 여러 종목에 분산하는 것이 안전합니다."
+                                explanation: "펀드는 전문 펀드매니저가 운용하여 개인이 직접 투자하기 어려운 분산투자가 가능합니다."
                             },
                             {
-                                question: "편의점에서 물건값이 작년보다 올랐다면, 이것은 무엇 때문일까요?",
-                                options: ["물가 상승", "환율 하락", "주가 상승", "금리 하락"],
-                                correct: 0,
-                                explanation: "일상생활에서 물건값이 오르는 것은 물가 상승(인플레이션)의 영향입니다."
+                                question: "신용카드 리볼빙의 위험성은?",
+                                options: ["낮은 한도", "높은 이자", "사용 불편", "포인트 없음"],
+                                correct: 1,
+                                explanation: "리볼빙은 매우 높은 이자율(연 15-20%)이 적용되어 빚이 늘어날 수 있습니다."
+                            },
+                            {
+                                question: "예금자보호제도의 보호 한도는?",
+                                options: ["1천만원", "3천만원", "5천만원", "1억원"],
+                                correct: 2,
+                                explanation: "예금자보호제도는 금융기관별로 원금과 이자를 합쳐 1인당 5천만원까지 보호합니다."
                             }
-                        ];
+                        ].filter(quiz => !isContentDuplicate('quiz', quiz));
                         
-                        while (quizzes.beginner.length < 5) {
-                            quizzes.beginner.push(defaultQuizzes[quizzes.beginner.length]);
+                        while (quizzes.beginner.length < 5 && defaultQuizzes.length > 0) {
+                            quizzes.beginner.push(defaultQuizzes.shift());
                         }
                     }
+                    
+                    await saveContentHistory('quizzes', quizzes.beginner);
                     
                     quizzes.intermediate = generateIntermediateQuiz();
                     quizzes.advanced = generateAdvancedQuiz();
@@ -1293,7 +1423,7 @@ function getUserLevelColor(level) {
                             example: "작년에 1000원이던 빵이 올해 1100원이 되는 현상입니다.",
                             isToday: true
                         }
-                    ],
+                    ].filter(term => !isContentDuplicate('terms', term)),
                     quizzes: {
                         beginner: [
                             {
@@ -1326,11 +1456,14 @@ function getUserLevelColor(level) {
                                 correct: 1,
                                 explanation: "수입의 일부를 꾸준히 저축하는 것이 자산을 만드는 첫걸음입니다."
                             }
-                        ],
+                        ].filter(quiz => !isContentDuplicate('quiz', quiz)),
                         intermediate: generateIntermediateQuiz(),
                         advanced: generateAdvancedQuiz()
                     }
                 };
+                
+                await saveContentHistory('terms', fallbackData.terms);
+                await saveContentHistory('quizzes', fallbackData.quizzes.beginner);
                 
                 try {
                     const firebaseRef = window.firebaseRef(window.firebaseDB, `cache/${firebaseCacheKey}`);
