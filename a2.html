@@ -414,6 +414,60 @@
             BLACK: { name: 'BLACK', exp: 50000, max: 999999, navImage: 'BLACK ㅇ.png' }
         };
 
+        // 다양한 금융 용어 풀
+        const financialTermsPool = [
+            { term: "ETF (Exchange Traded Fund)", definition: "거래소에서 주식처럼 거래되는 펀드입니다.", example: "KODEX 200 ETF를 사면 코스피 200 기업에 분산투자하는 효과가 있습니다." },
+            { term: "배당수익률 (Dividend Yield)", definition: "주가 대비 배당금의 비율입니다.", example: "주가 10만원, 연 배당 3천원이면 배당수익률은 3%입니다." },
+            { term: "매매차익 (Capital Gain)", definition: "자산을 매입한 가격보다 높은 가격에 매도하여 얻는 이익입니다.", example: "100만원에 산 주식을 150만원에 팔면 50만원의 매매차익이 발생합니다." },
+            { term: "손절매 (Stop Loss)", definition: "손실을 제한하기 위해 일정 손실에서 매도하는 전략입니다.", example: "10% 하락 시 자동 매도 설정으로 추가 손실을 방지합니다." },
+            { term: "리밸런싱 (Rebalancing)", definition: "포트폴리오의 자산 비중을 원래 목표대로 재조정하는 것입니다.", example: "주식 70%, 채권 30% 비율을 유지하기 위해 정기적으로 조정합니다." },
+            { term: "펀더멘털 (Fundamental)", definition: "기업의 재무상태, 실적 등 기본적 가치를 나타내는 지표입니다.", example: "매출, 영업이익, 부채비율 등을 분석하여 기업가치를 평가합니다." },
+            { term: "테크니컬 분석 (Technical Analysis)", definition: "차트와 거래량 등을 분석하여 주가를 예측하는 방법입니다.", example: "이동평균선, RSI 등의 지표를 활용하여 매매 시점을 결정합니다." },
+            { term: "공매도 (Short Selling)", definition: "주식을 빌려서 팔고 나중에 싸게 사서 갚는 투자 전략입니다.", example: "주가 하락을 예상하고 10만원에 빌려 판 주식을 8만원에 사서 갚아 2만원 수익을 얻습니다." },
+            { term: "IPO (Initial Public Offering)", definition: "기업이 처음으로 주식시장에 상장하는 것입니다.", example: "카카오뱅크가 2021년 코스피에 IPO하여 일반 투자자도 주식을 살 수 있게 되었습니다." },
+            { term: "블루칩 (Blue Chip)", definition: "재무구조가 건전하고 수익성이 높은 우량 대기업 주식입니다.", example: "삼성전자, SK하이닉스 같은 대표 우량주를 블루칩이라고 합니다." }
+        ];
+
+        // 다양한 퀴즈 문제 풀
+        const beginnerQuizPool = [
+            { question: "ISA 계좌의 가장 큰 장점은?", options: ["높은 수익률", "세금 혜택", "무제한 입금", "해외투자 전용"], correct: 1, explanation: "ISA는 개인종합자산관리계좌로, 일정 한도 내에서 세금 혜택을 받을 수 있습니다." },
+            { question: "코스닥은 주로 어떤 기업들이 상장되어 있나요?", options: ["대기업", "중소·벤처기업", "외국기업", "공기업"], correct: 1, explanation: "코스닥은 주로 성장 가능성이 높은 중소·벤처기업들이 상장되어 있습니다." },
+            { question: "펀드 투자의 장점은?", options: ["보장된 수익", "전문가 운용", "세금 면제", "원금 보장"], correct: 1, explanation: "펀드는 전문 펀드매니저가 운용하여 개인이 직접 투자하기 어려운 분산투자가 가능합니다." },
+            { question: "신용카드 리볼빙의 위험성은?", options: ["낮은 한도", "높은 이자", "사용 불편", "포인트 없음"], correct: 1, explanation: "리볼빙은 매우 높은 이자율(연 15-20%)이 적용되어 빚이 늘어날 수 있습니다." },
+            { question: "예금자보호제도의 보호 한도는?", options: ["1천만원", "3천만원", "5천만원", "1억원"], correct: 2, explanation: "예금자보호제도는 금융기관별로 원금과 이자를 합쳐 1인당 5천만원까지 보호합니다." },
+            { question: "주식 배당금은 언제 받나요?", options: ["매일", "매주", "매월", "연 1-4회"], correct: 3, explanation: "대부분의 기업은 연 1-2회, 일부는 분기별로 배당금을 지급합니다." },
+            { question: "적립식 펀드의 장점은?", options: ["일시 투자", "평균 매입 단가", "높은 수익 보장", "세금 면제"], correct: 1, explanation: "적립식은 정기적으로 투자하여 평균 매입 단가를 낮추는 효과가 있습니다." },
+            { question: "환율이 오르면 유리한 사람은?", options: ["수입업자", "해외여행객", "수출업자", "유학생"], correct: 2, explanation: "환율이 오르면 달러를 받는 수출업자가 더 많은 원화를 받게 되어 유리합니다." },
+            { question: "주가지수란 무엇인가요?", options: ["개별 주가", "시장 전체 동향", "거래량", "환율"], correct: 1, explanation: "주가지수는 주식시장 전체의 가격 변동을 나타내는 지표입니다." },
+            { question: "은행 예금과 적금의 차이는?", options: ["은행이 다름", "입금 방식", "이자율 동일", "위험도"], correct: 1, explanation: "예금은 목돈을 한번에, 적금은 매달 일정액을 납입합니다." }
+        ];
+
+        const intermediateQuizPool = [
+            { question: "PER이 낮은 주식의 일반적인 특징은?", options: ["고평가 상태", "저평가 가능성", "배당금이 높음", "성장성이 높음"], correct: 1, explanation: "PER이 낮다는 것은 주가가 수익 대비 저평가되어 있을 가능성을 의미합니다." },
+            { question: "ROE가 높은 기업의 특징은?", options: ["부채가 많음", "자기자본 수익률이 높음", "매출이 적음", "성장성이 낮음"], correct: 1, explanation: "ROE는 자기자본 대비 순이익 비율로, 높을수록 효율적으로 수익을 창출합니다." },
+            { question: "인플레이션 헤지에 유리한 자산은?", options: ["현금", "부동산", "장기채권", "정기예금"], correct: 1, explanation: "부동산은 물가상승과 함께 가치가 오르는 경향이 있어 인플레이션 헤지에 유리합니다." },
+            { question: "EPS가 증가한다는 의미는?", options: ["주가 하락", "주당 순이익 증가", "배당 감소", "부채 증가"], correct: 1, explanation: "EPS(주당순이익)가 증가하면 기업의 수익성이 개선되고 있음을 의미합니다." },
+            { question: "달러 코스트 애버리징의 효과는?", options: ["수익률 보장", "평균 매입가 하락", "세금 절감", "배당 증가"], correct: 1, explanation: "정기적으로 일정 금액을 투자하여 평균 매입 단가를 낮추는 효과가 있습니다." },
+            { question: "신용등급이 하락하면?", options: ["대출금리 하락", "대출금리 상승", "대출한도 증가", "상관없음"], correct: 1, explanation: "신용등급이 낮아지면 위험도가 높아져 더 높은 금리를 적용받게 됩니다." },
+            { question: "유동성이 높은 자산의 특징은?", options: ["거래 어려움", "현금화 용이", "수익률 높음", "위험도 높음"], correct: 1, explanation: "유동성이 높으면 필요시 빠르게 현금으로 전환할 수 있습니다." },
+            { question: "복리 효과가 극대화되는 조건은?", options: ["단기 투자", "장기 투자", "고위험 투자", "분산 투자"], correct: 1, explanation: "복리는 시간이 지날수록 기하급수적으로 증가하므로 장기투자에 유리합니다." },
+            { question: "베타(Beta) 값이 1보다 크면?", options: ["시장보다 안정적", "시장보다 변동성 큼", "무위험 자산", "채권형 자산"], correct: 1, explanation: "베타가 1보다 크면 시장 평균보다 가격 변동성이 큰 것을 의미합니다." },
+            { question: "매크로 헤지펀드의 주요 전략은?", options: ["개별 종목 투자", "경제 전반 예측", "부동산 투자", "원자재 투자"], correct: 1, explanation: "매크로 헤지펀드는 거시경제 동향을 예측하여 다양한 자산에 투자합니다." }
+        ];
+
+        const advancedQuizPool = [
+            { question: "샤프 비율(Sharpe Ratio)이 측정하는 것은?", options: ["절대 수익률", "위험 조정 수익률", "변동성", "최대 손실"], correct: 1, explanation: "샤프 비율은 위험 단위당 초과 수익률을 측정하는 지표입니다." },
+            { question: "컨탱고(Contango) 시장의 특징은?", options: ["현물가격 > 선물가격", "선물가격 > 현물가격", "가격 동일", "변동성 없음"], correct: 1, explanation: "컨탱고는 선물가격이 현물가격보다 높은 정상적인 시장 상황입니다." },
+            { question: "델타 헤징의 목적은?", options: ["수익 극대화", "방향성 위험 제거", "레버리지 증가", "배당 수취"], correct: 1, explanation: "델타 헤징은 기초자산 가격 변동에 대한 옵션 포지션의 민감도를 중립화합니다." },
+            { question: "VaR(Value at Risk)가 나타내는 것은?", options: ["최대 수익", "최대 손실 가능액", "평균 수익률", "변동성"], correct: 1, explanation: "VaR는 특정 신뢰수준에서 일정 기간 동안 발생 가능한 최대 손실액을 나타냅니다." },
+            { question: "백워데이션(Backwardation) 발생 원인은?", options: ["공급 과잉", "현물 수요 급증", "금리 상승", "환율 하락"], correct: 1, explanation: "현물 수요가 급증하여 현물가격이 선물가격보다 높아지는 현상입니다." },
+            { question: "소버린 리스크(Sovereign Risk)란?", options: ["기업 부도 위험", "국가 채무불이행 위험", "환율 변동 위험", "금리 변동 위험"], correct: 1, explanation: "국가가 채무를 이행하지 못할 위험을 의미합니다." },
+            { question: "콜 스프레드 전략의 목적은?", options: ["무제한 수익", "제한적 수익과 손실", "헤지 전용", "배당 수취"], correct: 1, explanation: "콜 스프레드는 수익과 손실을 제한하면서 프리미엄 비용을 줄이는 전략입니다." },
+            { question: "트레이딩 볼륨이 급증하면?", options: ["관심 감소", "가격 변동 임박", "시장 안정", "거래 중단"], correct: 1, explanation: "거래량 급증은 큰 가격 변동이 일어날 가능성이 높음을 시사합니다." },
+            { question: "알파 수익의 원천은?", options: ["시장 수익률", "초과 수익 능력", "무위험 수익률", "환차익"], correct: 1, explanation: "알파는 펀드매니저의 종목선택 능력으로 얻는 시장 초과 수익입니다." },
+            { question: "듀레이션 매칭의 목적은?", options: ["수익 극대화", "금리위험 헤지", "신용위험 제거", "환위험 헤지"], correct: 1, explanation: "자산과 부채의 듀레이션을 일치시켜 금리변동 위험을 최소화합니다." }
+        ];
+
         function calculateLevelFromExp(exp) {
             if (exp >= 50000) return 'black';
             if (exp >= 30000) return 'red';
@@ -492,10 +546,10 @@
                     });
                 }
                 
-                // 최근 100개만 유지 (메모리 관리)
-                contentHistory.news = contentHistory.news.slice(-100);
-                contentHistory.terms = contentHistory.terms.slice(-100);
-                contentHistory.quizzes = contentHistory.quizzes.slice(-300); // 퀴즈는 더 많이 유지
+                // 최근 항목만 유지 (메모리 관리)
+                contentHistory.news = contentHistory.news.slice(-200);
+                contentHistory.terms = contentHistory.terms.slice(-150);
+                contentHistory.quizzes = contentHistory.quizzes.slice(-500);
                 
                 const historyRef = window.firebaseRef(window.firebaseDB, 'contentHistory');
                 await window.firebaseSet(historyRef, contentHistory);
@@ -516,6 +570,36 @@
                 return contentHistory.quizzes.some(q => q.question === item.question);
             }
             return false;
+        }
+
+        // 중복되지 않은 용어 선택
+        function selectUniqueTerms(count = 3) {
+            const availableTerms = financialTermsPool.filter(term => 
+                !contentHistory.terms.some(t => t.term === term.term)
+            );
+            
+            const selected = [];
+            const shuffled = [...availableTerms].sort(() => Math.random() - 0.5);
+            
+            for (let i = 0; i < Math.min(count, shuffled.length); i++) {
+                selected.push({
+                    id: `term-${i}`,
+                    ...shuffled[i],
+                    isToday: true
+                });
+            }
+            
+            return selected;
+        }
+
+        // 중복되지 않은 퀴즈 선택
+        function selectUniqueQuizzes(pool, count = 5) {
+            const availableQuizzes = pool.filter(quiz => 
+                !contentHistory.quizzes.some(q => q.question === quiz.question)
+            );
+            
+            const shuffled = [...availableQuizzes].sort(() => Math.random() - 0.5);
+            return shuffled.slice(0, Math.min(count, shuffled.length));
         }
 
         async function cleanOldData() {
@@ -862,10 +946,13 @@
                     'https://api.codetabs.com/v1/proxy?quest='
                 ];
                 
+                // 더 많은 RSS 소스 추가
                 const rssUrls = [
                     'https://news.google.com/rss/search?q=금융+OR+경제+OR+주식+OR+코스피&hl=ko&gl=KR&ceid=KR:ko',
                     'https://news.google.com/rss/search?q=한국은행+OR+금리+OR+환율&hl=ko&gl=KR&ceid=KR:ko',
-                    'https://news.google.com/rss/search?q=삼성전자+OR+SK하이닉스+OR+반도체&hl=ko&gl=KR&ceid=KR:ko'
+                    'https://news.google.com/rss/search?q=삼성전자+OR+SK하이닉스+OR+반도체&hl=ko&gl=KR&ceid=KR:ko',
+                    'https://news.google.com/rss/search?q=코스닥+OR+IPO+OR+상장&hl=ko&gl=KR&ceid=KR:ko',
+                    'https://news.google.com/rss/search?q=부동산+OR+아파트+OR+금융정책&hl=ko&gl=KR&ceid=KR:ko'
                 ];
                 
                 let allNews = [];
@@ -882,13 +969,14 @@
                                 
                                 if (newsItems && newsItems.length > 0) {
                                     allNews.push(...newsItems);
-                                    break;
+                                    if (allNews.length > 50) break; // 충분한 뉴스 수집
                                 }
                             }
                         } catch (error) {
                             console.warn(`RSS 프록시 실패:`, error);
                         }
                     }
+                    if (allNews.length > 50) break;
                 }
                 
                 // 중복 제거 및 필터링
@@ -896,6 +984,7 @@
                 const seenTitles = new Set();
                 
                 for (const item of allNews) {
+                    // 제목 중복 체크 및 히스토리 체크
                     if (!seenTitles.has(item.title) && !isContentDuplicate('news', item)) {
                         uniqueNews.push({
                             id: `news-${uniqueNews.length}`,
@@ -910,6 +999,16 @@
                         seenTitles.add(item.title);
                         
                         if (uniqueNews.length >= 5) break;
+                    }
+                }
+                
+                // 뉴스가 부족하면 대체 뉴스 추가
+                if (uniqueNews.length < 5) {
+                    const fallbackNews = getFallbackNews();
+                    for (const news of fallbackNews) {
+                        if (!isContentDuplicate('news', news) && uniqueNews.length < 5) {
+                            uniqueNews.push(news);
+                        }
                     }
                 }
                 
@@ -941,7 +1040,7 @@
                 
                 const newsItems = [];
                 items.forEach((item, index) => {
-                    if (index < 10) { // 더 많은 아이템 파싱
+                    if (index < 20) { // 더 많은 아이템 파싱
                         const title = item.querySelector('title')?.textContent;
                         const description = item.querySelector('description')?.textContent || '';
                         const link = item.querySelector('link')?.textContent;
@@ -949,7 +1048,7 @@
                         const source = item.querySelector('source')?.textContent || 'Google News';
                         
                         if (title && link) {
-                            const financeKeywords = ['금융', '경제', '코스피', '코스닥', '한국은행', '금리', '환율', '삼성전자', '주식', '투자', '증시', '기업', '시장', '은행', '보험', '증권'];
+                            const financeKeywords = ['금융', '경제', '코스피', '코스닥', '한국은행', '금리', '환율', '삼성전자', '주식', '투자', '증시', '기업', '시장', '은행', '보험', '증권', '펀드', 'ETF', '채권', '부동산'];
                             const hasKeyword = financeKeywords.some(keyword => 
                                 title.includes(keyword) || description.includes(keyword)
                             );
@@ -982,9 +1081,9 @@
             const fallbackNewsList = [
                 {
                     id: 'news-0',
-                    title: `한국은행, 기준금리 3.50% 동결 결정`,
-                    description: `한국은행이 ${today.getMonth() + 1}월 금융통화위원회에서 현행 기준금리 3.50%를 유지하기로 결정했습니다.`,
-                    content: `한국은행이 ${today.getMonth() + 1}월 금융통화위원회에서 현행 기준금리 3.50%를 유지하기로 결정했습니다. 인플레이션 압력과 경제성장세를 종합 고려한 결과로 분석됩니다.`,
+                    title: `한국은행, ${today.getMonth() + 1}월 기준금리 동결 결정`,
+                    description: `한국은행이 ${today.getMonth() + 1}월 금융통화위원회에서 현행 기준금리를 유지하기로 결정했습니다.`,
+                    content: `한국은행이 ${today.getMonth() + 1}월 금융통화위원회에서 현행 기준금리를 유지하기로 결정했습니다.`,
                     url: "https://www.bok.or.kr/",
                     source: "한국은행",
                     category: "통화정책",
@@ -992,22 +1091,42 @@
                 },
                 {
                     id: 'news-1',
-                    title: `코스피 ${kospiPrice}선에서 등락 - 외국인 투자 동향 주목`,
-                    description: `국내 증시가 ${kospiPrice}대에서 등락을 거듭하고 있습니다.`,
-                    content: `국내 증시가 ${kospiPrice}대에서 등락을 거듭하고 있습니다. 반도체와 2차전지 업종을 중심으로 외국인 투자자들의 매매 패턴이 시장 방향성을 좌우하고 있습니다.`,
-                    url: "https://finance.naver.com/sise/",
+                    title: `코스피 ${kospiPrice}선 마감 - 외국인 순매수 지속`,
+                    description: `코스피가 ${kospiPrice}대에서 마감했습니다. 외국인 투자자들의 순매수가 이어지고 있습니다.`,
+                    content: `코스피가 ${kospiPrice}대에서 마감했습니다.`,
+                    url: "https://finance.naver.com/",
                     source: "한국거래소",
-                    category: "증시동향",
+                    category: "증시",
                     publishedAt: today.toISOString()
                 },
                 {
                     id: 'news-2',
-                    title: `달러-원 환율 ${usdRate}원대 - 미 연준 정책 영향`,
-                    description: `원-달러 환율이 ${usdRate}원대에서 형성되고 있습니다.`,
-                    content: `원-달러 환율이 ${usdRate}원대에서 형성되고 있습니다. 미국 연방준비제도의 통화정책 방향과 국내 경제지표가 환율 변동의 주요 요인으로 작용하고 있습니다.`,
+                    title: `원-달러 환율 ${usdRate}원대 유지`,
+                    description: `원-달러 환율이 ${usdRate}원대를 유지하고 있습니다.`,
+                    content: `원-달러 환율이 ${usdRate}원대를 유지하고 있습니다.`,
                     url: "https://www.koreaexim.go.kr/",
                     source: "한국수출입은행",
-                    category: "환율동향",
+                    category: "환율",
+                    publishedAt: today.toISOString()
+                },
+                {
+                    id: 'news-3',
+                    title: `국내 ETF 시장 100조원 돌파 임박`,
+                    description: `국내 ETF 시장 규모가 100조원 돌파를 앞두고 있습니다.`,
+                    content: `국내 ETF 시장이 빠르게 성장하고 있습니다.`,
+                    url: "https://www.krx.co.kr/",
+                    source: "한국거래소",
+                    category: "ETF",
+                    publishedAt: today.toISOString()
+                },
+                {
+                    id: 'news-4',
+                    title: `청년층 주식투자 비중 역대 최고`,
+                    description: `20-30대 청년층의 주식투자 참여율이 역대 최고 수준을 기록했습니다.`,
+                    content: `청년층의 투자 관심이 높아지고 있습니다.`,
+                    url: "https://www.fss.or.kr/",
+                    source: "금융감독원",
+                    category: "투자동향",
                     publishedAt: today.toISOString()
                 }
             ];
@@ -1017,7 +1136,7 @@
             if (uniqueFallback.length > 0) {
                 saveContentHistory('news', uniqueFallback);
             }
-            return uniqueFallback;
+            return uniqueFallback.slice(0, 5);
         }
 
         async function callGeminiAPI(prompt) {
@@ -1032,7 +1151,13 @@
                             parts: [{
                                 text: prompt
                             }]
-                        }]
+                        }],
+                        generationConfig: {
+                            temperature: 0.9,
+                            topK: 40,
+                            topP: 0.95,
+                            maxOutputTokens: 2048
+                        }
                     })
                 });
 
@@ -1059,100 +1184,6 @@
                 console.error('GEMINI API 호출 실패:', error);
                 return null;
             }
-        }
-
-        function generateIntermediateQuiz() {
-            const quizPool = [
-                {
-                    question: "PER이 낮은 주식의 일반적인 특징은?",
-                    options: ["고평가 상태", "저평가 가능성", "배당금이 높음", "성장성이 높음"],
-                    correct: 1,
-                    explanation: "PER이 낮다는 것은 주가가 수익 대비 저평가되어 있을 가능성을 의미합니다."
-                },
-                {
-                    question: "금리 인상 시 일반적으로 하락하는 자산은?",
-                    options: ["예금", "채권 가격", "대출 이자", "원화 가치"],
-                    correct: 1,
-                    explanation: "금리가 오르면 기존 채권의 매력도가 떨어져 채권 가격이 하락합니다."
-                },
-                {
-                    question: "분산투자의 핵심 원리는?",
-                    options: ["수익 극대화", "위험 분산", "세금 절감", "거래 비용 절감"],
-                    correct: 1,
-                    explanation: "분산투자는 여러 자산에 투자하여 전체 포트폴리오의 위험을 줄이는 전략입니다."
-                },
-                {
-                    question: "ROE가 높은 기업의 특징은?",
-                    options: ["부채가 많음", "자기자본 수익률이 높음", "매출이 적음", "성장성이 낮음"],
-                    correct: 1,
-                    explanation: "ROE는 자기자본 대비 순이익 비율로, 높을수록 효율적으로 수익을 창출합니다."
-                },
-                {
-                    question: "인플레이션 헤지에 유리한 자산은?",
-                    options: ["현금", "부동산", "장기채권", "정기예금"],
-                    correct: 1,
-                    explanation: "부동산은 물가상승과 함께 가치가 오르는 경향이 있어 인플레이션 헤지에 유리합니다."
-                }
-            ];
-            
-            // 중복되지 않은 퀴즈 선택
-            const uniqueQuizzes = quizPool.filter(quiz => !isContentDuplicate('quiz', quiz));
-            const selectedQuizzes = uniqueQuizzes.slice(0, 5);
-            
-            // 부족하면 기본 퀴즈 추가
-            while (selectedQuizzes.length < 5) {
-                selectedQuizzes.push(quizPool[selectedQuizzes.length]);
-            }
-            
-            saveContentHistory('quizzes', selectedQuizzes);
-            return selectedQuizzes;
-        }
-
-        function generateAdvancedQuiz() {
-            const quizPool = [
-                {
-                    question: "옵션의 시간가치가 가장 빠르게 감소하는 시기는?",
-                    options: ["만기 6개월 전", "만기 3개월 전", "만기 1개월 전", "만기 당일"],
-                    correct: 2,
-                    explanation: "옵션의 시간가치는 만기가 가까워질수록 가속도적으로 감소합니다(세타 decay)."
-                },
-                {
-                    question: "헤지펀드가 사용하는 '롱숏 전략'의 목적은?",
-                    options: ["레버리지 극대화", "시장 중립적 수익", "배당 수익", "환차익"],
-                    correct: 1,
-                    explanation: "롱숏 전략은 시장 방향과 관계없이 수익을 추구하는 시장 중립 전략입니다."
-                },
-                {
-                    question: "채권의 듀레이션이 의미하는 것은?",
-                    options: ["만기", "신용등급", "금리 민감도", "유동성"],
-                    correct: 2,
-                    explanation: "듀레이션은 금리 변동에 대한 채권 가격의 민감도를 나타내는 지표입니다."
-                },
-                {
-                    question: "샤프 비율(Sharpe Ratio)이 측정하는 것은?",
-                    options: ["절대 수익률", "위험 조정 수익률", "변동성", "최대 손실"],
-                    correct: 1,
-                    explanation: "샤프 비율은 위험 단위당 초과 수익률을 측정하는 지표입니다."
-                },
-                {
-                    question: "컨탱고(Contango) 시장의 특징은?",
-                    options: ["현물가격 > 선물가격", "선물가격 > 현물가격", "가격 동일", "변동성 없음"],
-                    correct: 1,
-                    explanation: "컨탱고는 선물가격이 현물가격보다 높은 정상적인 시장 상황입니다."
-                }
-            ];
-            
-            // 중복되지 않은 퀴즈 선택
-            const uniqueQuizzes = quizPool.filter(quiz => !isContentDuplicate('quiz', quiz));
-            const selectedQuizzes = uniqueQuizzes.slice(0, 5);
-            
-            // 부족하면 기본 퀴즈 추가
-            while (selectedQuizzes.length < 5) {
-                selectedQuizzes.push(quizPool[selectedQuizzes.length]);
-            }
-            
-            saveContentHistory('quizzes', selectedQuizzes);
-            return selectedQuizzes;
         }
 
         async function generateTodayContent() {
@@ -1202,70 +1233,29 @@
                     
                     showLoadingOverlay();
                     
+                    // 뉴스 수집
                     const newsData = await getLatestFinanceNews();
                     console.log(`📰 뉴스 ${newsData.length}건 수집 완료`);
                     
-                    // 이미 본 용어 제외하고 프롬프트 생성
-                    const excludedTerms = contentHistory.terms.map(t => t.term).join(', ');
-                    const termsPrompt = `오늘의 금융 뉴스를 바탕으로 중요한 금융 용어 3개를 선정하고 JSON 형식으로 반환해주세요:
+                    // AI로 용어 생성 (중복 제외)
+                    let terms = [];
+                    const excludedTerms = contentHistory.terms.slice(-50).map(t => t.term).join(', ');
+                    
+                    const termsPrompt = `오늘의 금융 뉴스를 바탕으로 중요한 금융 용어 5개를 선정하고 JSON 형식으로 반환해주세요:
                     ${newsData.map(n => n.title).join('\n')}
                     
-                    다음 용어들은 이미 학습했으므로 제외해주세요: ${excludedTerms}
+                    다음 용어들은 이미 학습했으므로 절대 포함하지 마세요: ${excludedTerms}
                     
-                    다음 형식으로 정확히 3개의 새로운 용어를 반환:
+                    다음과 같은 새로운 용어들을 고려해주세요: 블록체인, NFT, 메타버스, ESG, 리츠(REITs), 스팩(SPAC), 밈주식, 로보어드바이저, 핀테크, 디파이(DeFi), 스테이블코인, 알고리즘 트레이딩, 다크풀, 양적완화, 테이퍼링
+                    
+                    다음 형식으로 정확히 5개의 새로운 용어를 반환:
                     [
                         {
-                            "id": "term-0",
                             "term": "용어명 (영문명)",
                             "definition": "정의 (초보자도 이해할 수 있게 쉽게 설명)",
-                            "example": "실제 사례 (구체적인 예시)",
-                            "isToday": true
-                        },
-                        {
-                            "id": "term-1",
-                            "term": "용어명 (영문명)",
-                            "definition": "정의 (초보자도 이해할 수 있게 쉽게 설명)",
-                            "example": "실제 사례 (구체적인 예시)",
-                            "isToday": true
-                        },
-                        {
-                            "id": "term-2",
-                            "term": "용어명 (영문명)",
-                            "definition": "정의 (초보자도 이해할 수 있게 쉽게 설명)",
-                            "example": "실제 사례 (구체적인 예시)",
-                            "isToday": true
+                            "example": "실제 사례 (구체적인 예시)"
                         }
                     ]`;
-                    
-                    // 이미 본 퀴즈 문제 제외
-                    const excludedQuestions = contentHistory.quizzes.slice(-20).map(q => q.question).join(', ');
-                    const quizPrompt = `다음 금융 뉴스를 바탕으로 초급 퀴즈 5문제를 JSON 형식으로 만들어주세요:
-                    ${newsData.map(n => n.title + '\n' + n.description).join('\n\n')}
-                    
-                    다음 문제들과 유사한 문제는 제외해주세요: ${excludedQuestions}
-                    
-                    문제 구성:
-                    1. 뉴스 관련 문제 2개 (위 뉴스 내용 직접 활용)
-                    2. 최근 경제 트렌드 금융 상식 문제 2개 (위 뉴스에서 파악되는 트렌드 기반)
-                    3. 재미있는 금융 문제 1개 (일상생활과 연관된 쉬운 문제)
-                    
-                    난이도: 금융 초보자도 상식으로 풀 수 있는 매우 쉬운 수준
-                    
-                    다음 형식으로 반환:
-                    {
-                        "beginner": [
-                            {
-                                "question": "뉴스 관련 문제 1",
-                                "options": ["선택지1", "선택지2", "선택지3", "선택지4"],
-                                "correct": 정답인덱스(0-3),
-                                "explanation": "왜 이것이 정답인지 쉽게 설명"
-                            },
-                            // ... 5개 문제
-                        ]
-                    }`;
-                    
-                    let terms = [];
-                    let quizzes = { beginner: [], intermediate: [], advanced: [] };
                     
                     const termsResponse = await callGeminiAPI(termsPrompt);
                     if (termsResponse) {
@@ -1273,46 +1263,56 @@
                             const jsonMatch = termsResponse.match(/\[[\s\S]*\]/);
                             if (jsonMatch) {
                                 const parsedTerms = JSON.parse(jsonMatch[0]);
-                                // 중복 체크
-                                terms = parsedTerms.filter(term => !isContentDuplicate('terms', term));
+                                // 중복 체크 후 추가
+                                parsedTerms.forEach((term, index) => {
+                                    if (!isContentDuplicate('terms', term) && terms.length < 3) {
+                                        terms.push({
+                                            id: `term-${index}`,
+                                            ...term,
+                                            isToday: true
+                                        });
+                                    }
+                                });
                             }
                         } catch (e) {
                             console.error('Terms 파싱 실패:', e);
                         }
                     }
                     
-                    // 용어가 부족하면 기본 용어 추가
+                    // 부족하면 미리 준비된 용어에서 선택
                     if (terms.length < 3) {
-                        const defaultTerms = [
-                            {
-                                id: "term-0",
-                                term: "ETF (Exchange Traded Fund)",
-                                definition: "거래소에서 주식처럼 거래되는 펀드입니다. 여러 종목을 한 번에 투자할 수 있습니다.",
-                                example: "KODEX 200 ETF를 사면 코스피 200 기업에 분산투자하는 효과가 있습니다.",
-                                isToday: true
-                            },
-                            {
-                                id: "term-1",
-                                term: "배당수익률 (Dividend Yield)",
-                                definition: "주가 대비 배당금의 비율입니다. 안정적인 현금흐름을 원하는 투자자가 선호합니다.",
-                                example: "주가 10만원, 연 배당 3천원이면 배당수익률은 3%입니다.",
-                                isToday: true
-                            },
-                            {
-                                id: "term-2",
-                                term: "매매차익 (Capital Gain)",
-                                definition: "자산을 매입한 가격보다 높은 가격에 매도하여 얻는 이익입니다.",
-                                example: "100만원에 산 주식을 150만원에 팔면 50만원의 매매차익이 발생합니다.",
-                                isToday: true
-                            }
-                        ].filter(term => !isContentDuplicate('terms', term));
-                        
-                        while (terms.length < 3 && defaultTerms.length > 0) {
-                            terms.push(defaultTerms.shift());
-                        }
+                        const additionalTerms = selectUniqueTerms(3 - terms.length);
+                        terms = [...terms, ...additionalTerms];
                     }
                     
                     await saveContentHistory('terms', terms);
+                    
+                    // AI로 퀴즈 생성 (중복 제외)
+                    let quizzes = { beginner: [], intermediate: [], advanced: [] };
+                    const excludedQuestions = contentHistory.quizzes.slice(-30).map(q => q.question.substring(0, 20)).join(', ');
+                    
+                    const quizPrompt = `다음 금융 뉴스를 바탕으로 초급 퀴즈 7문제를 JSON 형식으로 만들어주세요:
+                    ${newsData.map(n => n.title + '\n' + n.description).join('\n\n')}
+                    
+                    다음과 유사한 문제는 제외해주세요: ${excludedQuestions}
+                    
+                    문제는 다양한 주제로 구성해주세요:
+                    - 뉴스 내용 직접 활용 (2문제)
+                    - 기본 금융 상식 (2문제)
+                    - 투자 기초 (2문제)
+                    - 일상 금융 (1문제)
+                    
+                    다음 형식으로 반환:
+                    {
+                        "beginner": [
+                            {
+                                "question": "문제",
+                                "options": ["선택지1", "선택지2", "선택지3", "선택지4"],
+                                "correct": 정답인덱스(0-3),
+                                "explanation": "설명"
+                            }
+                        ]
+                    }`;
                     
                     const quizResponse = await callGeminiAPI(quizPrompt);
                     if (quizResponse) {
@@ -1321,8 +1321,12 @@
                             if (jsonMatch) {
                                 const parsed = JSON.parse(jsonMatch[0]);
                                 if (parsed.beginner && Array.isArray(parsed.beginner)) {
-                                    // 중복 체크
-                                    quizzes.beginner = parsed.beginner.filter(quiz => !isContentDuplicate('quiz', quiz));
+                                    // 중복 체크 후 추가
+                                    parsed.beginner.forEach(quiz => {
+                                        if (!isContentDuplicate('quiz', quiz) && quizzes.beginner.length < 5) {
+                                            quizzes.beginner.push(quiz);
+                                        }
+                                    });
                                 }
                             }
                         } catch (e) {
@@ -1330,50 +1334,19 @@
                         }
                     }
                     
-                    // 초급 퀴즈가 부족하면 기본 퀴즈 추가
+                    // 부족하면 미리 준비된 퀴즈에서 선택
                     if (quizzes.beginner.length < 5) {
-                        const defaultQuizzes = [
-                            {
-                                question: "ISA 계좌의 가장 큰 장점은?",
-                                options: ["높은 수익률", "세금 혜택", "무제한 입금", "해외투자 전용"],
-                                correct: 1,
-                                explanation: "ISA는 개인종합자산관리계좌로, 일정 한도 내에서 세금 혜택을 받을 수 있습니다."
-                            },
-                            {
-                                question: "코스닥은 주로 어떤 기업들이 상장되어 있나요?",
-                                options: ["대기업", "중소·벤처기업", "외국기업", "공기업"],
-                                correct: 1,
-                                explanation: "코스닥은 주로 성장 가능성이 높은 중소·벤처기업들이 상장되어 있습니다."
-                            },
-                            {
-                                question: "펀드 투자의 장점은?",
-                                options: ["보장된 수익", "전문가 운용", "세금 면제", "원금 보장"],
-                                correct: 1,
-                                explanation: "펀드는 전문 펀드매니저가 운용하여 개인이 직접 투자하기 어려운 분산투자가 가능합니다."
-                            },
-                            {
-                                question: "신용카드 리볼빙의 위험성은?",
-                                options: ["낮은 한도", "높은 이자", "사용 불편", "포인트 없음"],
-                                correct: 1,
-                                explanation: "리볼빙은 매우 높은 이자율(연 15-20%)이 적용되어 빚이 늘어날 수 있습니다."
-                            },
-                            {
-                                question: "예금자보호제도의 보호 한도는?",
-                                options: ["1천만원", "3천만원", "5천만원", "1억원"],
-                                correct: 2,
-                                explanation: "예금자보호제도는 금융기관별로 원금과 이자를 합쳐 1인당 5천만원까지 보호합니다."
-                            }
-                        ].filter(quiz => !isContentDuplicate('quiz', quiz));
-                        
-                        while (quizzes.beginner.length < 5 && defaultQuizzes.length > 0) {
-                            quizzes.beginner.push(defaultQuizzes.shift());
-                        }
+                        const additionalQuizzes = selectUniqueQuizzes(beginnerQuizPool, 5 - quizzes.beginner.length);
+                        quizzes.beginner = [...quizzes.beginner, ...additionalQuizzes];
                     }
                     
                     await saveContentHistory('quizzes', quizzes.beginner);
                     
-                    quizzes.intermediate = generateIntermediateQuiz();
-                    quizzes.advanced = generateAdvancedQuiz();
+                    // 중급, 고급 퀴즈 추가
+                    quizzes.intermediate = selectUniqueQuizzes(intermediateQuizPool, 5);
+                    quizzes.advanced = selectUniqueQuizzes(advancedQuizPool, 5);
+                    
+                    await saveContentHistory('quizzes', [...quizzes.intermediate, ...quizzes.advanced]);
                     
                     const todayData = {
                         date: today,
@@ -1398,72 +1371,29 @@
             } catch (error) {
                 console.error('❌ 콘텐츠 생성 실패:', error);
                 
+                // 에러 시 대체 콘텐츠 제공
+                const fallbackTerms = selectUniqueTerms(3);
+                const fallbackBeginnerQuiz = selectUniqueQuizzes(beginnerQuizPool, 5);
+                const fallbackIntermediateQuiz = selectUniqueQuizzes(intermediateQuizPool, 5);
+                const fallbackAdvancedQuiz = selectUniqueQuizzes(advancedQuizPool, 5);
+                
                 const fallbackData = {
                     date: today,
                     news: getFallbackNews(),
-                    terms: [
-                        {
-                            id: "term-0",
-                            term: "복리 (Compound Interest)",
-                            definition: "원금에 붙은 이자가 다시 원금이 되어 이자가 붙는 방식입니다.",
-                            example: "100만원을 연 10% 복리로 투자하면 10년 후 약 259만원이 됩니다.",
-                            isToday: true
-                        },
-                        {
-                            id: "term-1",
-                            term: "분산투자 (Diversification)",
-                            definition: "여러 자산에 나누어 투자하여 위험을 줄이는 전략입니다.",
-                            example: "주식, 채권, 부동산 등 다양한 자산에 분산 투자합니다.",
-                            isToday: true
-                        },
-                        {
-                            id: "term-2",
-                            term: "인플레이션 (Inflation)",
-                            definition: "물가가 지속적으로 상승하는 현상입니다.",
-                            example: "작년에 1000원이던 빵이 올해 1100원이 되는 현상입니다.",
-                            isToday: true
-                        }
-                    ].filter(term => !isContentDuplicate('terms', term)),
+                    terms: fallbackTerms,
                     quizzes: {
-                        beginner: [
-                            {
-                                question: "예금 이자를 결정하는 기준이 되는 금리는?",
-                                options: ["시장금리", "기준금리", "대출금리", "환율"],
-                                correct: 1,
-                                explanation: "한국은행이 정하는 기준금리가 시중 금리의 기준이 됩니다."
-                            },
-                            {
-                                question: "주식을 처음 시작할 때 가장 중요한 것은?",
-                                options: ["큰 수익", "빠른 매매", "리스크 관리", "차트 분석"],
-                                correct: 2,
-                                explanation: "투자에서 가장 중요한 것은 손실을 최소화하는 리스크 관리입니다."
-                            },
-                            {
-                                question: "1년에 물가가 3% 올랐다면?",
-                                options: ["돈의 가치가 올랐다", "돈의 가치가 떨어졌다", "변화 없다", "환율이 올랐다"],
-                                correct: 1,
-                                explanation: "물가가 오르면 같은 돈으로 살 수 있는 물건이 줄어들어 돈의 가치가 떨어집니다."
-                            },
-                            {
-                                question: "적금과 예금의 차이는?",
-                                options: ["이자율", "정기 납입 여부", "위험도", "세금"],
-                                correct: 1,
-                                explanation: "적금은 매달 정기적으로 납입하고, 예금은 한 번에 예치합니다."
-                            },
-                            {
-                                question: "용돈을 모으는 가장 좋은 방법은?",
-                                options: ["전부 소비", "일부는 저축", "투자만", "빚내서 투자"],
-                                correct: 1,
-                                explanation: "수입의 일부를 꾸준히 저축하는 것이 자산을 만드는 첫걸음입니다."
-                            }
-                        ].filter(quiz => !isContentDuplicate('quiz', quiz)),
-                        intermediate: generateIntermediateQuiz(),
-                        advanced: generateAdvancedQuiz()
+                        beginner: fallbackBeginnerQuiz,
+                        intermediate: fallbackIntermediateQuiz,
+                        advanced: fallbackAdvancedQuiz
                     }
                 };
                 
                 await saveContentHistory('terms', fallbackData.terms);
-                await saveContentHistory('quizzes', fallbackData.quizzes.beginner);
+                await saveContentHistory('quizzes', [
+                    ...fallbackData.quizzes.beginner,
+                    ...fallbackData.quizzes.intermediate,
+                    ...fallbackData.quizzes.advanced
+                ]);
                 
                 try {
                     const firebaseRef = window.firebaseRef(window.firebaseDB, `cache/${firebaseCacheKey}`);
