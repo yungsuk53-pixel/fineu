@@ -1225,8 +1225,6 @@
                 const userRef = window.firebaseRef(window.firebaseDB, `users/${userId}`);
                 console.log('🔗 Firebase 참조 생성:', `users/${userId}`);
 
-
-
                 const snapshot = await window.firebaseGet(userRef);
                 console.log('📊 데이터 스냅샷 확인:', snapshot.exists());
 
@@ -1263,6 +1261,9 @@
                     
                     console.log('✅ userAssets 설정 완료:', userAssets);
                     
+                    // ⭐ 페이지 로드 시 포트폴리오 가격 업데이트
+                    await updateAllPortfolioPrices();
+                    
                 } else {
                     // Firebase에 데이터가 없으면 새로 생성
                     console.log('❌ Firebase에 데이터 없음 - 새 데이터 생성');
@@ -1282,6 +1283,56 @@
                 // 오류 발생 시 기본 데이터로 초기화
                 await createNewUserData(userId);
                 updateDisplay();
+            }
+        }
+
+        // ⭐ 새로운 함수: 모든 포트폴리오 자산의 가격 업데이트
+        async function updateAllPortfolioPrices() {
+            console.log('📈 포트폴리오 가격 업데이트 시작');
+            
+            if (!userAssets.portfolio || Object.keys(userAssets.portfolio).length === 0) {
+                console.log('포트폴리오가 비어있음');
+                return;
+            }
+
+            let hasUpdates = false;
+            
+            // 각 보유 자산의 가격 업데이트
+            for (const [symbol, holding] of Object.entries(userAssets.portfolio)) {
+                const assetType = holding.type || 'stock';
+                
+                // 주식과 펀드만 가격 변동 적용 (예적금과 대출은 고정)
+                if (assetType === 'stock' || assetType === 'fund') {
+                    const oldPrice = holding.currentPrice || holding.avgPrice || 0;
+                    
+                    if (oldPrice > 0) {
+                        // 랜덤 가격 변동 생성 (-3% ~ +3%)
+                        const changePercent = (Math.random() - 0.5) * 0.06;
+                        const newPrice = Math.max(1, Math.round(oldPrice * (1 + changePercent)));
+                        
+                        // 가격 업데이트
+                        holding.currentPrice = newPrice;
+                        holding.lastPriceUpdate = new Date().toISOString();
+                        
+                        const priceChange = newPrice - oldPrice;
+                        const priceChangePercent = ((priceChange / oldPrice) * 100).toFixed(2);
+                        
+                        console.log(`📊 ${holding.name || symbol}: ${oldPrice}원 → ${newPrice}원 (${priceChangePercent >= 0 ? '+' : ''}${priceChangePercent}%)`);
+                        hasUpdates = true;
+                    }
+                }
+            }
+            
+            if (hasUpdates) {
+                console.log('✅ 포트폴리오 가격 업데이트 완료');
+                
+                // 총 자산 재계산
+                calculateRealTotalAssets();
+                
+                // Firebase에 저장
+                await saveUserDataToFirebase();
+                
+                // 화면 업데이트는 loadUserDataFromFirebase에서 처리하므로 여기서는 생략
             }
         }
 
