@@ -1207,7 +1207,8 @@
                         currency: currency,
                         quantity: 0,
                         avgPrice: 0,
-                        totalInvested: 0
+                        totalInvested: 0,
+                        currentPrice: price // 현재 가격 저장
                     };
                 }
                 
@@ -1215,6 +1216,7 @@
                 
                 // 통화 정보 업데이트
                 holding.currency = currency;
+                holding.currentPrice = price; // 현재 가격 업데이트
                 
                 if (type === 'buy') {
                     // 매수 처리
@@ -1234,7 +1236,7 @@
                     
                     const amountDisplay = formatPrice(totalAmount, currency, isUSD ? 2 : 0);
                     console.log('✅ 매수 완료:', {symbol, quantity, totalAmount});
-                    alert(`${name} ${quantity}주를 ${amountDisplay}에 매수했습니다.`);
+                    alert(`${name} ${quantity}${assetType === 'fund' ? '좌' : '주'}를 ${amountDisplay}에 매수했습니다.`);
                     
                 } else if (type === 'sell') {
                     // 매도 처리
@@ -1254,7 +1256,7 @@
                     
                     const amountDisplay = formatPrice(totalAmount, currency, isUSD ? 2 : 0);
                     console.log('✅ 매도 완료:', {symbol, quantity, totalAmount});
-                    alert(`${name} ${quantity}주를 ${amountDisplay}에 매도했습니다.`);
+                    alert(`${name} ${quantity}${assetType === 'fund' ? '좌' : '주'}를 ${amountDisplay}에 매도했습니다.`);
                 }
                 
                 console.log('💾 Firebase 저장 시도...');
@@ -1350,7 +1352,32 @@
             let currentPrice = passedPrice;
             try {
                 let yahooSymbol = symbol;
-                if (!yahooSymbol.includes('.')) {
+                
+                // ETF/펀드의 경우 Yahoo Finance 심볼 처리
+                if (assetType === 'fund') {
+                    // 한국 ETF는 종목코드.KS 또는 .KQ 형식
+                    const etfSymbolMap = {
+                        'KODEX_200': '069500.KS',
+                        'TIGER_200': '102110.KS',
+                        'KODEX_코스닥150': '229200.KS',
+                        'TIGER_나스닥100': '133690.KS',
+                        'KODEX_미국S&P500': '360750.KS',
+                        'TIGER_차이나전기차SOLACTIVE': '371460.KS',
+                        'KODEX_2차전지산업': '305720.KS',
+                        'TIGER_반도체': '091230.KS',
+                        'KODEX_골드선물': '132030.KS',
+                        'TIGER_원유선물Enhanced': '130680.KS',
+                        'KODEX_인버스': '114800.KS',
+                        'TIGER_미국채10년선물': '305080.KS'
+                    };
+                    
+                    yahooSymbol = etfSymbolMap[symbol] || symbol;
+                    
+                    // .KS가 없으면 추가
+                    if (!yahooSymbol.includes('.')) {
+                        yahooSymbol += '.KS';
+                    }
+                } else if (!yahooSymbol.includes('.')) {
                     yahooSymbol += '.KS';
                 }
                 
@@ -1385,12 +1412,15 @@
                 ? userAssets.portfolio[symbol] 
                 : { quantity: 0, avgPrice: 0, totalInvested: 0, currency: currency };
             
+            // 자산 유형별 단위 설정
+            const unitText = assetType === 'fund' ? '좌' : '주';
+            
             chartModal.innerHTML = `
                 <div class="chart-content">
                     <div class="chart-header">
                         <div class="asset-info">
                             <div class="asset-name">${name}</div>
-                            <div class="asset-symbol">${symbol}</div>
+                            <div class="asset-symbol">${symbol} ${assetType === 'fund' ? '(ETF/펀드)' : ''}</div>
                         </div>
                         <div style="text-align: right;">
                             <div class="current-price" style="color: ${isPositive ? '#dc3545' : '#007bff'}">
@@ -1412,7 +1442,7 @@
                             <div class="holdings-title">보유 현황</div>
                             <div class="holdings-details">
                                 <span>보유수량:</span>
-                                <span>${holding.quantity.toLocaleString()}주</span>
+                                <span>${holding.quantity.toLocaleString()}${unitText}</span>
                             </div>
                             <div class="holdings-details">
                                 <span>평균단가:</span>
@@ -1514,12 +1544,13 @@
             const priceDisplay = formatPrice(price, currency, isUSD ? 2 : 0);
             const cashDisplay = userAssets.cash.toLocaleString() + '원';
             const usdCashDisplay = isUSD ? ` (약 ${formatPrice(convertCurrency(userAssets.cash, 'KRW', 'USD'), 'USD')})` : '';
+            const unitText = assetType === 'fund' ? '좌' : '주';
             
             const quantity = prompt(
                 `${name} ${isBuy ? '매수' : '매도'}\n` +
                 `현재가: ${priceDisplay}\n` +
-                `${isBuy ? '보유 현금' : '보유 수량'}: ${isBuy ? cashDisplay + usdCashDisplay : holding.quantity + '주'}\n` +
-                `최대 ${isBuy ? '매수' : '매도'} 가능: ${maxQuantity}${isBuy ? '주' : '주'}\n\n` +
+                `${isBuy ? '보유 현금' : '보유 수량'}: ${isBuy ? cashDisplay + usdCashDisplay : holding.quantity + unitText}\n` +
+                `최대 ${isBuy ? '매수' : '매도'} 가능: ${maxQuantity}${unitText}\n\n` +
                 `${isBuy ? '매수' : '매도'}할 수량을 입력하세요:`
             );
             
@@ -2467,7 +2498,7 @@
                 return;
             }
             
-            resultsDiv.innerHTML = '<div style="text-align: center; padding: 20px; color: #666;">검색 중...</div>';
+            resultsDiv.innerHTML = '<div style="text-align: center; padding: 20px; color: #666;">실시간 ETF/펀드 정보를 검색 중...</div>';
             
             try {
                 const funds = await searchKoreanFunds(query);
@@ -2478,80 +2509,132 @@
             }
         }
 
-        // 한국 ETF/펀드 검색
+        // 한국 ETF/펀드 검색 - 실제 API 데이터 사용
         async function searchKoreanFunds(query) {
-            // 한국 주요 ETF/펀드 데이터베이스
-            const koreanFunds = [
-                { name: 'KODEX 200', type: 'ETF', description: 'KOSPI 200 지수 추종', company: '삼성자산운용', category: '국내주식' },
-                { name: 'TIGER 200', type: 'ETF', description: 'KOSPI 200 지수 추종', company: '미래에셋자산운용', category: '국내주식' },
-                { name: 'KODEX 코스닥150', type: 'ETF', description: 'KOSDAQ 150 지수 추종', company: '삼성자산운용', category: '국내주식' },
-                { name: 'TIGER 나스닥100', type: 'ETF', description: '나스닥 100 지수 추종', company: '미래에셋자산운용', category: '해외주식' },
-                { name: 'KODEX 미국S&P500', type: 'ETF', description: 'S&P 500 지수 추종', company: '삼성자산운용', category: '해외주식' },
-                { name: 'TIGER 차이나전기차SOLACTIVE', type: 'ETF', description: '중국 전기차 테마', company: '미래에셋자산운용', category: '테마' },
-                { name: 'KODEX 2차전지산업', type: 'ETF', description: '2차전지 관련 기업', company: '삼성자산운용', category: '테마' },
-                { name: 'TIGER 반도체', type: 'ETF', description: '반도체 관련 기업', company: '미래에셋자산운용', category: '섹터' },
-                { name: '삼성 글로벌펀드', type: '펀드', description: '글로벌 주식형 펀드', company: '삼성자산운용', category: '해외주식' },
-                { name: 'KB 성장동력펀드', type: '펀드', description: '국내 성장주 투자', company: 'KB자산운용', category: '국내주식' },
-                { name: '미래에셋 아시아퍼시픽', type: '펀드', description: '아시아 태평양 지역 투자', company: '미래에셋자산운용', category: '해외주식' },
-                { name: '한국투자 AI 테마펀드', type: '펀드', description: 'AI 관련 기업 투자', company: '한국투자신탁운용', category: '테마' },
-                { name: 'NH-Amundi 글로벌헬스케어', type: '펀드', description: '글로벌 헬스케어 섹터', company: 'NH-Amundi자산운용', category: '섹터' },
-                { name: '교보악사 ESG펀드', type: '펀드', description: 'ESG 기준 투자', company: '교보악사자산운용', category: 'ESG' },
-                { name: 'KODEX 골드선물', type: 'ETF', description: '금 선물 추종', company: '삼성자산운용', category: '원자재' },
-                { name: 'TIGER 원유선물Enhanced', type: 'ETF', description: '원유 선물 추종', company: '미래에셋자산운용', category: '원자재' },
-                { name: 'KODEX 인버스', type: 'ETF', description: 'KOSPI 200 인버스', company: '삼성자산운용', category: '인버스' },
-                { name: 'TIGER 미국채10년선물', type: 'ETF', description: '미국 국채 10년 추종', company: '미래에셋자산운용', category: '채권' },
-                { name: '신한 BNPP 유럽펀드', type: '펀드', description: '유럽 주식 투자', company: '신한BNPP자산운용', category: '해외주식' },
-                { name: '대신 밸런스펀드', type: '펀드', description: '주식+채권 혼합형', company: '대신자산운용', category: '혼합' }
+            // 한국 주요 ETF 데이터베이스 (Yahoo Finance 심볼 포함)
+            const koreanETFs = [
+                { symbol: '069500', yahooSymbol: '069500.KS', name: 'KODEX 200', type: 'ETF', description: 'KOSPI 200 지수 추종', company: '삼성자산운용', category: '국내주식' },
+                { symbol: '102110', yahooSymbol: '102110.KS', name: 'TIGER 200', type: 'ETF', description: 'KOSPI 200 지수 추종', company: '미래에셋자산운용', category: '국내주식' },
+                { symbol: '229200', yahooSymbol: '229200.KS', name: 'KODEX 코스닥150', type: 'ETF', description: 'KOSDAQ 150 지수 추종', company: '삼성자산운용', category: '국내주식' },
+                { symbol: '133690', yahooSymbol: '133690.KS', name: 'TIGER 나스닥100', type: 'ETF', description: '나스닥 100 지수 추종', company: '미래에셋자산운용', category: '해외주식' },
+                { symbol: '360750', yahooSymbol: '360750.KS', name: 'KODEX 미국S&P500', type: 'ETF', description: 'S&P 500 지수 추종', company: '삼성자산운용', category: '해외주식' },
+                { symbol: '371460', yahooSymbol: '371460.KS', name: 'TIGER 차이나전기차SOLACTIVE', type: 'ETF', description: '중국 전기차 테마', company: '미래에셋자산운용', category: '테마' },
+                { symbol: '305720', yahooSymbol: '305720.KS', name: 'KODEX 2차전지산업', type: 'ETF', description: '2차전지 관련 기업', company: '삼성자산운용', category: '테마' },
+                { symbol: '091230', yahooSymbol: '091230.KS', name: 'TIGER 반도체', type: 'ETF', description: '반도체 관련 기업', company: '미래에셋자산운용', category: '섹터' },
+                { symbol: '132030', yahooSymbol: '132030.KS', name: 'KODEX 골드선물', type: 'ETF', description: '금 선물 추종', company: '삼성자산운용', category: '원자재' },
+                { symbol: '130680', yahooSymbol: '130680.KS', name: 'TIGER 원유선물Enhanced', type: 'ETF', description: '원유 선물 추종', company: '미래에셋자산운용', category: '원자재' },
+                { symbol: '114800', yahooSymbol: '114800.KS', name: 'KODEX 인버스', type: 'ETF', description: 'KOSPI 200 인버스', company: '삼성자산운용', category: '인버스' },
+                { symbol: '305080', yahooSymbol: '305080.KS', name: 'TIGER 미국채10년선물', type: 'ETF', description: '미국 국채 10년 추종', company: '미래에셋자산운용', category: '채권' },
+                { symbol: '069660', yahooSymbol: '069660.KS', name: 'KOSEF 200', type: 'ETF', description: 'KOSPI 200 지수 추종', company: '키움투자자산운용', category: '국내주식' },
+                { symbol: '278530', yahooSymbol: '278530.KS', name: 'KODEX MSCI Korea', type: 'ETF', description: 'MSCI Korea 지수 추종', company: '삼성자산운용', category: '국내주식' },
+                { symbol: '143460', yahooSymbol: '143460.KS', name: 'KINDEX 중국본토CSI300', type: 'ETF', description: '중국 CSI300 지수 추종', company: '한국투자신탁운용', category: '해외주식' },
+                { symbol: '300950', yahooSymbol: '300950.KS', name: 'TIGER K-뉴딜', type: 'ETF', description: '한국판 뉴딜 테마', company: '미래에셋자산운용', category: '테마' },
+                { symbol: '276650', yahooSymbol: '276650.KS', name: 'KODEX 바이오', type: 'ETF', description: '바이오 관련 기업', company: '삼성자산운용', category: '섹터' },
+                { symbol: '315270', yahooSymbol: '315270.KS', name: 'TIGER 차이나전기차', type: 'ETF', description: '중국 전기차 관련', company: '미래에셋자산운용', category: '테마' },
+                { symbol: '157490', yahooSymbol: '157490.KS', name: 'TIGER 소프트웨어', type: 'ETF', description: '소프트웨어 관련 기업', company: '미래에셋자산운용', category: '섹터' },
+                { symbol: '364970', yahooSymbol: '364970.KS', name: 'KODEX 미국달러선물', type: 'ETF', description: '달러 선물 추종', company: '삼성자산운용', category: '통화' }
             ];
             
-            // 검색어와 매칭되는 상품들 찾기
+            // 검색어와 매칭되는 ETF 찾기
             let matchedFunds = [];
             if (query) {
-                matchedFunds = koreanFunds.filter(fund => 
+                matchedFunds = koreanETFs.filter(fund => 
                     fund.name.includes(query) || 
                     fund.company.includes(query) ||
                     fund.category.includes(query) ||
-                    fund.description.includes(query)
+                    fund.description.includes(query) ||
+                    fund.symbol.includes(query)
                 );
             } else {
                 // 검색어가 없으면 인기 상품 반환
-                const popularNames = ['KODEX 200', 'TIGER 나스닥100', 'KODEX 코스닥150', '삼성 글로벌펀드', 'TIGER 반도체'];
-                matchedFunds = koreanFunds.filter(fund => 
-                    popularNames.includes(fund.name)
+                const popularSymbols = ['069500', '102110', '229200', '133690', '091230'];
+                matchedFunds = koreanETFs.filter(fund => 
+                    popularSymbols.includes(fund.symbol)
                 );
             }
             
-            // 가격과 수익률 데이터 추가 (최대 10개)
-            const fundsWithPrices = [];
+            // 실제 Yahoo Finance API로 가격 정보 가져오기
+            const fundsWithRealPrices = [];
             const maxResults = Math.min(matchedFunds.length, 10);
             
             for (let i = 0; i < maxResults; i++) {
                 const fund = matchedFunds[i];
-                const priceData = generateFundPrice(fund.name, fund.type);
-                fundsWithPrices.push({
-                    ...fund,
-                    price: priceData.price,
-                    returnRate: priceData.returnRate
-                });
+                try {
+                    console.log(`🔍 ${fund.name} (${fund.yahooSymbol}) 실시간 가격 조회`);
+                    const priceData = await getYahooStockPrice(fund.yahooSymbol);
+                    
+                    if (priceData && priceData.price) {
+                        console.log(`✅ ${fund.name} 실제 가격: ${priceData.price}원`);
+                        fundsWithRealPrices.push({
+                            ...fund,
+                            price: priceData.price,
+                            returnRate: priceData.changePercent || 0,
+                            change: priceData.change || 0,
+                                                        currency: priceData.currency || 'KRW',
+                            volume: priceData.volume || 0,
+                            source: 'yahoo_api'
+                        });
+                    } else {
+                        // API 실패 시 현실적인 가격 생성
+                        console.log(`⚠️ ${fund.name} API 실패, 현실적 가격 생성`);
+                        const generatedPrice = generateRealisticETFPrice(fund);
+                        fundsWithRealPrices.push({
+                            ...fund,
+                            ...generatedPrice
+                        });
+                    }
+                } catch (error) {
+                    console.log(`❌ ${fund.name} 처리 실패: ${error.message}`);
+                    const generatedPrice = generateRealisticETFPrice(fund);
+                    fundsWithRealPrices.push({
+                        ...fund,
+                        ...generatedPrice
+                    });
+                }
+                
+                // 서버 과부하 방지를 위한 딜레이
+                if (i < maxResults - 1) {
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                }
             }
             
-            return fundsWithPrices;
+            console.log(`🎯 ETF/펀드 검색 완료: ${fundsWithRealPrices.length}개`);
+            return fundsWithRealPrices;
         }
 
-        // ETF/펀드 가격 생성
-        function generateFundPrice(name, type) {
-            // ETF는 일반적으로 1만원~5만원, 펀드는 1천원~2만원
-            const basePrice = type === 'ETF' ? 
-                Math.floor(Math.random() * 40000) + 10000 : 
-                Math.floor(Math.random() * 19000) + 1000;
+        // 현실적인 ETF 가격 생성
+        function generateRealisticETFPrice(fund) {
+            // ETF별 현실적인 가격대
+            const realisticPrices = {
+                'KODEX 200': { base: 42000, volatility: 0.02 },
+                'TIGER 200': { base: 41000, volatility: 0.02 },
+                'KODEX 코스닥150': { base: 8500, volatility: 0.03 },
+                'TIGER 나스닥100': { base: 18000, volatility: 0.03 },
+                'KODEX 미국S&P500': { base: 15000, volatility: 0.025 },
+                'TIGER 반도체': { base: 12000, volatility: 0.04 },
+                'KODEX 2차전지산업': { base: 10000, volatility: 0.04 },
+                'KODEX 골드선물': { base: 9000, volatility: 0.02 },
+                'TIGER 원유선물Enhanced': { base: 5000, volatility: 0.05 },
+                'KODEX 인버스': { base: 4500, volatility: 0.03 }
+            };
             
-            const variation = (Math.random() - 0.5) * 0.1; // ±10% 변동
-            const price = Math.floor(basePrice * (1 + variation));
-            const returnRate = (Math.random() - 0.3) * 20; // -6% ~ +14% 범위
+            const priceInfo = realisticPrices[fund.name] || { base: 10000, volatility: 0.03 };
+            
+            // 기준가에서 ±volatility 범위의 변동
+            const variation = (Math.random() - 0.5) * 2 * priceInfo.volatility;
+            const currentPrice = Math.round(priceInfo.base * (1 + variation));
+            
+            // 전일 대비 변동 계산
+            const changePercent = variation * 100;
+            const change = Math.round(currentPrice * (changePercent / 100));
             
             return {
-                price: price,
-                returnRate: returnRate
+                price: currentPrice,
+                returnRate: changePercent,
+                change: change,
+                currency: 'KRW',
+                volume: Math.floor(Math.random() * 500000) + 50000,
+                source: 'realistic_simulation'
             };
         }
 
@@ -2568,17 +2651,21 @@
                 const returnClass = isPositive ? 'positive' : 'negative';
                 const returnSymbol = isPositive ? '+' : '';
                 
-                html += '<div class="item-card" onclick="investFund(\'' + fund.name + '\', ' + fund.price + ')" style="cursor: pointer; margin-bottom: 10px;">' +
-                        '<div class="item-header">' +
-                        '<span class="item-title">' + fund.name + '</span>' +
-                        '<span class="item-price ' + returnClass + '">' + returnSymbol + fund.returnRate.toFixed(2) + '%</span>' +
-                        '</div>' +
-                        '<div class="item-desc">' +
-                        fund.description + '<br>' +
-                        '기준가: ' + fund.price.toLocaleString() + '원<br>' +
-                        '운용사: ' + fund.company + ' | 유형: ' + fund.type + ' | 분류: ' + fund.category +
-                        '</div>' +
-                        '</div>';
+                // 실제 가격으로 표시
+                html += `
+                    <div class="item-card" onclick="investFund('${fund.symbol}', '${fund.name}', ${fund.price}, '${fund.yahooSymbol || fund.symbol}')" style="cursor: pointer; margin-bottom: 10px;">
+                        <div class="item-header">
+                            <span class="item-title">${fund.name}</span>
+                            <span class="item-price ${returnClass}">${returnSymbol}${fund.returnRate.toFixed(2)}%</span>
+                        </div>
+                        <div class="item-desc">
+                            ${fund.description}<br>
+                            기준가: ${fund.price.toLocaleString()}원<br>
+                            운용사: ${fund.company} | 유형: ${fund.type} | 분류: ${fund.category}
+                            ${fund.source === 'yahoo_api' ? '<br><small style="color: #28a745;">✓ 실시간 데이터</small>' : ''}
+                        </div>
+                    </div>
+                `;
             });
             
             container.innerHTML = html;
@@ -2590,66 +2677,26 @@
             if (!popularDiv) return;
             
             try {
+                console.log('📈 인기 ETF 실제 데이터 로드 시작');
                 const popularFunds = await searchKoreanFunds('');
                 displayFundResults(popularFunds, popularDiv);
             } catch (error) {
+                console.error('인기 ETF 로드 실패:', error);
                 popularDiv.innerHTML = '<div style="text-align: center; color: #666;">인기 상품을 불러올 수 없습니다.</div>';
             }
         }
 
-        async function fetchETFAndFunds() {
-            // ETF 및 펀드 상품 데이터
-            const products = [
-                {
-                    name: 'KODEX 200',
-                    price: 42850,
-                    return: 2.34,
-                    description: 'KOSPI 200 지수를 추종하는 ETF',
-                    company: '삼성자산운용'
-                },
-                {
-                    name: 'TIGER 나스닥100',
-                    price: 18420,
-                    return: -1.23,
-                    description: '나스닥 100 지수 추종 ETF',
-                    company: '미래에셋자산운용'
-                },
-                {
-                    name: '삼성 글로벌펀드',
-                    price: 15670,
-                    return: 4.56,
-                    description: '글로벌 주식형 펀드',
-                    company: '삼성자산운용'
-                                },
-                {
-                    name: 'KB 성장동력펀드',
-                    price: 12340,
-                    return: 1.89,
-                    description: '국내 성장주 투자 펀드',
-                    company: 'KB자산운용'
-                },
-                {
-                    name: 'KODEX 골드선물',
-                    price: 8950,
-                    return: 0.78,
-                    description: '금 선물 추종 ETF',
-                    company: '삼성자산운용'
-                }
-            ];
+        // ETF/펀드 투자 함수 수정 - 실제 가격 사용
+        function investFund(symbol, productName, price, yahooSymbol) {
+            // ETF/펀드도 차트 모달로 표시 - 실제 가격 사용
+            const displaySymbol = productName.replace(/\s+/g, '_'); // 표시용 심볼
+            console.log(`🎯 ${productName} 투자 모달 열기 - 실제 가격: ${price}원`);
             
-            // 랜덤한 수익률 변동 시뮬레이션
-            products.forEach(product => {
-                product.return += (Math.random() - 0.5) * 2;
-            });
+            // yahooSymbol이 있으면 사용, 없으면 symbol 사용
+            const apiSymbol = yahooSymbol || symbol;
             
-            return products;
-        }
-
-        function investFund(productName, price) {
-            // ETF/펀드도 차트 모달로 대체 - 기호는 상품명으로 설정
-            const symbol = productName.replace(/\s+/g, '_'); // 공백을 언더스코어로 변환
-            const dynamicPrice = generateDynamicPrice(price, 0.015); // 주식보다 낮은 변동성
-            showAssetChart(symbol, productName, dynamicPrice, 'fund');
+            // showAssetChart에 실제 가격 전달
+            showAssetChart(displaySymbol, productName, price, 'fund', 'KRW');
         }
 
         // 초기화
