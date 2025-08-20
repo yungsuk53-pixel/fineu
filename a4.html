@@ -90,6 +90,10 @@
             flex-direction: column;
         }
 
+        .main-content.hidden {
+            display: none;
+        }
+
         .page-title {
             font-size: 24px;
             font-weight: bold;
@@ -201,6 +205,10 @@
             border-top: 1px solid #e0e0e0;
         }
 
+        .input-area.hidden {
+            display: none;
+        }
+
         .input-container {
             display: flex;
             align-items: center;
@@ -288,21 +296,215 @@
             background: #f0f0f0;
         }
 
-        .voice-button.recording {
-            background: #ff4444;
-            color: white;
-            animation: pulse 1.5s infinite;
+        /* 음성 모드 화면 */
+        .voice-mode-container {
+            display: none;
+            position: fixed;
+            top: 60px;
+            left: 0;
+            right: 0;
+            bottom: 70px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            z-index: 90;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
         }
 
-        @keyframes pulse {
+        .voice-mode-container.active {
+            display: flex;
+        }
+
+        .voice-mode-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .voice-mode-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .voice-assistant-avatar {
+            width: 150px;
+            height: 150px;
+            background: white;
+            border-radius: 50%;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .voice-assistant-avatar img {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .voice-assistant-avatar.listening {
+            animation: pulse-listen 2s infinite;
+        }
+
+        .voice-assistant-avatar.speaking {
+            animation: pulse-speak 1s infinite;
+        }
+
+        @keyframes pulse-listen {
+            0% {
+                box-shadow: 0 0 0 0 rgba(124, 185, 232, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 20px rgba(124, 185, 232, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(124, 185, 232, 0);
+            }
+        }
+
+        @keyframes pulse-speak {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .voice-status-text {
+            color: white;
+            font-size: 20px;
+            font-weight: 500;
+            margin-bottom: 20px;
+            text-align: center;
+            min-height: 30px;
+        }
+
+        .voice-transcript {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            min-height: 100px;
+            max-height: 200px;
+            overflow-y: auto;
+            width: 100%;
+            max-width: 350px;
+        }
+
+        .voice-transcript-text {
+            color: white;
+            font-size: 16px;
+            line-height: 1.5;
+            text-align: center;
+        }
+
+        .voice-control-button {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border: none;
+            border-radius: 50%;
+            color: #667eea;
+            font-size: 30px;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .voice-control-button:hover {
+            transform: scale(1.1);
+        }
+
+        .voice-control-button:active {
+            transform: scale(0.95);
+        }
+
+        .voice-control-button.recording {
+            background: #ff4444;
+            color: white;
+            animation: pulse-record 1.5s infinite;
+        }
+
+        @keyframes pulse-record {
             0% {
                 box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.7);
             }
             70% {
-                box-shadow: 0 0 0 10px rgba(255, 68, 68, 0);
+                box-shadow: 0 0 0 15px rgba(255, 68, 68, 0);
             }
             100% {
                 box-shadow: 0 0 0 0 rgba(255, 68, 68, 0);
+            }
+        }
+
+        .voice-wave-animation {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 40px;
+            margin: 20px 0;
+        }
+
+        .voice-wave-animation.hidden {
+            visibility: hidden;
+        }
+
+        .voice-wave-bar {
+            width: 4px;
+            height: 20px;
+            background: white;
+            margin: 0 3px;
+            border-radius: 2px;
+            animation: wave 1s ease-in-out infinite;
+        }
+
+        .voice-wave-bar:nth-child(2) {
+            animation-delay: 0.1s;
+            height: 30px;
+        }
+
+        .voice-wave-bar:nth-child(3) {
+            animation-delay: 0.2s;
+            height: 25px;
+        }
+
+        .voice-wave-bar:nth-child(4) {
+            animation-delay: 0.3s;
+            height: 35px;
+        }
+
+        .voice-wave-bar:nth-child(5) {
+            animation-delay: 0.4s;
+            height: 20px;
+        }
+
+        @keyframes wave {
+            0%, 100% {
+                transform: scaleY(1);
+                opacity: 0.8;
+            }
+            50% {
+                transform: scaleY(1.5);
+                opacity: 1;
             }
         }
 
@@ -576,7 +778,7 @@
     </div>
 
     <!-- 메인 콘텐츠 -->
-    <div class="main-content">
+    <div class="main-content" id="mainContent">
         <div class="page-title">AI CHATBOT</div>
         
         <!-- 채팅 영역 -->
@@ -590,14 +792,47 @@
         </div>
     </div>
 
+    <!-- 음성 모드 화면 -->
+    <div class="voice-mode-container" id="voiceModeContainer">
+        <button class="voice-mode-close" onclick="closeVoiceMode()">
+            <i class="fas fa-times"></i>
+        </button>
+        
+        <div class="voice-assistant-avatar" id="voiceAvatar">
+            <img src="images/똑부리.png" alt="똑부리">
+        </div>
+        
+        <div class="voice-status-text" id="voiceStatus">
+            음성 모드가 활성화되었습니다
+        </div>
+        
+        <div class="voice-wave-animation" id="voiceWave">
+            <div class="voice-wave-bar"></div>
+            <div class="voice-wave-bar"></div>
+            <div class="voice-wave-bar"></div>
+            <div class="voice-wave-bar"></div>
+            <div class="voice-wave-bar"></div>
+        </div>
+        
+        <div class="voice-transcript">
+            <div class="voice-transcript-text" id="voiceTranscript">
+                마이크 버튼을 누르고 말씀해주세요
+            </div>
+        </div>
+        
+        <button class="voice-control-button" id="voiceControlButton" onclick="toggleVoiceRecording()">
+            <i class="fas fa-microphone" id="voiceControlIcon"></i>
+        </button>
+    </div>
+
     <!-- 입력 영역 -->
-    <div class="input-area">
+    <div class="input-area" id="inputArea">
         <div class="input-container">
             <button class="attach-button" onclick="attachFile()">
                 <i class="fas fa-camera"></i>
             </button>
-            <button class="voice-button" id="voiceButton" onclick="toggleVoiceRecording()">
-                <i class="fas fa-microphone" id="voiceIcon"></i>
+            <button class="voice-button" id="voiceButton" onclick="openVoiceMode()">
+                <i class="fas fa-microphone"></i>
             </button>
             <input type="text" class="chat-input" placeholder="채팅을 입력하세요." id="chatInput" onkeypress="handleKeyPress(event)">
             <button class="send-button" id="sendButton" onclick="sendMessage()">
@@ -683,6 +918,8 @@
         let isRecording = false;
         let speechSynthesis = window.speechSynthesis;
         let isSpeaking = false;
+        let isVoiceMode = false;
+        let voiceModeAutoListen = true;
 
         // 음성 인식 초기화
         function initSpeechRecognition() {
@@ -697,29 +934,43 @@
                 recognition.onstart = function() {
                     console.log('🎤 음성 인식 시작');
                     isRecording = true;
-                    updateVoiceButton(true);
+                    if (isVoiceMode) {
+                        updateVoiceModeUI('listening');
+                    }
                 };
 
                 recognition.onresult = function(event) {
                     const transcript = event.results[0][0].transcript;
                     console.log('🎤 인식된 텍스트:', transcript);
-                    document.getElementById('chatInput').value = transcript;
                     
-                    if (event.results[0].isFinal) {
-                        setTimeout(() => {
-                            sendMessage();
-                        }, 500);
+                    if (isVoiceMode) {
+                        document.getElementById('voiceTranscript').textContent = transcript;
+                        
+                        if (event.results[0].isFinal) {
+                            // 음성 인식 완료 시 바로 메시지 전송
+                            setTimeout(() => {
+                                sendVoiceMessage(transcript);
+                            }, 500);
+                        }
+                    } else {
+                        document.getElementById('chatInput').value = transcript;
+                        if (event.results[0].isFinal) {
+                            setTimeout(() => {
+                                sendMessage();
+                            }, 500);
+                        }
                     }
                 };
 
                 recognition.onerror = function(event) {
                     console.error('❌ 음성 인식 오류:', event.error);
                     if (event.error === 'no-speech') {
-                        alert('음성이 감지되지 않았습니다. 다시 시도해주세요.');
+                        if (isVoiceMode) {
+                            updateVoiceModeUI('ready');
+                            document.getElementById('voiceTranscript').textContent = '음성이 감지되지 않았습니다. 다시 시도해주세요.';
+                        }
                     } else if (event.error === 'not-allowed') {
                         alert('마이크 권한이 필요합니다. 브라우저 설정에서 마이크 권한을 허용해주세요.');
-                    } else {
-                        alert('음성 인식 오류가 발생했습니다: ' + event.error);
                     }
                     stopVoiceRecording();
                 };
@@ -730,6 +981,129 @@
                 };
             } else {
                 console.warn('⚠️ 이 브라우저는 음성 인식을 지원하지 않습니다.');
+            }
+        }
+
+        // 음성 모드 열기
+        function openVoiceMode() {
+            isVoiceMode = true;
+            document.getElementById('mainContent').classList.add('hidden');
+            document.getElementById('inputArea').classList.add('hidden');
+            document.getElementById('voiceModeContainer').classList.add('active');
+            
+            updateVoiceModeUI('ready');
+            document.getElementById('voiceTranscript').textContent = '마이크 버튼을 누르고 말씀해주세요';
+            
+            // 음성 모드 진입 안내
+            speakText('음성 모드가 활성화되었습니다. 마이크 버튼을 누르고 말씀해주세요.');
+        }
+
+        // 음성 모드 닫기
+        function closeVoiceMode() {
+            isVoiceMode = false;
+            voiceModeAutoListen = true;
+            
+            // 음성 중지
+            if (isRecording) {
+                stopVoiceRecording();
+            }
+            if (isSpeaking) {
+                speechSynthesis.cancel();
+            }
+            
+            document.getElementById('voiceModeContainer').classList.remove('active');
+            document.getElementById('mainContent').classList.remove('hidden');
+            document.getElementById('inputArea').classList.remove('hidden');
+        }
+
+        // 음성 모드 UI 업데이트
+        function updateVoiceModeUI(status) {
+            const avatar = document.getElementById('voiceAvatar');
+            const statusText = document.getElementById('voiceStatus');
+            const controlButton = document.getElementById('voiceControlButton');
+            const controlIcon = document.getElementById('voiceControlIcon');
+            const waveAnimation = document.getElementById('voiceWave');
+            
+            switch(status) {
+                case 'listening':
+                    avatar.classList.add('listening');
+                    avatar.classList.remove('speaking');
+                    statusText.textContent = '듣고 있습니다...';
+                    controlButton.classList.add('recording');
+                    controlIcon.className = 'fas fa-stop';
+                    waveAnimation.classList.remove('hidden');
+                    break;
+                    
+                case 'speaking':
+                    avatar.classList.add('speaking');
+                    avatar.classList.remove('listening');
+                    statusText.textContent = '답변 중...';
+                    controlButton.classList.remove('recording');
+                    controlIcon.className = 'fas fa-microphone';
+                    waveAnimation.classList.add('hidden');
+                    break;
+                    
+                case 'processing':
+                    avatar.classList.remove('listening', 'speaking');
+                    statusText.textContent = '처리 중...';
+                    controlButton.classList.remove('recording');
+                    controlIcon.className = 'fas fa-microphone';
+                    waveAnimation.classList.add('hidden');
+                    break;
+                    
+                case 'ready':
+                default:
+                    avatar.classList.remove('listening', 'speaking');
+                    statusText.textContent = '준비되었습니다';
+                    controlButton.classList.remove('recording');
+                    controlIcon.className = 'fas fa-microphone';
+                    waveAnimation.classList.add('hidden');
+                    break;
+            }
+        }
+
+        // 음성 메시지 전송
+        async function sendVoiceMessage(message) {
+            if (!message || message.trim() === '') return;
+            
+            updateVoiceModeUI('processing');
+            document.getElementById('voiceTranscript').textContent = '답변을 준비하고 있습니다...';
+            
+            // 채팅 영역에 메시지 추가
+            addMessage(message, 'user', true);
+            
+            try {
+                const userInfo = await getUserFinancialInfo();
+                const response = await callGeminiAPI(message, userInfo);
+                
+                // 채팅 영역에 응답 추가
+                addMessage(response, 'bot', true);
+                
+                // 음성 모드에서 응답 표시 및 음성 출력
+                document.getElementById('voiceTranscript').textContent = response;
+                updateVoiceModeUI('speaking');
+                
+                // 음성 출력 완료 후 자동으로 다시 듣기 모드
+                speakTextWithCallback(response, () => {
+                    if (isVoiceMode && voiceModeAutoListen) {
+                        updateVoiceModeUI('ready');
+                        document.getElementById('voiceTranscript').textContent = '마이크 버튼을 누르고 말씀해주세요';
+                    }
+                });
+                
+            } catch (error) {
+                console.error('메시지 전송 실패:', error);
+                const errorMessage = '죄송합니다. 일시적인 오류가 발생했습니다.';
+                document.getElementById('voiceTranscript').textContent = errorMessage;
+                addMessage(errorMessage, 'bot', false);
+                speakText(errorMessage);
+                
+                setTimeout(() => {
+                    if (isVoiceMode) {
+                        updateVoiceModeUI('ready');
+                        document.getElementById('voiceTranscript').textContent = '마이크 버튼을 누르고 말씀해주세요';
+                    }
+                }, 3000);
             }
         }
 
@@ -748,12 +1122,19 @@
                 initSpeechRecognition();
             }
             
+            // 음성 출력 중이면 중지
+            if (isSpeaking) {
+                speechSynthesis.cancel();
+            }
+            
             if (recognition) {
                 try {
                     recognition.start();
                 } catch (error) {
                     console.error('음성 인식 시작 실패:', error);
-                    alert('음성 인식을 시작할 수 없습니다.');
+                    if (isVoiceMode) {
+                        document.getElementById('voiceTranscript').textContent = '음성 인식을 시작할 수 없습니다.';
+                    }
                 }
             } else {
                 alert('이 브라우저는 음성 인식을 지원하지 않습니다.');
@@ -766,27 +1147,16 @@
                 recognition.stop();
             }
             isRecording = false;
-            updateVoiceButton(false);
-        }
-
-        // 음성 버튼 상태 업데이트
-        function updateVoiceButton(recording) {
-            const voiceButton = document.getElementById('voiceButton');
-            const voiceIcon = document.getElementById('voiceIcon');
-            
-            if (recording) {
-                voiceButton.classList.add('recording');
-                voiceIcon.className = 'fas fa-stop';
-            } else {
-                voiceButton.classList.remove('recording');
-                voiceIcon.className = 'fas fa-microphone';
+            if (isVoiceMode) {
+                updateVoiceModeUI('ready');
             }
         }
 
-        // 텍스트를 음성으로 변환
-        function speakText(text) {
+        // 텍스트를 음성으로 변환 (콜백 포함)
+        function speakTextWithCallback(text, callback) {
             if (!speechSynthesis) {
                 console.warn('⚠️ 이 브라우저는 음성 합성을 지원하지 않습니다.');
+                if (callback) callback();
                 return;
             }
 
@@ -827,14 +1197,21 @@
             utterance.onend = function() {
                 isSpeaking = false;
                 console.log('🔊 음성 출력 종료');
+                if (callback) callback();
             };
 
             utterance.onerror = function(event) {
                 isSpeaking = false;
                 console.error('❌ 음성 합성 오류:', event.error);
+                if (callback) callback();
             };
 
             speechSynthesis.speak(utterance);
+        }
+
+        // 텍스트를 음성으로 변환
+        function speakText(text) {
+            speakTextWithCallback(text, null);
         }
 
         // 등급 시스템 설정
@@ -988,8 +1365,6 @@
         function initializeWelcomeMessage() {
             const welcomeMessage = "안녕하세요.\n저는 여러분의 슬기로운 금융 생활을 돕는 똑부리에요.\n혹시 도움이 필요한 일이 있나요?";
             addMessage(welcomeMessage, 'bot', false);
-            // 환영 메시지 음성 출력
-            speakText(welcomeMessage);
         }
 
         // 채팅 히스토리 로드
@@ -1013,11 +1388,6 @@
             const message = input.value.trim();
             
             if (message === '' || isProcessing) return;
-
-            // 음성 인식 중이면 중지
-            if (isRecording) {
-                stopVoiceRecording();
-            }
 
             // 교육 명령어 체크
             if (message === '/교육하기') {
@@ -1050,15 +1420,11 @@
                 hideTypingIndicator();
                 addMessage(response, 'bot', true);
                 
-                // 봇 응답 음성 출력
-                speakText(response);
-                
             } catch (error) {
                 console.error('메시지 전송 실패:', error);
                 hideTypingIndicator();
                 const errorMessage = '죄송합니다. 일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
                 addMessage(errorMessage, 'bot', false);
-                speakText(errorMessage);
             } finally {
                 isProcessing = false;
                 input.disabled = false;
@@ -1158,7 +1524,6 @@
                 
                 const successMessage = '✅ 교육 내용이 성공적으로 저장되었습니다.';
                 addMessage(successMessage, 'system', false);
-                speakText(successMessage);
                 closeEducationModal();
                 
             } catch (error) {
@@ -1176,7 +1541,6 @@
             if (educationData.length === 0) {
                 const emptyMessage = '📚 저장된 교육 내용이 없습니다.\n\n/교육하기 명령어로 새로운 교육 내용을 추가할 수 있습니다.';
                 addMessage(emptyMessage, 'system', false);
-                speakText('저장된 교육 내용이 없습니다.');
                 return;
             }
             
@@ -1190,7 +1554,6 @@
             listMessage += '━━━━━━━━━━━━━━━━━━━━\n💡 삭제: /교육삭제 [번호]\n💡 추가: /교육하기';
             
             addMessage(listMessage, 'system', false);
-            speakText(`총 ${educationData.length}개의 교육 내용이 있습니다.`);
         }
 
         // 교육 삭제
@@ -1198,7 +1561,6 @@
             if (index < 0 || index >= educationData.length) {
                 const errorMessage = '❌ 올바른 번호를 입력해주세요. (1부터 ' + educationData.length + '까지)';
                 addMessage(errorMessage, 'system', false);
-                speakText('올바른 번호를 입력해주세요.');
                 return;
             }
 
@@ -1213,12 +1575,10 @@
                 
                 const successMessage = `✅ 교육 내용 ${index + 1}번이 삭제되었습니다.`;
                 addMessage(successMessage, 'system', false);
-                speakText('교육 내용이 삭제되었습니다.');
             } catch (error) {
                 console.error('❌ 교육 데이터 삭제 실패:', error);
                 const errorMessage = '❌ 삭제 중 오류가 발생했습니다: ' + error.message;
                 addMessage(errorMessage, 'system', false);
-                speakText('삭제 중 오류가 발생했습니다.');
             }
         }
 
@@ -1486,6 +1846,9 @@
             if (isRecording) {
                 stopVoiceRecording();
             }
+            if (isVoiceMode) {
+                closeVoiceMode();
+            }
             
             document.querySelectorAll('.nav-item').forEach(item => {
                 item.classList.remove('active');
@@ -1505,6 +1868,9 @@
                 }
                 if (isRecording) {
                     stopVoiceRecording();
+                }
+                if (isVoiceMode) {
+                    closeVoiceMode();
                 }
                 
                 localStorage.removeItem('fineu_current_user');
@@ -1531,7 +1897,6 @@
             console.log('네트워크 연결 끊김');
             const offlineMessage = '네트워크 연결이 끊겼습니다. 연결 상태를 확인해주세요.';
             addMessage(offlineMessage, 'bot', false);
-            speakText(offlineMessage);
         });
 
         // 페이지 언로드 시 음성 중지
