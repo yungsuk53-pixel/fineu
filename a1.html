@@ -281,13 +281,46 @@
         }
 
         .asset-name {
-            font-weight: normal;
-            font-size: 12px;
-            color: #666;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
+    font-weight: normal;
+    font-size: 12px;
+    color: #666;
+    word-wrap: break-word;
+    white-space: normal;
+    line-height: 1.4;
+}
+
+.asset-item.collapsed .asset-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 200px;
+}
+
+.expand-button {
+    text-align: center;
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin-top: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #666;
+    transition: all 0.3s ease;
+}
+
+.expand-button:hover {
+    background: #e9ecef;
+    color: #333;
+}
+
+.expand-button i {
+    margin-left: 5px;
+    transition: transform 0.3s ease;
+}
+
+.expand-button.expanded i {
+    transform: rotate(180deg);
+}
 
         .asset-details {
             font-size: 12px;
@@ -1673,89 +1706,142 @@
         }
 
         // 자산 목록 업데이트 (실제 포트폴리오 데이터 반영 - ETF 포함)
-        function updateAssetList() {
-            const assetListElement = document.getElementById('assetList');
-            if (!assetListElement) return;
+       function updateAssetList() {
+    const assetListElement = document.getElementById('assetList');
+    if (!assetListElement) return;
 
-            let assetHTML = '';
+    let assetHTML = '';
+    let assetItems = [];
 
-            // 포트폴리오 데이터 표시 (다양한 자산 유형 지원)
-            if (userAssets.portfolio && Object.keys(userAssets.portfolio).length > 0) {
-                Object.entries(userAssets.portfolio).forEach(([symbol, holding]) => {
-                    // 자산 유형별 표시 방식 결정
-                    const assetType = holding.type || 'stock';
-                    let displayName = holding.name || symbol;
-                    let detailText = '';
-                    let currentValue = 0;
-                    let profitLoss = 0;
-                    let profitLossPercent = '0.00';
-                    
-                    if (assetType === 'stock') {
-                        // 주식 표시
-                        const currentPrice = holding.currentPrice || holding.price || holding.avgPrice || 0;
-                        currentValue = (holding.quantity || 0) * currentPrice;
-                        const totalInvested = holding.totalInvested || ((holding.quantity || 0) * (holding.avgPrice || 0));
-                        profitLoss = currentValue - totalInvested;
-                        profitLossPercent = totalInvested > 0 ? ((profitLoss / totalInvested) * 100).toFixed(2) : '0.00';
-                        detailText = `${(holding.quantity || 0).toLocaleString()}주 (현재가: ${currentPrice.toLocaleString()}원)`;
-                    } else if (assetType === 'fund') {
-                        // ETF/펀드 표시
-                        const currentPrice = holding.currentPrice || holding.price || holding.avgPrice || 0;
-                        currentValue = (holding.quantity || 0) * currentPrice;
-                        const totalInvested = holding.totalInvested || ((holding.quantity || 0) * (holding.avgPrice || 0));
-                        profitLoss = currentValue - totalInvested;
-                        profitLossPercent = totalInvested > 0 ? ((profitLoss / totalInvested) * 100).toFixed(2) : '0.00';
-                        detailText = `${(holding.quantity || 0).toLocaleString()}좌 (현재가: ${currentPrice.toLocaleString()}원)`;
-                        displayName += ' (ETF)'; // ETF 표시 추가
-                    } else if (assetType === 'savings') {
-                        // 예적금 표시
-                        currentValue = holding.avgPrice || 0;
-                        detailText = `예적금 상품 (금액: ${currentValue.toLocaleString()}원)`;
-                        profitLoss = 0; // 예적금은 수익률 표시 안함
-                    } else if (assetType === 'loan') {
-                        // 대출 표시
-                        currentValue = -(holding.avgPrice || 0); // 부채는 음수로 표시
-                        detailText = `대출 상품 (금액: ${Math.abs(currentValue).toLocaleString()}원)`;
-                        profitLoss = 0; // 대출은 수익률 표시 안함
-                        displayName += ' (부채)';
-                    }
-                    
-                    const isProfit = profitLoss >= 0;
-                    const profitClass = isProfit ? 'text-red-500' : 'text-blue-500';
-                    const profitSign = isProfit ? '+' : '';
+    // 포트폴리오 데이터 수집
+    if (userAssets.portfolio && Object.keys(userAssets.portfolio).length > 0) {
+        Object.entries(userAssets.portfolio).forEach(([symbol, holding]) => {
+            const assetType = holding.type || 'stock';
+            let displayName = holding.name || symbol;
+            let detailText = '';
+            let currentValue = 0;
+            let profitLoss = 0;
+            let profitLossPercent = '0.00';
+            
+            if (assetType === 'stock') {
+                const currentPrice = holding.currentPrice || holding.price || holding.avgPrice || 0;
+                currentValue = (holding.quantity || 0) * currentPrice;
+                const totalInvested = holding.totalInvested || ((holding.quantity || 0) * (holding.avgPrice || 0));
+                profitLoss = currentValue - totalInvested;
+                profitLossPercent = totalInvested > 0 ? ((profitLoss / totalInvested) * 100).toFixed(2) : '0.00';
+                detailText = `${(holding.quantity || 0).toLocaleString()}주 (현재가: ${currentPrice.toLocaleString()}원)`;
+            } else if (assetType === 'fund') {
+                const currentPrice = holding.currentPrice || holding.price || holding.avgPrice || 0;
+                currentValue = (holding.quantity || 0) * currentPrice;
+                const totalInvested = holding.totalInvested || ((holding.quantity || 0) * (holding.avgPrice || 0));
+                profitLoss = currentValue - totalInvested;
+                profitLossPercent = totalInvested > 0 ? ((profitLoss / totalInvested) * 100).toFixed(2) : '0.00';
+                detailText = `${(holding.quantity || 0).toLocaleString()}좌 (현재가: ${currentPrice.toLocaleString()}원)`;
+                displayName += ' (ETF)';
+            } else if (assetType === 'savings') {
+                currentValue = holding.avgPrice || 0;
+                detailText = `예적금 상품 (금액: ${currentValue.toLocaleString()}원)`;
+                profitLoss = 0;
+            } else if (assetType === 'loan') {
+                currentValue = -(holding.avgPrice || 0);
+                detailText = `대출 상품 (금액: ${Math.abs(currentValue).toLocaleString()}원)`;
+                profitLoss = 0;
+                displayName += ' (부채)';
+            }
+            
+            assetItems.push({
+                displayName,
+                detailText,
+                currentValue,
+                profitLoss,
+                profitLossPercent,
+                assetType,
+                symbol
+            });
+        });
 
-                    assetHTML += `
-                        <div class="asset-item">
-                            <div class="asset-left">
-                                <div class="asset-name">${displayName}</div>
-                                <div class="asset-details">${detailText}</div>
+        // 처음 3개만 표시, 나머지는 숨김
+        const visibleItems = assetItems.slice(0, 3);
+        const hiddenItems = assetItems.slice(3);
+        
+        // 표시할 항목들
+        visibleItems.forEach(item => {
+            const isProfit = item.profitLoss >= 0;
+            const profitClass = isProfit ? 'positive' : 'negative';
+            const profitSign = isProfit ? '+' : '';
+
+            assetHTML += `
+                <div class="asset-item" onclick="showAssetItemDetail('${item.symbol}')">
+                    <div class="asset-left">
+                        <div>
+                            <div class="asset-name" title="${item.displayName}">${item.displayName}</div>
+                            <div class="asset-details">${item.detailText}</div>
+                        </div>
+                    </div>
+                    <div class="asset-right">
+                        <div>${item.currentValue.toLocaleString()}원</div>
+                        ${(item.assetType === 'stock' || item.assetType === 'fund') ? `
+                            <div class="asset-change ${profitClass}">
+                                ${profitSign}${item.profitLoss.toLocaleString()}원 (${profitSign}${item.profitLossPercent}%)
                             </div>
-                            <div class="asset-right">
-                                <div>${currentValue.toLocaleString()}원</div>
-                                ${(assetType === 'stock' || assetType === 'fund') ? `
-                                    <div class="asset-profit ${profitClass}">
-                                        ${profitSign}${profitLoss.toLocaleString()}원 (${profitSign}${profitLossPercent}%)
-                                    </div>
-                                ` : ''}
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        });
+
+        // 숨겨진 항목들
+        if (hiddenItems.length > 0) {
+            assetHTML += '<div id="hiddenAssets" style="display: none;">';
+            hiddenItems.forEach(item => {
+                const isProfit = item.profitLoss >= 0;
+                const profitClass = isProfit ? 'positive' : 'negative';
+                const profitSign = isProfit ? '+' : '';
+
+                assetHTML += `
+                    <div class="asset-item" onclick="showAssetItemDetail('${item.symbol}')">
+                        <div class="asset-left">
+                            <div>
+                                <div class="asset-name" title="${item.displayName}">${item.displayName}</div>
+                                <div class="asset-details">${item.detailText}</div>
                             </div>
                         </div>
-                    `;
-                    console.log(`📊 ${symbol}: ${assetType} = ${currentValue.toLocaleString()}원`);
-                });
-            } else {
-                assetHTML += `
-                    <div class="asset-item">
-                        <div class="asset-left">
-                            <div class="asset-name">투자 상품이 없습니다</div>
-                            <div class="asset-details">투자를 시작해보세요!</div>
+                        <div class="asset-right">
+                            <div>${item.currentValue.toLocaleString()}원</div>
+                            ${(item.assetType === 'stock' || item.assetType === 'fund') ? `
+                                <div class="asset-change ${profitClass}">
+                                    ${profitSign}${item.profitLoss.toLocaleString()}원 (${profitSign}${item.profitLossPercent}%)
+                                </div>
+                            ` : ''}
                         </div>
                     </div>
                 `;
-            }
-
-            assetListElement.innerHTML = assetHTML;
-            console.log('📊 자산 목록 업데이트 완료');
+            });
+            assetHTML += '</div>';
+            
+            // 더보기 버튼
+            assetHTML += `
+                <div class="expand-button" id="expandButton" onclick="toggleAssetList()">
+                    <span id="expandText">더보기 (${hiddenItems.length}개 더)</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            `;
         }
+    } else {
+        assetHTML += `
+            <div class="asset-item">
+                <div class="asset-left">
+                    <div class="asset-name">투자 상품이 없습니다</div>
+                    <div class="asset-details">투자를 시작해보세요!</div>
+                </div>
+            </div>
+        `;
+    }
+
+    assetListElement.innerHTML = assetHTML;
+    console.log('📊 자산 목록 업데이트 완료');
+}
+
 
         // 실제 총 자산 계산 (다양한 자산 유형 포함)
         function calculateRealTotalAssets() {
@@ -2253,6 +2339,61 @@
             loadUserData();
             console.log('FINE U 메인 페이지 - 실제 데이터 연동 완료');
         });
+        // 자산 목록 펼치기/접기
+function toggleAssetList() {
+    const hiddenAssets = document.getElementById('hiddenAssets');
+    const expandButton = document.getElementById('expandButton');
+    const expandText = document.getElementById('expandText');
+    
+    if (hiddenAssets.style.display === 'none') {
+        hiddenAssets.style.display = 'block';
+        expandButton.classList.add('expanded');
+        expandText.textContent = '접기';
+    } else {
+        hiddenAssets.style.display = 'none';
+        expandButton.classList.remove('expanded');
+        const hiddenCount = hiddenAssets.querySelectorAll('.asset-item').length;
+        expandText.textContent = `더보기 (${hiddenCount}개 더)`;
+    }
+}
+
+// 개별 자산 상세 정보 표시
+function showAssetItemDetail(symbol) {
+    const holding = userAssets.portfolio[symbol];
+    if (!holding) return;
+    
+    const assetType = holding.type || 'stock';
+    let message = `📊 ${holding.name || symbol}\n\n`;
+    
+    if (assetType === 'stock' || assetType === 'fund') {
+        const currentPrice = holding.currentPrice || holding.price || holding.avgPrice || 0;
+        const currentValue = (holding.quantity || 0) * currentPrice;
+        const totalInvested = holding.totalInvested || ((holding.quantity || 0) * (holding.avgPrice || 0));
+        const profitLoss = currentValue - totalInvested;
+        const profitLossPercent = totalInvested > 0 ? ((profitLoss / totalInvested) * 100).toFixed(2) : '0.00';
+        
+        message += `종류: ${assetType === 'stock' ? '주식' : 'ETF/펀드'}\n`;
+        message += `보유수량: ${(holding.quantity || 0).toLocaleString()}${assetType === 'stock' ? '주' : '좌'}\n`;
+        message += `평균단가: ${(holding.avgPrice || 0).toLocaleString()}원\n`;
+        message += `현재가: ${currentPrice.toLocaleString()}원\n\n`;
+        message += `투자금액: ${totalInvested.toLocaleString()}원\n`;
+        message += `평가금액: ${currentValue.toLocaleString()}원\n`;
+        message += `평가손익: ${profitLoss >= 0 ? '+' : ''}${profitLoss.toLocaleString()}원\n`;
+        message += `수익률: ${profitLoss >= 0 ? '+' : ''}${profitLossPercent}%`;
+    } else if (assetType === 'savings') {
+        message += `종류: 예적금\n`;
+        message += `금액: ${(holding.avgPrice || 0).toLocaleString()}원`;
+    } else if (assetType === 'loan') {
+        message += `종류: 대출\n`;
+        message += `금액: ${Math.abs(holding.avgPrice || 0).toLocaleString()}원`;
+    }
+    
+    alert(message);
+}
+
+// 전역 함수로 등록
+window.toggleAssetList = toggleAssetList;
+window.showAssetItemDetail = showAssetItemDetail;
     </script>
 </body>
 </html>
