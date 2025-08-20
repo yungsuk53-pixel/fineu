@@ -1870,49 +1870,78 @@
         }
 
         // 한국 주식 검색
-        // 한국 주식 검색 - Yahoo Finance API 사용
-        async function searchKoreanStocks(query) {
-            try {
-                console.log('🔍 실제 Yahoo Finance API로 검색 시작:', query);
-                
-                // 1차: 직접 로컬 데이터베이스에서 매칭하여 실제 API 호출
-                const directResult = await searchFromLocalDatabase(query);
-                if (directResult && directResult.length > 0) {
-                    console.log('✅ 로컬 데이터베이스 매칭 + 실제 API 성공:', directResult.length, '개');
-                    return directResult;
+       async function searchKoreanStocks(query) {
+    try {
+        console.log('🔍 실제 Yahoo Finance API로 검색 시작:', query);
+        
+        // 검색어가 숫자로만 이루어진 경우 종목코드로 판단
+        const isCode = /^\d+$/.test(query);
+        let searchResults = [];
+        
+        if (isCode) {
+            // 종목코드로 직접 검색
+            console.log('📊 종목코드로 직접 검색:', query);
+            
+            // 코스피(.KS)와 코스닥(.KQ) 모두 시도
+            for (const suffix of ['.KS', '.KQ']) {
+                try {
+                    const symbol = query + suffix;
+                    const priceData = await getYahooStockPrice(symbol);
+                    
+                    if (priceData && priceData.price) {
+                        // 종목명 가져오기 시도
+                        const nameData = await getStockName(symbol);
+                        searchResults.push({
+                            symbol: query,
+                            name: nameData || `종목코드 ${query}`,
+                            sector: '주식',
+                            currency: 'KRW',
+                            isUSD: false,
+                            ...priceData
+                        });
+                        console.log(`✅ ${symbol} 검색 성공`);
+                        break; // 성공하면 중단
+                    }
+                } catch (error) {
+                    console.log(`${query}${suffix} 시도 실패`);
                 }
-                
-                // 2차: Yahoo Finance 검색 API 사용
-                const searchUrl = `https://query1.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(query)}&quotesCount=20&newsCount=0&enableFuzzyQuery=false&quotesQueryId=tss_match_phrase_query&multiQuoteQueryId=multi_quote_single_token_query&enableCb=true&enableNavLinks=false&enableEnhancedTrivialQuery=true&region=KR&lang=ko`;
-                
-                // CORS 우회를 위한 프록시 사용
-                const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(searchUrl)}`;
-                
+            }
+        }
+        
+        // 종목명으로 검색 또는 종목코드 검색 실패 시
+        if (searchResults.length === 0) {
+            console.log('🌐 Yahoo Finance Search API 사용');
+            
+            // Yahoo Finance 검색 API 사용
+            const searchUrl = `https://query1.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(query)}&quotesCount=50&newsCount=0&enableFuzzyQuery=true&quotesQueryId=tss_match_phrase_query&multiQuoteQueryId=multi_quote_single_token_query&enableCb=true&enableNavLinks=false&enableEnhancedTrivialQuery=true`;
+            
+            const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(searchUrl)}`;
+            
+            try {
                 const response = await fetch(proxyUrl);
                 const data = await response.json();
                 const searchData = JSON.parse(data.contents);
                 
-                const stocksWithPrices = [];
-                
                 if (searchData.quotes && searchData.quotes.length > 0) {
-                    console.log('🌐 Yahoo Finance 검색 결과:', searchData.quotes.length, '개');
+                    console.log('🔍 검색 결과:', searchData.quotes.length, '개');
                     
-                    // 한국 주식만 필터링 (.KS, .KQ로 끝나는 것)
-                    const koreanStocks = searchData.quotes.filter(quote => 
-                        quote.symbol && (quote.symbol.endsWith('.KS') || quote.symbol.endsWith('.KQ'))
+                    // 한국 주식 우선, 그 다음 미국 주식
+                    const koreanStocks = searchData.quotes.filter(q => 
+                        q.symbol && (q.symbol.endsWith('.KS') || q.symbol.endsWith('.KQ'))
+                    );
+                    const usStocks = searchData.quotes.filter(q => 
+                        q.symbol && !q.symbol.includes('.')
                     );
                     
-                    console.log('🇰🇷 한국 주식 필터링 결과:', koreanStocks.length, '개');
-                    
-                    // 각 주식의 실시간 가격 정보 가져오기
-                    for (const stock of koreanStocks.slice(0, 10)) { // 최대 10개
+                    // 한국 주식 처리
+                    for (const stock of koreanStocks.slice(0, 10)) {
                         try {
                             const priceData = await getYahooStockPrice(stock.symbol);
                             if (priceData) {
-                                stocksWithPrices.push({
+                                searchResults.push({
                                     symbol: stock.symbol.replace('.KS', '').replace('.KQ', ''),
                                     name: stock.longname || stock.shortname || stock.symbol,
-                                    sector: stock.typeDisp || stock.quoteType || '주식',
+                                    sector: stock.typeDisp || '주식',
                                     currency: 'KRW',
                                     isUSD: false,
                                     ...priceData
@@ -1922,18 +1951,104 @@
                             console.log(`${stock.symbol} 가격 로드 실패`);
                         }
                     }
+                    
+                    // 한국 주식이 없으면 미국 주식도 표시
+                    if (searchResults.length === 0 && usStocks.length > 0) {
+                        console.log('🇺🇸 미국 주식 검색 결과 포함');
+                        for (const stock of usStocks.slice(0, 5)) {
+                            try {
+                                const priceData = await getYahooStockPrice(stock.symbol);
+                                if (priceData) {
+                                    searchResults.push({
+                                        symbol: stock.symbol,
+                                        name: stock.longname || stock.shortname || stock.symbol,
+                                        sector: stock.exchange || '미국주식',
+                                        ...priceData
+                                    });
+                                }
+                            } catch (error) {
+                                console.log(`${stock.symbol} 가격 로드 실패`);
+                            }
+                        }
+                    }
                 }
-                
-                console.log('✅ Yahoo Finance API 검색 완료:', stocksWithPrices.length, '개');
-                return stocksWithPrices;
-                
             } catch (error) {
-                console.error('Yahoo Finance 검색 실패:', error);
-                console.log('⚠️ API 실패로 로컬 데이터베이스 사용');
-                // 실패 시 로컬 데이터베이스 사용 (이제 실제 API 시도함)
-                return await searchFromLocalDatabase(query);
+                console.error('Yahoo Search API 실패:', error);
             }
         }
+        
+        // 여전히 결과가 없으면 직접 종목 시도 (종목명이 입력된 경우)
+        if (searchResults.length === 0 && !isCode) {
+            console.log('📋 로컬 데이터베이스 + 추가 검색');
+            
+            // 로컬 데이터베이스에서 먼저 찾기
+            const localResults = await searchFromLocalDatabase(query);
+            if (localResults.length > 0) {
+                return localResults;
+            }
+            
+            // 일반적인 종목명 패턴으로 직접 검색 시도
+            const commonPatterns = [
+                query, // 그대로
+                query.replace(/\s/g, ''), // 공백 제거
+                query.toUpperCase(), // 대문자
+                query.toLowerCase() // 소문자
+            ];
+            
+            for (const pattern of commonPatterns) {
+                try {
+                    // Yahoo Finance에서 직접 검색
+                    for (const suffix of ['.KS', '.KQ', '']) {
+                        const testSymbol = pattern + suffix;
+                        const priceData = await getYahooStockPrice(testSymbol);
+                        
+                        if (priceData && priceData.price) {
+                            searchResults.push({
+                                symbol: pattern,
+                                name: query,
+                                sector: suffix ? '한국주식' : '해외주식',
+                                ...priceData
+                            });
+                            break;
+                        }
+                    }
+                    
+                    if (searchResults.length > 0) break;
+                } catch (error) {
+                    continue;
+                }
+            }
+        }
+        
+        console.log(`✅ 최종 검색 결과: ${searchResults.length}개`);
+        return searchResults;
+        
+    } catch (error) {
+        console.error('주식 검색 실패:', error);
+        // 오류 시 로컬 데이터베이스 사용
+        return await searchFromLocalDatabase(query);
+    }
+}
+
+// 종목명 가져오기 함수 추가
+async function getStockName(symbol) {
+    try {
+        const searchUrl = `https://query1.finance.yahoo.com/v1/finance/search?q=${symbol}&quotesCount=1`;
+        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(searchUrl)}`;
+        
+        const response = await fetch(proxyUrl);
+        const data = await response.json();
+        const searchData = JSON.parse(data.contents);
+        
+        if (searchData.quotes && searchData.quotes[0]) {
+            return searchData.quotes[0].longname || searchData.quotes[0].shortname || null;
+        }
+    } catch (error) {
+        console.log('종목명 조회 실패');
+    }
+    return null;
+}
+
 
         // Yahoo Finance에서 실시간 주가 가져오기
         async function getYahooStockPrice(symbol) {
@@ -2073,7 +2188,51 @@
                 { symbol: '112040', name: '위메이드', sector: '게임' },
                 { symbol: '259960', name: '크래프톤', sector: '게임' }
             ];
-            
+            // 추가 종목들 (더 많은 종목 포함)
+const additionalStocks = [
+    { symbol: '000020', name: '동화약품', sector: '제약' },
+    { symbol: '000080', name: '하이트진로', sector: '음료' },
+    { symbol: '000100', name: '유한양행', sector: '제약' },
+    { symbol: '000120', name: 'CJ대한통운', sector: '물류' },
+    { symbol: '000150', name: '두산', sector: '지주회사' },
+    { symbol: '000210', name: '대림산업', sector: '건설' },
+    { symbol: '000240', name: '한국앤컴퍼니', sector: '지주회사' },
+    { symbol: '000720', name: '현대건설', sector: '건설' },
+    { symbol: '000810', name: '삼성화재', sector: '보험' },
+    { symbol: '000880', name: '한화', sector: '화학' },
+    { symbol: '001040', name: 'CJ', sector: '지주회사' },
+    { symbol: '001450', name: '현대해상', sector: '보험' },
+    { symbol: '002380', name: 'KCC', sector: '화학' },
+    { symbol: '002790', name: '아모레G', sector: '화장품' },
+    { symbol: '003410', name: '쌍용씨앤이', sector: '건설' },
+    { symbol: '003670', name: '포스코퓨처엠', sector: '소재' },
+    { symbol: '004020', name: '현대제철', sector: '철강' },
+    { symbol: '004170', name: '신세계', sector: '유통' },
+    { symbol: '004370', name: '농심', sector: '식품' },
+    { symbol: '004990', name: '롯데지주', sector: '지주회사' },
+    { symbol: '005250', name: '녹십자', sector: '제약' },
+    { symbol: '005300', name: '롯데칠성', sector: '음료' },
+    { symbol: '005385', name: '현대차2우B', sector: '자동차' },
+    { symbol: '005387', name: '현대차3우B', sector: '자동차' },
+    { symbol: '005490', name: 'POSCO홀딩스', sector: '철강' },
+    { symbol: '005830', name: 'DB손해보험', sector: '보험' },
+    { symbol: '005850', name: '에스엘', sector: '자동차부품' },
+    { symbol: '005930', name: '삼성전자', sector: '반도체' },
+    { symbol: '005935', name: '삼성전자우', sector: '반도체' },
+    { symbol: '005940', name: 'NH투자증권', sector: '증권' }
+];
+
+// 기존 배열과 합치기
+const allStocks = [...koreanStocks, ...additionalStocks];
+
+// 검색어와 매칭 (더 유연한 검색)
+let matchedStocks = allStocks.filter(stock => {
+    const searchLower = query.toLowerCase();
+    return stock.name.toLowerCase().includes(searchLower) || 
+           stock.symbol.includes(query) ||
+           stock.sector.toLowerCase().includes(searchLower);
+});
+
             let matchedStocks = koreanStocks.filter(stock => 
                 stock.name.includes(query) || 
                 stock.symbol.includes(query) ||
