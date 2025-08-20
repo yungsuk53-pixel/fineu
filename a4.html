@@ -1417,6 +1417,8 @@
         function initializeWelcomeMessage() {
             const welcomeMessage = "안녕하세요.\n저는 여러분의 슬기로운 금융 생활을 돕는 똑부리에요.\n혹시 도움이 필요한 일이 있나요?";
             addMessage(welcomeMessage, 'bot', false);
+            // 환영 메시지도 음성으로 출력
+            speakText(welcomeMessage);
         }
 
         // 채팅 히스토리 로드
@@ -1426,7 +1428,7 @@
                 const data = snapshot.val();
                 if (data) {
                     Object.values(data).forEach(msg => {
-                        addMessage(msg.text, msg.sender, false);
+                        addMessage(msg.text, msg.sender, false, false); // 히스토리는 음성 출력 안함
                     });
                 }
             } catch (error) {
@@ -1470,13 +1472,13 @@
                 const userInfo = await getUserFinancialInfo();
                 const response = await callGeminiAPI(message, userInfo);
                 hideTypingIndicator();
-                addMessage(response, 'bot', true);
+                addMessage(response, 'bot', true, true); // 봇 응답은 음성 출력
                 
             } catch (error) {
                 console.error('메시지 전송 실패:', error);
                 hideTypingIndicator();
                 const errorMessage = '죄송합니다. 일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
-                addMessage(errorMessage, 'bot', false);
+                addMessage(errorMessage, 'bot', false, true); // 에러 메시지도 음성 출력
             } finally {
                 isProcessing = false;
                 input.disabled = false;
@@ -1800,8 +1802,8 @@
             return '🤖 금융에 대해 궁금한 점이 있으시면 언제든 물어보세요!';
         }
 
-        // 메시지 추가
-        function addMessage(text, sender, save = true) {
+        // 메시지 추가 (음성 출력 파라미터 추가)
+        function addMessage(text, sender, save = true, playVoice = false) {
             const chatArea = document.getElementById('chatArea');
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${sender}`;
@@ -1836,6 +1838,11 @@
             chatArea.insertBefore(messageDiv, typingIndicator);
             
             chatArea.scrollTop = chatArea.scrollHeight;
+            
+            // 봇 메시지일 때 음성 출력 (음성 모드가 아닐 때만)
+            if (sender === 'bot' && playVoice && !isVoiceMode) {
+                speakText(text);
+            }
             
             if (save && sender !== 'system') {
                 saveChatMessage(text, sender);
