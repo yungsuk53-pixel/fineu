@@ -270,6 +270,42 @@
             background: #f0f0f0;
         }
 
+        /* 음성 버튼 스타일 추가 */
+        .voice-button {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border: none;
+            border-radius: 50%;
+            color: #666;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .voice-button:hover {
+            background: #f0f0f0;
+        }
+
+        .voice-button.recording {
+            background: #ff4444;
+            color: white;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(255, 68, 68, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 68, 68, 0);
+            }
+        }
+
         /* 하단 네비게이션 */
         .bottom-nav {
             position: fixed;
@@ -483,7 +519,8 @@
             }
             
             .send-button,
-            .attach-button {
+            .attach-button,
+            .voice-button {
                 width: 36px;
                 height: 36px;
             }
@@ -558,6 +595,9 @@
         <div class="input-container">
             <button class="attach-button" onclick="attachFile()">
                 <i class="fas fa-camera"></i>
+            </button>
+            <button class="voice-button" id="voiceButton" onclick="toggleVoiceRecording()">
+                <i class="fas fa-microphone" id="voiceIcon"></i>
             </button>
             <input type="text" class="chat-input" placeholder="채팅을 입력하세요." id="chatInput" onkeypress="handleKeyPress(event)">
             <button class="send-button" id="sendButton" onclick="sendMessage()">
@@ -638,6 +678,165 @@
         const GEMINI_API_KEY = 'AIzaSyDMawZDEzBrAvAJt8ZrZxvvq2aZIRnbObk';
         const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`;
 
+        // 음성 인식 관련 변수
+        let recognition = null;
+        let isRecording = false;
+        let speechSynthesis = window.speechSynthesis;
+        let isSpeaking = false;
+
+        // 음성 인식 초기화
+        function initSpeechRecognition() {
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                recognition = new SpeechRecognition();
+                recognition.lang = 'ko-KR';
+                recognition.interimResults = true;
+                recognition.continuous = false;
+                recognition.maxAlternatives = 1;
+
+                recognition.onstart = function() {
+                    console.log('🎤 음성 인식 시작');
+                    isRecording = true;
+                    updateVoiceButton(true);
+                };
+
+                recognition.onresult = function(event) {
+                    const transcript = event.results[0][0].transcript;
+                    console.log('🎤 인식된 텍스트:', transcript);
+                    document.getElementById('chatInput').value = transcript;
+                    
+                    if (event.results[0].isFinal) {
+                        setTimeout(() => {
+                            sendMessage();
+                        }, 500);
+                    }
+                };
+
+                recognition.onerror = function(event) {
+                    console.error('❌ 음성 인식 오류:', event.error);
+                    if (event.error === 'no-speech') {
+                        alert('음성이 감지되지 않았습니다. 다시 시도해주세요.');
+                    } else if (event.error === 'not-allowed') {
+                        alert('마이크 권한이 필요합니다. 브라우저 설정에서 마이크 권한을 허용해주세요.');
+                    } else {
+                        alert('음성 인식 오류가 발생했습니다: ' + event.error);
+                    }
+                    stopVoiceRecording();
+                };
+
+                recognition.onend = function() {
+                    console.log('🎤 음성 인식 종료');
+                    stopVoiceRecording();
+                };
+            } else {
+                console.warn('⚠️ 이 브라우저는 음성 인식을 지원하지 않습니다.');
+            }
+        }
+
+        // 음성 녹음 토글
+        function toggleVoiceRecording() {
+            if (isRecording) {
+                stopVoiceRecording();
+            } else {
+                startVoiceRecording();
+            }
+        }
+
+        // 음성 녹음 시작
+        function startVoiceRecording() {
+            if (!recognition) {
+                initSpeechRecognition();
+            }
+            
+            if (recognition) {
+                try {
+                    recognition.start();
+                } catch (error) {
+                    console.error('음성 인식 시작 실패:', error);
+                    alert('음성 인식을 시작할 수 없습니다.');
+                }
+            } else {
+                alert('이 브라우저는 음성 인식을 지원하지 않습니다.');
+            }
+        }
+
+        // 음성 녹음 중지
+        function stopVoiceRecording() {
+            if (recognition && isRecording) {
+                recognition.stop();
+            }
+            isRecording = false;
+            updateVoiceButton(false);
+        }
+
+        // 음성 버튼 상태 업데이트
+        function updateVoiceButton(recording) {
+            const voiceButton = document.getElementById('voiceButton');
+            const voiceIcon = document.getElementById('voiceIcon');
+            
+            if (recording) {
+                voiceButton.classList.add('recording');
+                voiceIcon.className = 'fas fa-stop';
+            } else {
+                voiceButton.classList.remove('recording');
+                voiceIcon.className = 'fas fa-microphone';
+            }
+        }
+
+        // 텍스트를 음성으로 변환
+        function speakText(text) {
+            if (!speechSynthesis) {
+                console.warn('⚠️ 이 브라우저는 음성 합성을 지원하지 않습니다.');
+                return;
+            }
+
+            // 이전 음성 중지
+            if (isSpeaking) {
+                speechSynthesis.cancel();
+            }
+
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'ko-KR';
+            utterance.rate = 1.1; // 약간 빠르게
+            utterance.pitch = 1.3; // 높은 톤으로 (귀여운 목소리)
+            utterance.volume = 1.0;
+
+            // 사용 가능한 음성 목록 가져오기
+            const voices = speechSynthesis.getVoices();
+            const koreanVoices = voices.filter(voice => voice.lang.includes('ko'));
+            
+            // 여성 음성 우선 선택
+            const femaleVoice = koreanVoices.find(voice => 
+                voice.name.toLowerCase().includes('female') || 
+                voice.name.includes('여성') ||
+                voice.name.includes('Yuna') ||
+                voice.name.includes('Google 한국어')
+            );
+            
+            if (femaleVoice) {
+                utterance.voice = femaleVoice;
+            } else if (koreanVoices.length > 0) {
+                utterance.voice = koreanVoices[0];
+            }
+
+            utterance.onstart = function() {
+                isSpeaking = true;
+                console.log('🔊 음성 출력 시작');
+            };
+
+            utterance.onend = function() {
+                isSpeaking = false;
+                console.log('🔊 음성 출력 종료');
+            };
+
+            utterance.onerror = function(event) {
+                isSpeaking = false;
+                console.error('❌ 음성 합성 오류:', event.error);
+            };
+
+            speechSynthesis.speak(utterance);
+        }
+
         // 등급 시스템 설정
         const levelSystem = {
             YELLOW: { name: 'YELLOW', exp: 0, max: 5000, image: 'YELLOW ㅁ.png', nav: 'YELLOW ㅇ', navImage: 'YELLOW ㅇ.png' },
@@ -666,6 +865,17 @@
         // 페이지 로드 시 초기화
         document.addEventListener('DOMContentLoaded', async function() {
             console.log('🚀 페이지 초기화 시작');
+            initSpeechRecognition();
+            
+            // 음성 목록 로드 (비동기)
+            if (speechSynthesis) {
+                speechSynthesis.getVoices();
+                speechSynthesis.onvoiceschanged = function() {
+                    const voices = speechSynthesis.getVoices();
+                    console.log('🔊 사용 가능한 음성:', voices.filter(v => v.lang.includes('ko')));
+                };
+            }
+            
             await loadUserDataFromFirebase();
             await loadEducationDataFromFirebase();
             await loadChatHistory();
@@ -778,6 +988,8 @@
         function initializeWelcomeMessage() {
             const welcomeMessage = "안녕하세요.\n저는 여러분의 슬기로운 금융 생활을 돕는 똑부리에요.\n혹시 도움이 필요한 일이 있나요?";
             addMessage(welcomeMessage, 'bot', false);
+            // 환영 메시지 음성 출력
+            speakText(welcomeMessage);
         }
 
         // 채팅 히스토리 로드
@@ -801,6 +1013,11 @@
             const message = input.value.trim();
             
             if (message === '' || isProcessing) return;
+
+            // 음성 인식 중이면 중지
+            if (isRecording) {
+                stopVoiceRecording();
+            }
 
             // 교육 명령어 체크
             if (message === '/교육하기') {
@@ -833,10 +1050,15 @@
                 hideTypingIndicator();
                 addMessage(response, 'bot', true);
                 
+                // 봇 응답 음성 출력
+                speakText(response);
+                
             } catch (error) {
                 console.error('메시지 전송 실패:', error);
                 hideTypingIndicator();
-                addMessage('죄송합니다. 일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.', 'bot', false);
+                const errorMessage = '죄송합니다. 일시적인 오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
+                addMessage(errorMessage, 'bot', false);
+                speakText(errorMessage);
             } finally {
                 isProcessing = false;
                 input.disabled = false;
@@ -934,7 +1156,9 @@
                 // 로컬 배열 업데이트
                 await loadEducationDataFromFirebase();
                 
-                addMessage('✅ 교육 내용이 성공적으로 저장되었습니다.', 'system', false);
+                const successMessage = '✅ 교육 내용이 성공적으로 저장되었습니다.';
+                addMessage(successMessage, 'system', false);
+                speakText(successMessage);
                 closeEducationModal();
                 
             } catch (error) {
@@ -950,7 +1174,9 @@
             await loadEducationDataFromFirebase();
             
             if (educationData.length === 0) {
-                addMessage('📚 저장된 교육 내용이 없습니다.\n\n/교육하기 명령어로 새로운 교육 내용을 추가할 수 있습니다.', 'system', false);
+                const emptyMessage = '📚 저장된 교육 내용이 없습니다.\n\n/교육하기 명령어로 새로운 교육 내용을 추가할 수 있습니다.';
+                addMessage(emptyMessage, 'system', false);
+                speakText('저장된 교육 내용이 없습니다.');
                 return;
             }
             
@@ -964,12 +1190,15 @@
             listMessage += '━━━━━━━━━━━━━━━━━━━━\n💡 삭제: /교육삭제 [번호]\n💡 추가: /교육하기';
             
             addMessage(listMessage, 'system', false);
+            speakText(`총 ${educationData.length}개의 교육 내용이 있습니다.`);
         }
 
         // 교육 삭제
         async function deleteEducation(index) {
             if (index < 0 || index >= educationData.length) {
-                addMessage('❌ 올바른 번호를 입력해주세요. (1부터 ' + educationData.length + '까지)', 'system', false);
+                const errorMessage = '❌ 올바른 번호를 입력해주세요. (1부터 ' + educationData.length + '까지)';
+                addMessage(errorMessage, 'system', false);
+                speakText('올바른 번호를 입력해주세요.');
                 return;
             }
 
@@ -982,10 +1211,14 @@
                 
                 await loadEducationDataFromFirebase();
                 
-                addMessage(`✅ 교육 내용 ${index + 1}번이 삭제되었습니다.`, 'system', false);
+                const successMessage = `✅ 교육 내용 ${index + 1}번이 삭제되었습니다.`;
+                addMessage(successMessage, 'system', false);
+                speakText('교육 내용이 삭제되었습니다.');
             } catch (error) {
                 console.error('❌ 교육 데이터 삭제 실패:', error);
-                addMessage('❌ 삭제 중 오류가 발생했습니다: ' + error.message, 'system', false);
+                const errorMessage = '❌ 삭제 중 오류가 발생했습니다: ' + error.message;
+                addMessage(errorMessage, 'system', false);
+                speakText('삭제 중 오류가 발생했습니다.');
             }
         }
 
@@ -1246,6 +1479,14 @@
 
         // 네비게이션 함수
         function goToPage(page) {
+            // 음성 중지
+            if (speechSynthesis && isSpeaking) {
+                speechSynthesis.cancel();
+            }
+            if (isRecording) {
+                stopVoiceRecording();
+            }
+            
             document.querySelectorAll('.nav-item').forEach(item => {
                 item.classList.remove('active');
             });
@@ -1258,6 +1499,14 @@
         // 로그아웃
         function logout() {
             if (confirm('로그아웃 하시겠습니까?')) {
+                // 음성 중지
+                if (speechSynthesis && isSpeaking) {
+                    speechSynthesis.cancel();
+                }
+                if (isRecording) {
+                    stopVoiceRecording();
+                }
+                
                 localStorage.removeItem('fineu_current_user');
                 window.location.href = 'index.html';
             }
@@ -1280,7 +1529,19 @@
 
         window.addEventListener('offline', function() {
             console.log('네트워크 연결 끊김');
-            addMessage('네트워크 연결이 끊겼습니다. 연결 상태를 확인해주세요.', 'bot', false);
+            const offlineMessage = '네트워크 연결이 끊겼습니다. 연결 상태를 확인해주세요.';
+            addMessage(offlineMessage, 'bot', false);
+            speakText(offlineMessage);
+        });
+
+        // 페이지 언로드 시 음성 중지
+        window.addEventListener('beforeunload', function() {
+            if (speechSynthesis && isSpeaking) {
+                speechSynthesis.cancel();
+            }
+            if (isRecording) {
+                stopVoiceRecording();
+            }
         });
     </script>
 </body>
