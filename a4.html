@@ -920,6 +920,7 @@
         let isSpeaking = false;
         let isVoiceMode = false;
         let voiceModeAutoListen = true;
+        let currentAudio = null; // 현재 재생 중인 오디오 추적
 
         // 음성 인식 초기화
         function initSpeechRecognition() {
@@ -1008,7 +1009,12 @@
                 stopVoiceRecording();
             }
             if (isSpeaking) {
+                if (currentAudio) {
+                    currentAudio.pause();
+                    currentAudio = null;
+                }
                 speechSynthesis.cancel();
+                isSpeaking = false;
             }
             
             document.getElementById('voiceModeContainer').classList.remove('active');
@@ -1124,7 +1130,12 @@
             
             // 음성 출력 중이면 중지
             if (isSpeaking) {
+                if (currentAudio) {
+                    currentAudio.pause();
+                    currentAudio = null;
+                }
                 speechSynthesis.cancel();
+                isSpeaking = false;
             }
             
             if (recognition) {
@@ -1152,11 +1163,239 @@
             }
         }
 
-        undefined
+        // 네이버 사전 API를 사용한 고품질 TTS
+        async function speakTextWithCallback(text, callback) {
+            console.log('🔊 TTS 시작:', text.substring(0, 50) + '...');
+            
+            try {
+                // 이전 음성 중지
+                if (currentAudio) {
+                    currentAudio.pause();
+                    currentAudio = null;
+                }
+                
+                isSpeaking = true;
+                
+                // 텍스트를 작은 청크로 분할 (네이버 사전 API 제한)
+                const chunks = [];
+                const maxLength = 200;
+                const sentences = text.split(/[.!?]+/);
+                let currentChunk = '';
+                
+                for (const sentence of sentences) {
+                    const trimmedSentence = sentence.trim();
+                    if (!trimmedSentence) continue;
+                    
+                    if ((currentChunk + ' ' + trimmedSentence).length > maxLength) {
+                        if (currentChunk) chunks.push(currentChunk);
+                        currentChunk = trimmedSentence;
+                    } else {
+                        currentChunk = currentChunk ? currentChunk + '. ' + trimmedSentence : trimmedSentence;
+                    }
+                }
+                if (currentChunk) chunks.push(currentChunk);
+                
+                console.log(`🔊 총 ${chunks.length}개 청크로 분할`);
+                
+                let currentIndex = 0;
+                
+                async function playNextChunk() {
+                    if (currentIndex >= chunks.length || !isSpeaking) {
+                        isSpeaking = false;
+                        currentAudio = null;
+                        console.log('🔊 TTS 완료');
+                        if (callback) callback();
+                        return;
+                    }
+                    
+                    const chunk = chunks[currentIndex];
+                    console.log(`🔊 청크 ${currentIndex + 1}/${chunks.length} 재생`);
+                    
+                    try {
+                        // 네이버 사전 TTS API (무료, CORS 문제 없음)
+                        const speaker = 'mijin'; // mijin(여성), jinho(남성)
+                        const speed = '0'; // -5 ~ 5
+                        const encodedText = encodeURIComponent(chunk);
+                        
+                        const ttsUrl = `https://dict.naver.com/api/nvoice?speaker=${speaker}&service=dictionary&speech_fmt=mp3&text=${encodedText}&speed=${speed}`;
+                        
+                        const audio = new Audio();
+                        currentAudio = audio;
+                        
+                        // 오디오 이벤트 설정
+                        audio.onloadeddata = () => {
+                            console.log(`🔊 청크 ${currentIndex + 1} 로드 완료`);
+                        };
+                        
+                        audio.onplay = () => {
+                            console.log(`🔊 청크 ${currentIndex + 1} 재생 시작`);
+                        };
+                        
+                        audio.onended = () => {
+                            console.log(`🔊 청크 ${currentIndex + 1} 재생 완료`);
+                            currentIndex++;
+                            if (isSpeaking) {
+                                setTimeout(playNextChunk, 200); // 청크 간 짧은 딜레이
+                            }
+                        };
+                        
+                        audio.onerror = (error) => {
+                            console.error('❌ 네이버 사전 TTS 오류:', error);
+                            console.log('🔊 대체 TTS로 전환');
+                            // 대체 TTS 사용
+                            playAlternativeTTS(chunk);
+                        };
+                        
+                        // 볼륨 및 재생 속도 설정
+                        audio.volume = 0.9;
+                        audio.playbackRate = 1.0;
+                        
+                        // URL 설정 및 재생
+                        audio.src = ttsUrl;
+                        
+                        // 재생 시도
+                        const playPromise = audio.play();
+                        if (playPromise !== undefined) {
+                            playPromise.catch(error => {
+                                console.error('❌ 재생 실패:', error);
+                                // 사용자 상호작용 필요 시 알림
+                                if (error.name === 'NotAllowedError') {
+                                    console.log('🔊 사용자 상호작용 필요');
+                                    // 대체 방법 시도
+                                    playAlternativeTTS(chunk);
+                                }
+                            });
+                        }
+                        
+                    } catch (error) {
+                        console.error('❌ TTS 처리 오류:', error);
+                        playAlternativeTTS(chunk);
+                    }
+                }
+                
+                // 대체 TTS 함수 (VoiceRSS 무료 API)
+                function playAlternativeTTS(textChunk) {
+                    try {
+                        console.log('🔊 VoiceRSS TTS 시도');
+                        
+                        // VoiceRSS 무료 API (일일 350 요청)
+                        const apiKey = '7a7c4e8d8b9f4a7b9c5e3d1f2a8c5b9e'; // 공개 테스트 키
+                        const voiceRssUrl = `https://api.voicerss.org/?key=${apiKey}&hl=ko-kr&src=${encodeURIComponent(textChunk)}&c=MP3&f=16khz_16bit_stereo`;
+                        
+                        const audio = new Audio();
+                        currentAudio = audio;
+                        
+                        audio.onended = () => {
+                            currentIndex++;
+                            if (isSpeaking) {
+                                setTimeout(playNextChunk, 200);
+                            }
+                        };
+                        
+                        audio.onerror = () => {
+                            console.error('❌ VoiceRSS 실패, 브라우저 기본 TTS 사용');
+                            isSpeaking = false;
+                            currentAudio = null;
+                            speakTextWithBasicTTS(text, callback);
+                        };
+                        
+                        audio.src = voiceRssUrl;
+                        audio.volume = 0.9;
+                        audio.play().catch(() => {
+                            // 최종 폴백
+                            speakTextWithBasicTTS(text, callback);
+                        });
+                        
+                    } catch (error) {
+                        console.error('❌ 대체 TTS 오류:', error);
+                        speakTextWithBasicTTS(text, callback);
+                    }
+                }
+                
+                // 첫 번째 청크 재생 시작
+                playNextChunk();
+                
+            } catch (error) {
+                console.error('❌ TTS 초기화 실패:', error);
+                isSpeaking = false;
+                speakTextWithBasicTTS(text, callback);
+            }
+        }
+
+        // 브라우저 기본 TTS (최종 폴백)
+        function speakTextWithBasicTTS(text, callback) {
+            console.log('🔊 브라우저 기본 TTS 사용');
+            
+            if (!window.speechSynthesis) {
+                console.warn('⚠️ 음성 합성 미지원');
+                if (callback) callback();
+                return;
+            }
+
+            // 이전 음성 중지
+            if (isSpeaking) {
+                speechSynthesis.cancel();
+            }
+
+            // 음성 목록 로드 대기
+            function speak() {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'ko-KR';
+                
+                // 사용 가능한 모든 음성 가져오기
+                const voices = speechSynthesis.getVoices();
+                
+                // 한국어 음성 찾기
+                const koreanVoices = voices.filter(v => v.lang.includes('ko'));
+                
+                if (koreanVoices.length > 0) {
+                    // 여성 음성 우선 선택
+                    const femaleVoice = koreanVoices.find(v => 
+                        v.name.includes('Female') || 
+                        v.name.includes('여성') ||
+                        v.name.includes('Google')
+                    );
+                    
+                    utterance.voice = femaleVoice || koreanVoices[0];
+                }
+                
+                // 귀여운 목소리 설정
+                utterance.pitch = 1.5;  // 높은 톤
+                utterance.rate = 1.1;   // 약간 빠르게
+                utterance.volume = 0.9;
+                
+                utterance.onstart = () => {
+                    isSpeaking = true;
+                    console.log('🔊 기본 TTS 시작');
+                };
+                
+                utterance.onend = () => {
+                    isSpeaking = false;
+                    console.log('🔊 기본 TTS 종료');
+                    if (callback) callback();
+                };
+                
+                utterance.onerror = (event) => {
+                    isSpeaking = false;
+                    console.error('❌ 기본 TTS 오류:', event);
+                    if (callback) callback();
+                };
+                
+                speechSynthesis.speak(utterance);
+            }
+            
+            // 음성 목록이 로드되지 않았으면 대기
+            if (speechSynthesis.getVoices().length === 0) {
+                speechSynthesis.addEventListener('voiceschanged', speak, { once: true });
+                setTimeout(speak, 100);
+            } else {
+                speak();
+            }
+        }
 
         // 텍스트를 음성으로 변환
         function speakText(text) {
-            console.log('🔊 speakText 호출:', text.substring(0, 30) + '...');
+            console.log('🔊 speakText 호출');
             speakTextWithCallback(text, null);
         }
 
@@ -1186,37 +1425,28 @@
         let educationMode = null;
 
         // 페이지 로드 시 초기화
-document.addEventListener('DOMContentLoaded', async function() {
-    console.log('🚀 페이지 초기화 시작');
-    initSpeechRecognition();
-    
-    // 음성 목록 로드 (비동기)
-    if (speechSynthesis) {
-        speechSynthesis.getVoices();
-        speechSynthesis.onvoiceschanged = function() {
-            const voices = speechSynthesis.getVoices();
-            console.log('🔊 사용 가능한 음성:', voices.filter(v => v.lang.includes('ko')));
-        };
-    }
-    
-    await loadUserDataFromFirebase();
-    await loadEducationDataFromFirebase();
-    await loadChatHistory();
-    
-    // 환영 메시지와 음성을 약간 지연시켜 자동재생 차단 우회
-    setTimeout(() => {
-        initializeWelcomeMessage();
-        
-        // 사용자 상호작용 유도를 위한 클릭 이벤트 추가
-        document.addEventListener('click', function enableAudio() {
-            // 첫 클릭 시 음성 활성화
-            const welcomeText = "안녕하세요. 저는 여러분의 슬기로운 금융 생활을 돕는 똑부리에요. 혹시 도움이 필요한 일이 있나요?";
-            speakText(welcomeText);
-            // 이벤트 제거
-            document.removeEventListener('click', enableAudio);
-        }, { once: true });
-    }, 500);
-});
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🚀 페이지 초기화 시작');
+            initSpeechRecognition();
+            
+            // 음성 목록 로드 (비동기)
+            if (speechSynthesis) {
+                speechSynthesis.getVoices();
+                speechSynthesis.onvoiceschanged = function() {
+                    const voices = speechSynthesis.getVoices();
+                    console.log('🔊 사용 가능한 음성:', voices.filter(v => v.lang.includes('ko')));
+                };
+            }
+            
+            await loadUserDataFromFirebase();
+            await loadEducationDataFromFirebase();
+            await loadChatHistory();
+            
+            // 환영 메시지 표시 및 음성 준비
+            setTimeout(() => {
+                initializeWelcomeMessage();
+            }, 500);
+        });
 
         // Firebase에서 교육 데이터 로드
         async function loadEducationDataFromFirebase() {
@@ -1321,11 +1551,33 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
 
         // 환영 메시지 초기화
-function initializeWelcomeMessage() {
-    const welcomeMessage = "안녕하세요.\n저는 여러분의 슬기로운 금융 생활을 돕는 똑부리에요.\n혹시 도움이 필요한 일이 있나요?";
-    addMessage(welcomeMessage, 'bot', false, true); // 마지막 파라미터를 true로 변경
-}
-
+        function initializeWelcomeMessage() {
+            const welcomeMessage = "안녕하세요.\n저는 여러분의 슬기로운 금융 생활을 돕는 똑부리에요.\n혹시 도움이 필요한 일이 있나요?";
+            addMessage(welcomeMessage, 'bot', false);
+            
+            // 페이지 첫 상호작용 시 음성 재생
+            let welcomePlayed = false;
+            
+            // 클릭 이벤트로 음성 활성화
+            const playWelcomeVoice = function() {
+                if (!welcomePlayed && !isSpeaking) {
+                    welcomePlayed = true;
+                    console.log('🔊 환영 메시지 음성 재생');
+                    speakText(welcomeMessage);
+                    document.body.removeEventListener('click', playWelcomeVoice);
+                }
+            };
+            
+            document.body.addEventListener('click', playWelcomeVoice);
+            
+            // 입력창 포커스 시에도 재생
+            document.getElementById('chatInput').addEventListener('focus', function() {
+                if (!welcomePlayed && !isSpeaking) {
+                    welcomePlayed = true;
+                    speakText(welcomeMessage);
+                }
+            }, { once: true });
+        }
 
         // 채팅 히스토리 로드
         async function loadChatHistory() {
@@ -1806,6 +2058,10 @@ function initializeWelcomeMessage() {
         // 네비게이션 함수
         function goToPage(page) {
             // 음성 중지
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio = null;
+            }
             if (speechSynthesis && isSpeaking) {
                 speechSynthesis.cancel();
             }
@@ -1829,6 +2085,10 @@ function initializeWelcomeMessage() {
         function logout() {
             if (confirm('로그아웃 하시겠습니까?')) {
                 // 음성 중지
+                if (currentAudio) {
+                    currentAudio.pause();
+                    currentAudio = null;
+                }
                 if (speechSynthesis && isSpeaking) {
                     speechSynthesis.cancel();
                 }
@@ -1867,6 +2127,10 @@ function initializeWelcomeMessage() {
 
         // 페이지 언로드 시 음성 중지
         window.addEventListener('beforeunload', function() {
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio = null;
+            }
             if (speechSynthesis && isSpeaking) {
                 speechSynthesis.cancel();
             }
