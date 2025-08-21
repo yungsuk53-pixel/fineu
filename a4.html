@@ -913,11 +913,6 @@
         const GEMINI_API_KEY = 'AIzaSyDMawZDEzBrAvAJt8ZrZxvvq2aZIRnbObk';
         const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`;
 
-        // 파파고 TTS 프록시 서버 URL (Vercel 배포 후 변경 필요)
-        // 로컬 테스트: http://localhost:3000/api/papago-tts
-        // Vercel 배포 후: https://your-app.vercel.app/api/papago-tts
-        const PAPAGO_TTS_PROXY_URL = 'https://your-app.vercel.app/api/papago-tts';
-
         // 음성 인식 관련 변수
         let recognition = null;
         let isRecording = false;
@@ -1157,159 +1152,96 @@
             }
         }
 
-        // 네이버 파파고 TTS를 사용한 음성 합성
-        async function speakTextWithCallback(text, callback) {
-            try {
-                console.log('🔊 파파고 TTS 시작');
-                
-                // 파파고 TTS 프록시 서버로 요청
-                const response = await fetch(PAPAGO_TTS_PROXY_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        text: text,
-                        speaker: 'nara',  // 음성 선택: nara(차분한 여성), kyuri(귀여운 여성), jinho(남성), mijin(차분한 여성)
-                        speed: 0,         // -5 ~ 5 (0이 기본)
-                        pitch: 2          // -5 ~ 5 (높을수록 높은 톤, 귀여운 목소리)
-                    })
-                });
-                
-                if (!response.ok) {
-                    throw new Error('파파고 TTS 요청 실패');
-                }
-                
-                // 오디오 데이터 받기
-                const audioBlob = await response.blob();
-                const audioUrl = URL.createObjectURL(audioBlob);
-                const audio = new Audio(audioUrl);
-                
-                audio.onplay = () => {
-                    isSpeaking = true;
-                    console.log('🔊 파파고 음성 재생 시작');
-                };
-                
-                audio.onended = () => {
-                    isSpeaking = false;
-                    URL.revokeObjectURL(audioUrl);
-                    console.log('🔊 파파고 음성 재생 완료');
-                    if (callback) callback();
-                };
-                
-                audio.onerror = (error) => {
-                    console.error('❌ 파파고 오디오 재생 오류:', error);
-                    isSpeaking = false;
-                    URL.revokeObjectURL(audioUrl);
-                    // 폴백: 기본 TTS 사용
-                    speakTextWithBasicTTS(text, callback);
-                };
-                
-                // 재생 속도 조절 (더 귀여운 효과)
-                audio.playbackRate = 1.1;
-                await audio.play();
-                
-            } catch (error) {
-                console.error('❌ 파파고 TTS 실패:', error);
-                // 폴백: Google Translate TTS 사용
-                speakTextWithGoogleTTS(text, callback);
-            }
-        }
-
-        // Google Translate TTS (폴백용)
-        async function speakTextWithGoogleTTS(text, callback) {
-            try {
-                console.log('🔊 Google TTS로 폴백');
-                
-                // 텍스트를 200자씩 분할 (Google TTS 제한)
-                const chunks = text.match(/.{1,200}/g) || [text];
-                let currentChunk = 0;
-                
-                function playNextChunk() {
-                    if (currentChunk >= chunks.length) {
-                        isSpeaking = false;
-                        if (callback) callback();
-                        return;
-                    }
-                    
-                    const chunk = chunks[currentChunk];
-                    const encodedText = encodeURIComponent(chunk);
-                    
-                    // Google Translate TTS URL
-                    const googleTTSUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodedText}&tl=ko&client=tw-ob`;
-                    
-                    const audio = new Audio(googleTTSUrl);
-                    
-                    audio.onplay = () => {
-                        if (currentChunk === 0) {
-                            isSpeaking = true;
-                            console.log('🔊 Google TTS 재생 시작');
-                        }
-                    };
-                    
-                    audio.onended = () => {
-                        currentChunk++;
-                        playNextChunk();
-                    };
-                    
-                    audio.onerror = (error) => {
-                        console.error('❌ Google TTS 오류:', error);
-                        // 최종 폴백: 브라우저 기본 TTS
-                        speakTextWithBasicTTS(text, callback);
-                    };
-                    
-                    // 재생 속도 조절
-                    audio.playbackRate = 1.1;
-                    audio.play();
-                }
-                
-                playNextChunk();
-                
-            } catch (error) {
-                console.error('❌ Google TTS 실패:', error);
-                speakTextWithBasicTTS(text, callback);
-            }
-        }
-
-        // 기본 브라우저 TTS (최종 폴백용)
-        function speakTextWithBasicTTS(text, callback) {
-            if (!speechSynthesis) {
+        // 브라우저 기본 TTS 사용 (작동 확인된 버전)
+        function speakTextWithCallback(text, callback) {
+            console.log('🔊 TTS 시작:', text.substring(0, 50) + '...');
+            
+            if (!window.speechSynthesis) {
+                console.warn('⚠️ 음성 합성 미지원');
                 if (callback) callback();
                 return;
             }
 
+            // 이전 음성 중지
             if (isSpeaking) {
                 speechSynthesis.cancel();
             }
 
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'ko-KR';
-            utterance.rate = 1.15;
-            utterance.pitch = 1.85;
-            utterance.volume = 0.95;
-
-            const voices = speechSynthesis.getVoices();
-            const koreanVoices = voices.filter(voice => voice.lang.includes('ko'));
-            if (koreanVoices.length > 0) {
-                utterance.voice = koreanVoices[0];
+            // 음성 목록 로드 대기
+            function speak() {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'ko-KR';
+                
+                // 사용 가능한 모든 음성 가져오기
+                const voices = speechSynthesis.getVoices();
+                console.log('🔊 사용 가능한 음성:', voices.length);
+                
+                // 한국어 음성 찾기
+                const koreanVoices = voices.filter(v => v.lang.includes('ko'));
+                console.log('🔊 한국어 음성:', koreanVoices.map(v => v.name));
+                
+                // 우선순위별 음성 선택
+                const voicePreferences = [
+                    'Google 한국어',      // Chrome 최고 품질
+                    'Microsoft Heami',    // Edge 여성
+                    'Microsoft SunHi',    // Edge 여성2
+                    'Yuna',              // Samsung
+                    'Nari'               // iOS
+                ];
+                
+                let selectedVoice = null;
+                for (const pref of voicePreferences) {
+                    selectedVoice = koreanVoices.find(v => v.name.includes(pref));
+                    if (selectedVoice) break;
+                }
+                
+                if (selectedVoice) {
+                    utterance.voice = selectedVoice;
+                    console.log('🎵 선택된 음성:', selectedVoice.name);
+                } else if (koreanVoices.length > 0) {
+                    utterance.voice = koreanVoices[0];
+                    console.log('🎵 기본 한국어 음성 사용');
+                }
+                
+                // 귀여운 목소리 설정
+                utterance.pitch = 1.6;  // 높은 톤
+                utterance.rate = 1.1;   // 약간 빠르게
+                utterance.volume = 0.95;
+                
+                utterance.onstart = () => {
+                    isSpeaking = true;
+                    console.log('🔊 음성 시작');
+                };
+                
+                utterance.onend = () => {
+                    isSpeaking = false;
+                    console.log('🔊 음성 종료');
+                    if (callback) callback();
+                };
+                
+                utterance.onerror = (event) => {
+                    isSpeaking = false;
+                    console.error('❌ 음성 오류:', event);
+                    if (callback) callback();
+                };
+                
+                speechSynthesis.speak(utterance);
             }
-
-            utterance.onstart = () => {
-                isSpeaking = true;
-                console.log('🔊 기본 TTS 시작');
-            };
             
-            utterance.onend = () => {
-                isSpeaking = false;
-                console.log('🔊 기본 TTS 종료');
-                if (callback) callback();
-            };
-
-            speechSynthesis.speak(utterance);
+            // 음성 목록이 로드되지 않았으면 대기
+            if (speechSynthesis.getVoices().length === 0) {
+                console.log('🔊 음성 목록 로드 대기중...');
+                speechSynthesis.addEventListener('voiceschanged', speak, { once: true });
+                // 일부 브라우저에서는 이벤트가 발생하지 않을 수 있으므로 타임아웃 설정
+                setTimeout(speak, 100);
+            } else {
+                speak();
+            }
         }
 
         // 텍스트를 음성으로 변환
         function speakText(text) {
+            console.log('🔊 speakText 호출:', text.substring(0, 30) + '...');
             speakTextWithCallback(text, null);
         }
 
@@ -1888,6 +1820,7 @@
             
             // 봇 메시지일 때 음성 출력 (음성 모드가 아닐 때만)
             if (sender === 'bot' && playVoice && !isVoiceMode) {
+                console.log('🔊 봇 메시지 음성 출력 시작');
                 speakText(text);
             }
             
