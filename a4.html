@@ -1153,91 +1153,313 @@
         }
 
         // 브라우저 기본 TTS 사용 (작동 확인된 버전)
-        function speakTextWithCallback(text, callback) {
-            console.log('🔊 TTS 시작:', text.substring(0, 50) + '...');
-            
-            if (!window.speechSynthesis) {
-                console.warn('⚠️ 음성 합성 미지원');
+        // 네이버 파파고 TTS를 사용한 고품질 음성 합성
+async function speakTextWithCallback(text, callback) {
+    console.log('🔊 파파고 TTS 시작:', text.substring(0, 50) + '...');
+    
+    try {
+        // 이전 음성 중지
+        if (isSpeaking) {
+            const allAudios = document.querySelectorAll('audio.tts-audio');
+            allAudios.forEach(audio => {
+                audio.pause();
+                audio.remove();
+            });
+        }
+        
+        isSpeaking = true;
+        
+        // 텍스트를 청크로 분할 (파파고는 긴 텍스트도 처리 가능)
+        const chunks = text.match(/.{1,500}/g) || [text];
+        let currentIndex = 0;
+        
+        async function playNextChunk() {
+            if (currentIndex >= chunks.length) {
+                isSpeaking = false;
+                console.log('🔊 파파고 TTS 완료');
                 if (callback) callback();
                 return;
             }
-
-            // 이전 음성 중지
-            if (isSpeaking) {
-                speechSynthesis.cancel();
-            }
-
-            // 음성 목록 로드 대기
-            function speak() {
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'ko-KR';
-                
-                // 사용 가능한 모든 음성 가져오기
-                const voices = speechSynthesis.getVoices();
-                console.log('🔊 사용 가능한 음성:', voices.length);
-                
-                // 한국어 음성 찾기
-                const koreanVoices = voices.filter(v => v.lang.includes('ko'));
-                console.log('🔊 한국어 음성:', koreanVoices.map(v => v.name));
-                
-                // 우선순위별 음성 선택
-                const voicePreferences = [
-                    'Google 한국어',      // Chrome 최고 품질
-                    'Microsoft Heami',    // Edge 여성
-                    'Microsoft SunHi',    // Edge 여성2
-                    'Yuna',              // Samsung
-                    'Nari'               // iOS
-                ];
-                
-                let selectedVoice = null;
-                for (const pref of voicePreferences) {
-                    selectedVoice = koreanVoices.find(v => v.name.includes(pref));
-                    if (selectedVoice) break;
-                }
-                
-                if (selectedVoice) {
-                    utterance.voice = selectedVoice;
-                    console.log('🎵 선택된 음성:', selectedVoice.name);
-                } else if (koreanVoices.length > 0) {
-                    utterance.voice = koreanVoices[0];
-                    console.log('🎵 기본 한국어 음성 사용');
-                }
-                
-                // 귀여운 목소리 설정
-                utterance.pitch = 1.6;  // 높은 톤
-                utterance.rate = 1.1;   // 약간 빠르게
-                utterance.volume = 0.95;
-                
-                utterance.onstart = () => {
-                    isSpeaking = true;
-                    console.log('🔊 음성 시작');
-                };
-                
-                utterance.onend = () => {
-                    isSpeaking = false;
-                    console.log('🔊 음성 종료');
-                    if (callback) callback();
-                };
-                
-                utterance.onerror = (event) => {
-                    isSpeaking = false;
-                    console.error('❌ 음성 오류:', event);
-                    if (callback) callback();
-                };
-                
-                speechSynthesis.speak(utterance);
-            }
             
-            // 음성 목록이 로드되지 않았으면 대기
-            if (speechSynthesis.getVoices().length === 0) {
-                console.log('🔊 음성 목록 로드 대기중...');
-                speechSynthesis.addEventListener('voiceschanged', speak, { once: true });
-                // 일부 브라우저에서는 이벤트가 발생하지 않을 수 있으므로 타임아웃 설정
-                setTimeout(speak, 100);
-            } else {
-                speak();
+            const chunk = chunks[currentIndex];
+            console.log(`🔊 청크 ${currentIndex + 1}/${chunks.length} 재생 준비`);
+            
+            try {
+                // 파파고 TTS makeID API 호출
+                const makeIdUrl = 'https://papago.naver.com/apis/tts/makeID';
+                const makeIdParams = new URLSearchParams({
+                    'speaker': 'kyuri',    // kyuri(귀여운 여성), nara(차분한 여성), jinho(남성)
+                    'speed': '0',          // -5 ~ 5
+                    'pitch': '2',          // -5 ~ 5 (높을수록 귀여운 목소리)
+                    'text': chunk,
+                    'volume': '0',
+                    'alpha': '0',
+                    'emotion': '0',
+                    'emotion-strength': '1',
+                    'sampling-rate': '24000',
+                    'format': 'mp3'
+                });
+                
+                // AllOrigins 프록시를 통해 CORS 우회
+                const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(makeIdUrl)}`;
+                
+                const makeIdResponse = await fetch(proxyUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: makeIdParams.toString()
+                });
+                
+                const makeIdText = await makeIdResponse.text();
+                console.log('🔊 makeID 응답:', makeIdText);
+                
+                // JSON 파싱 시도
+                let audioId;
+                try {
+                    const makeIdData = JSON.parse(makeIdText);
+                    audioId = makeIdData.id;
+                } catch (e) {
+                    // ID만 추출 시도
+                    const idMatch = makeIdText.match(/"id":"([^"]+)"/);
+                    if (idMatch) {
+                        audioId = idMatch[1];
+                    } else {
+                        throw new Error('오디오 ID를 찾을 수 없습니다');
+                    }
+                }
+                
+                if (!audioId) {
+                    throw new Error('오디오 ID 생성 실패');
+                }
+                
+                console.log('🔊 오디오 ID:', audioId);
+                
+                // 오디오 URL 생성
+                const audioUrl = `https://papago.naver.com/apis/tts/${audioId}`;
+                
+                // 오디오 재생
+                const audio = new Audio();
+                audio.className = 'tts-audio';
+                audio.crossOrigin = 'anonymous';
+                
+                // 프록시를 통한 오디오 URL
+                const proxiedAudioUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(audioUrl)}`;
+                
+                audio.onloadeddata = () => {
+                    console.log(`🔊 청크 ${currentIndex + 1} 로드 완료`);
+                };
+                
+                audio.onplay = () => {
+                    console.log(`🔊 청크 ${currentIndex + 1} 재생 시작`);
+                };
+                
+                audio.onended = () => {
+                    console.log(`🔊 청크 ${currentIndex + 1} 재생 완료`);
+                    audio.remove();
+                    currentIndex++;
+                    setTimeout(playNextChunk, 100);
+                };
+                
+                audio.onerror = (error) => {
+                    console.error('❌ 파파고 오디오 재생 오류:', error);
+                    console.log('🔊 클로바 보이스로 폴백');
+                    audio.remove();
+                    // 폴백: 클로바 보이스 시도
+                    playClovaVoice(chunk);
+                };
+                
+                audio.src = proxiedAudioUrl;
+                audio.volume = 0.9;
+                
+                // 재생 시도
+                const playPromise = audio.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(error => {
+                        console.error('❌ 재생 실패:', error);
+                        // 클로바 보이스로 폴백
+                        playClovaVoice(chunk);
+                    });
+                }
+                
+            } catch (error) {
+                console.error('❌ 파파고 TTS 실패:', error);
+                // 클로바 보이스로 폴백
+                playClovaVoice(chunk);
             }
         }
+        
+        // 클로바 보이스 폴백 함수
+        async function playClovaVoice(textChunk) {
+            try {
+                console.log('🔊 클로바 보이스 시도');
+                
+                // 클로바 보이스 URL (무료 데모 API)
+                const clovaUrl = `https://dict.naver.com/api/nvoice?speaker=kyuri&service=dictionary&speech_fmt=mp3&text=${encodeURIComponent(textChunk)}`;
+                
+                const audio = new Audio();
+                audio.className = 'tts-audio';
+                
+                audio.onended = () => {
+                    console.log('🔊 클로바 보이스 재생 완료');
+                    audio.remove();
+                    currentIndex++;
+                    setTimeout(playNextChunk, 100);
+                };
+                
+                audio.onerror = () => {
+                    console.error('❌ 클로바 보이스 실패, 구글 TTS로 폴백');
+                    // 최종 폴백: 구글 TTS
+                    playGoogleTTS(textChunk);
+                };
+                
+                audio.src = clovaUrl;
+                audio.volume = 0.9;
+                audio.play();
+                
+            } catch (error) {
+                console.error('❌ 클로바 보이스 오류:', error);
+                playGoogleTTS(textChunk);
+            }
+        }
+        
+        // 구글 TTS 최종 폴백
+        function playGoogleTTS(textChunk) {
+            try {
+                console.log('🔊 구글 TTS로 최종 폴백');
+                
+                const googleUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(textChunk)}&tl=ko&client=tw-ob`;
+                
+                const audio = new Audio();
+                audio.className = 'tts-audio';
+                
+                audio.onended = () => {
+                    audio.remove();
+                    currentIndex++;
+                    setTimeout(playNextChunk, 100);
+                };
+                
+                audio.onerror = () => {
+                    console.error('❌ 구글 TTS도 실패, 브라우저 기본 TTS 사용');
+                    isSpeaking = false;
+                    speakTextWithBasicTTS(text, callback);
+                };
+                
+                audio.src = googleUrl;
+                audio.playbackRate = 1.1;
+                audio.volume = 0.9;
+                audio.play();
+                
+            } catch (error) {
+                console.error('❌ 구글 TTS 오류:', error);
+                isSpeaking = false;
+                speakTextWithBasicTTS(text, callback);
+            }
+        }
+        
+        // 첫 번째 청크 재생 시작
+        playNextChunk();
+        
+    } catch (error) {
+        console.error('❌ TTS 초기화 실패:', error);
+        isSpeaking = false;
+        speakTextWithBasicTTS(text, callback);
+    }
+}
+
+// 브라우저 기본 TTS (최종 폴백용)
+function speakTextWithBasicTTS(text, callback) {
+    console.log('🔊 브라우저 기본 TTS 사용');
+    
+    if (!window.speechSynthesis) {
+        console.warn('⚠️ 음성 합성 미지원');
+        if (callback) callback();
+        return;
+    }
+
+    // 이전 음성 중지
+    if (isSpeaking) {
+        speechSynthesis.cancel();
+    }
+
+    // 음성 목록 로드 대기
+    function speak() {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'ko-KR';
+        
+        // 사용 가능한 모든 음성 가져오기
+        const voices = speechSynthesis.getVoices();
+        console.log('🔊 사용 가능한 음성:', voices.length);
+        
+        // 한국어 음성 찾기
+        const koreanVoices = voices.filter(v => v.lang.includes('ko'));
+        console.log('🔊 한국어 음성:', koreanVoices.map(v => v.name));
+        
+        // 우선순위별 음성 선택
+        const voicePreferences = [
+            'Google 한국어',      // Chrome 최고 품질
+            'Microsoft Heami',    // Edge 여성
+            'Microsoft SunHi',    // Edge 여성2
+            'Yuna',              // Samsung
+            'Nari'               // iOS
+        ];
+        
+        let selectedVoice = null;
+        for (const pref of voicePreferences) {
+            selectedVoice = koreanVoices.find(v => v.name.includes(pref));
+            if (selectedVoice) break;
+        }
+        
+        if (selectedVoice) {
+            utterance.voice = selectedVoice;
+            console.log('🎵 선택된 음성:', selectedVoice.name);
+        } else if (koreanVoices.length > 0) {
+            utterance.voice = koreanVoices[0];
+            console.log('🎵 기본 한국어 음성 사용');
+        }
+        
+        // 귀여운 목소리 설정
+        utterance.pitch = 1.6;  // 높은 톤
+        utterance.rate = 1.1;   // 약간 빠르게
+        utterance.volume = 0.95;
+        
+        utterance.onstart = () => {
+            isSpeaking = true;
+            console.log('🔊 음성 시작');
+        };
+        
+        utterance.onend = () => {
+            isSpeaking = false;
+            console.log('🔊 음성 종료');
+            if (callback) callback();
+        };
+        
+        utterance.onerror = (event) => {
+            isSpeaking = false;
+            console.error('❌ 음성 오류:', event);
+            if (callback) callback();
+        };
+        
+        speechSynthesis.speak(utterance);
+    }
+    
+    // 음성 목록이 로드되지 않았으면 대기
+    if (speechSynthesis.getVoices().length === 0) {
+        console.log('🔊 음성 목록 로드 대기중...');
+        speechSynthesis.addEventListener('voiceschanged', speak, { once: true });
+        // 일부 브라우저에서는 이벤트가 발생하지 않을 수 있으므로 타임아웃 설정
+        setTimeout(speak, 100);
+    } else {
+        speak();
+    }
+}
+
+// 텍스트를 음성으로 변환
+function speakText(text) {
+    console.log('🔊 speakText 호출:', text.substring(0, 30) + '...');
+    speakTextWithCallback(text, null);
+}
+
 
         // 텍스트를 음성으로 변환
         function speakText(text) {
