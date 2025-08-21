@@ -1274,71 +1274,69 @@
         }
 
         // 브라우저 기본 TTS (폴백)
-function speakTextWithBasicTTS(text, callback) {
-    console.log('🔊 브라우저 기본 TTS 사용');
-    
-    if (!window.speechSynthesis) {
-        console.warn('⚠️ 음성 합성 미지원');
-        if (callback) callback();
-        return;
-    }
-
-    if (isSpeaking) {
-        speechSynthesis.cancel();
-    }
-
-    function speak() {
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'ko-KR';
-        
-        const voices = speechSynthesis.getVoices();
-        const koreanVoices = voices.filter(v => v.lang.includes('ko'));
-        
-        if (koreanVoices.length > 0) {
-            const femaleVoice = koreanVoices.find(v => 
-                v.name.includes('Female') || 
-                v.name.includes('여성') ||
-                v.name.includes('Google') ||
-                v.name.includes('Microsoft')
-            );
+        function speakTextWithBasicTTS(text, callback) {
+            console.log('🔊 브라우저 기본 TTS 사용');
             
-            utterance.voice = femaleVoice || koreanVoices[0];
-        }
-        
-        // 🎀 귀여운 목소리 설정 🎀
-        utterance.pitch = 1.8;   // 높은 톤 (0.5~2.0)
-        utterance.rate = 1.2;    // 약간 빠르게 (0.1~10)
-        utterance.volume = 1.0;  // 볼륨 (0~1)
-        
-        utterance.onstart = () => {
-            isSpeaking = true;
-            console.log('🔊 기본 TTS 시작');
-        };
-        
-        utterance.onend = () => {
-            isSpeaking = false;
-            console.log('🔊 기본 TTS 종료');
-            if (callback) callback();
-        };
-        
-        utterance.onerror = (event) => {
-            isSpeaking = false;
-            console.error('❌ 기본 TTS 오류:', event);
-            if (callback) callback();
-        };
-        
-        speechSynthesis.speak(utterance);
-    }
-    
-    // 이 부분이 함수 안에 있어야 함!
-    if (speechSynthesis.getVoices().length === 0) {
-        speechSynthesis.addEventListener('voiceschanged', speak, { once: true });
-        setTimeout(speak, 100);
-    } else {
-        speak();
-    }
-}
+            if (!window.speechSynthesis) {
+                console.warn('⚠️ 음성 합성 미지원');
+                if (callback) callback();
+                return;
+            }
 
+            if (isSpeaking) {
+                speechSynthesis.cancel();
+            }
+
+            function speak() {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'ko-KR';
+                
+                const voices = speechSynthesis.getVoices();
+                const koreanVoices = voices.filter(v => v.lang.includes('ko'));
+                
+                if (koreanVoices.length > 0) {
+                    const femaleVoice = koreanVoices.find(v => 
+                        v.name.includes('Female') || 
+                        v.name.includes('여성') ||
+                        v.name.includes('Google') ||
+                        v.name.includes('Microsoft')
+                    );
+                    
+                    utterance.voice = femaleVoice || koreanVoices[0];
+                }
+                
+                // 🎀 귀여운 목소리 설정 🎀
+                utterance.pitch = 1.8;   // 높은 톤 (0.5~2.0)
+                utterance.rate = 1.2;    // 약간 빠르게 (0.1~10)
+                utterance.volume = 1.0;  // 볼륨 (0~1)
+                
+                utterance.onstart = () => {
+                    isSpeaking = true;
+                    console.log('🔊 기본 TTS 시작');
+                };
+                
+                utterance.onend = () => {
+                    isSpeaking = false;
+                    console.log('🔊 기본 TTS 종료');
+                    if (callback) callback();
+                };
+                
+                utterance.onerror = (event) => {
+                    isSpeaking = false;
+                    console.error('❌ 기본 TTS 오류:', event);
+                    if (callback) callback();
+                };
+                
+                speechSynthesis.speak(utterance);
+            }
+            
+            if (speechSynthesis.getVoices().length === 0) {
+                speechSynthesis.addEventListener('voiceschanged', speak, { once: true });
+                setTimeout(speak, 100);
+            } else {
+                speak();
+            }
+        }
 
         // 텍스트를 음성으로 변환
         function speakText(text) {
