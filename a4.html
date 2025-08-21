@@ -1186,24 +1186,37 @@
         let educationMode = null;
 
         // 페이지 로드 시 초기화
-        document.addEventListener('DOMContentLoaded', async function() {
-            console.log('🚀 페이지 초기화 시작');
-            initSpeechRecognition();
-            
-            // 음성 목록 로드 (비동기)
-            if (speechSynthesis) {
-                speechSynthesis.getVoices();
-                speechSynthesis.onvoiceschanged = function() {
-                    const voices = speechSynthesis.getVoices();
-                    console.log('🔊 사용 가능한 음성:', voices.filter(v => v.lang.includes('ko')));
-                };
-            }
-            
-            await loadUserDataFromFirebase();
-            await loadEducationDataFromFirebase();
-            await loadChatHistory();
-            initializeWelcomeMessage();
-        });
+document.addEventListener('DOMContentLoaded', async function() {
+    console.log('🚀 페이지 초기화 시작');
+    initSpeechRecognition();
+    
+    // 음성 목록 로드 (비동기)
+    if (speechSynthesis) {
+        speechSynthesis.getVoices();
+        speechSynthesis.onvoiceschanged = function() {
+            const voices = speechSynthesis.getVoices();
+            console.log('🔊 사용 가능한 음성:', voices.filter(v => v.lang.includes('ko')));
+        };
+    }
+    
+    await loadUserDataFromFirebase();
+    await loadEducationDataFromFirebase();
+    await loadChatHistory();
+    
+    // 환영 메시지와 음성을 약간 지연시켜 자동재생 차단 우회
+    setTimeout(() => {
+        initializeWelcomeMessage();
+        
+        // 사용자 상호작용 유도를 위한 클릭 이벤트 추가
+        document.addEventListener('click', function enableAudio() {
+            // 첫 클릭 시 음성 활성화
+            const welcomeText = "안녕하세요. 저는 여러분의 슬기로운 금융 생활을 돕는 똑부리에요. 혹시 도움이 필요한 일이 있나요?";
+            speakText(welcomeText);
+            // 이벤트 제거
+            document.removeEventListener('click', enableAudio);
+        }, { once: true });
+    }, 500);
+});
 
         // Firebase에서 교육 데이터 로드
         async function loadEducationDataFromFirebase() {
@@ -1308,12 +1321,11 @@
         }
 
         // 환영 메시지 초기화
-        function initializeWelcomeMessage() {
-            const welcomeMessage = "안녕하세요.\n저는 여러분의 슬기로운 금융 생활을 돕는 똑부리에요.\n혹시 도움이 필요한 일이 있나요?";
-            addMessage(welcomeMessage, 'bot', false);
-            // 환영 메시지도 음성으로 출력
-            speakText(welcomeMessage);
-        }
+function initializeWelcomeMessage() {
+    const welcomeMessage = "안녕하세요.\n저는 여러분의 슬기로운 금융 생활을 돕는 똑부리에요.\n혹시 도움이 필요한 일이 있나요?";
+    addMessage(welcomeMessage, 'bot', false, true); // 마지막 파라미터를 true로 변경
+}
+
 
         // 채팅 히스토리 로드
         async function loadChatHistory() {
