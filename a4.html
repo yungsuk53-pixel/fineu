@@ -702,6 +702,28 @@
             cursor: not-allowed;
         }
 
+        /* iOS 음성 알림 */
+        .ios-audio-notice {
+            display: none;
+            position: fixed;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #fff3cd;
+            color: #856404;
+            padding: 10px 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 200;
+            font-size: 14px;
+            text-align: center;
+            max-width: 350px;
+        }
+
+        .ios-audio-notice.show {
+            display: block;
+        }
+
         /* 반응형 수정 */
         @media (max-width: 480px) {
             .main-content {
@@ -768,6 +790,11 @@
     </style>
 </head>
 <body>
+    <!-- iOS 음성 알림 -->
+    <div class="ios-audio-notice" id="iosAudioNotice">
+        📱 화면을 터치하면 음성이 재생됩니다
+    </div>
+
     <!-- 헤더 -->
     <div class="header">
         <i class="fas fa-power-off power-icon" onclick="logout()"></i>
@@ -921,6 +948,10 @@
         let isVoiceMode = false;
         let voiceModeAutoListen = true;
         let currentAudio = null;
+
+        // iOS 감지
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        console.log('📱 iOS 환경:', isIOS);
 
         // 음성 인식 초기화
         function initSpeechRecognition() {
@@ -1155,10 +1186,19 @@
             }
         }
 
-        // Google Cloud TTS 사용 (더 나은 품질)
+        // iOS 호환 TTS 함수
         async function speakTextWithCallback(text, callback) {
             console.log('🔊 TTS 시작:', text.substring(0, 50) + '...');
+            console.log('📱 iOS 환경:', isIOS);
             
+            // iOS는 항상 기본 TTS 사용
+            if (isIOS) {
+                console.log('📱 iOS 감지 - 기본 TTS 사용');
+                speakTextWithBasicTTS(text, callback);
+                return;
+            }
+            
+            // Android/Desktop은 Google TTS 시도
             try {
                 if (currentAudio) {
                     currentAudio.pause();
@@ -1167,11 +1207,9 @@
                 
                 isSpeaking = true;
                 
-                // Google Translate TTS 사용 (무료, 고품질)
                 const chunks = [];
                 const maxLength = 200;
                 
-                // 텍스트를 적절한 크기로 분할
                 const sentences = text.split(/[.!?]+/);
                 let currentChunk = '';
                 
@@ -1205,13 +1243,11 @@
                     console.log(`🔊 청크 ${currentIndex + 1}/${chunks.length} 재생`);
                     
                     try {
-                        // Google Translate TTS URL
                         const googleTtsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=ko&client=tw-ob&q=${encodeURIComponent(chunk)}`;
                         
                         const audio = new Audio();
                         currentAudio = audio;
                         
-                        // CORS 우회를 위한 프록시 사용
                         audio.crossOrigin = 'anonymous';
                         
                         audio.onloadeddata = () => {
@@ -1240,15 +1276,12 @@
                         
                         audio.volume = 0.9;
                         audio.playbackRate = 1.0;
-                        
-                        // 직접 URL 설정 및 재생
                         audio.src = googleTtsUrl;
                         
                         const playPromise = audio.play();
                         if (playPromise !== undefined) {
                             playPromise.catch(error => {
                                 console.error('❌ 재생 실패:', error);
-                                // 브라우저 기본 TTS로 폴백
                                 isSpeaking = false;
                                 currentAudio = null;
                                 speakTextWithBasicTTS(text, callback);
@@ -1263,7 +1296,6 @@
                     }
                 }
                 
-                // 첫 번째 청크 재생 시작
                 playNextChunk();
                 
             } catch (error) {
@@ -1273,9 +1305,9 @@
             }
         }
 
-        // 브라우저 기본 TTS (폴백)
+        // 브라우저 기본 TTS (iOS 최적화)
         function speakTextWithBasicTTS(text, callback) {
-            console.log('🔊 브라우저 기본 TTS 사용');
+            console.log('🔊 브라우저 기본 TTS 사용 (iOS:', isIOS, ')');
             
             if (!window.speechSynthesis) {
                 console.warn('⚠️ 음성 합성 미지원');
@@ -1283,7 +1315,8 @@
                 return;
             }
 
-            if (isSpeaking) {
+            // iOS에서 음성 초기화
+            if (isIOS && speechSynthesis.speaking) {
                 speechSynthesis.cancel();
             }
 
@@ -1292,47 +1325,102 @@
                 utterance.lang = 'ko-KR';
                 
                 const voices = speechSynthesis.getVoices();
-                const koreanVoices = voices.filter(v => v.lang.includes('ko'));
+                console.log('🔊 사용 가능한 음성:', voices.length);
                 
-                if (koreanVoices.length > 0) {
+                const koreanVoices = voices.filter(v => v.lang.includes('ko'));
+                console.log('🔊 한국어 음성:', koreanVoices.map(v => v.name));
+                
+                // iOS 전용 음성 선택
+                if (isIOS && koreanVoices.length > 0) {
+                    // iOS 한국어 음성 우선순위
+                    const iOSKoreanVoice = koreanVoices.find(v => 
+                        v.name.includes('Yuna') ||     // iOS 15+ 한국어 여성
+                        v.name.includes('Sora') ||     // iOS 한국어 여성
+                        v.name.includes('한국') ||
+                        v.name.includes('Korean') ||
+                        v.name.includes('KR')
+                    );
+                    
+                    if (iOSKoreanVoice) {
+                        utterance.voice = iOSKoreanVoice;
+                        console.log('🔊 iOS 음성 선택:', iOSKoreanVoice.name);
+                    } else {
+                        utterance.voice = koreanVoices[0];
+                        console.log('🔊 기본 한국어 음성 선택:', koreanVoices[0].name);
+                    }
+                } else if (koreanVoices.length > 0) {
+                    // 다른 플랫폼
                     const femaleVoice = koreanVoices.find(v => 
                         v.name.includes('Female') || 
                         v.name.includes('여성') ||
                         v.name.includes('Google') ||
                         v.name.includes('Microsoft')
                     );
-                    
                     utterance.voice = femaleVoice || koreanVoices[0];
                 }
                 
-                // 🎀 귀여운 목소리 설정 🎀
-                utterance.pitch = 2.0;   // 높은 톤 (0.5~2.0)
-                utterance.rate = 1.4;    // 약간 빠르게 (0.1~10)
-                utterance.volume = 1.0;  // 볼륨 (0~1)
+                // iOS 음성 설정 (제한적)
+                if (isIOS) {
+                    utterance.pitch = 1.5;   // iOS는 1.5가 최대 안정
+                    utterance.rate = 1.0;    // iOS는 정상 속도
+                    utterance.volume = 1.0;  // 최대 볼륨
+                } else {
+                    // 다른 플랫폼은 더 귀엽게
+                    utterance.pitch = 2.0;   // 최대 톤
+                    utterance.rate = 1.3;    // 빠르게
+                    utterance.volume = 1.0;
+                }
                 
                 utterance.onstart = () => {
                     isSpeaking = true;
-                    console.log('🔊 기본 TTS 시작');
+                    console.log('🔊 TTS 시작 (iOS:', isIOS, ', pitch:', utterance.pitch, ')');
                 };
                 
                 utterance.onend = () => {
                     isSpeaking = false;
-                    console.log('🔊 기본 TTS 종료');
+                    console.log('🔊 TTS 종료');
                     if (callback) callback();
                 };
                 
                 utterance.onerror = (event) => {
                     isSpeaking = false;
-                    console.error('❌ 기본 TTS 오류:', event);
+                    console.error('❌ TTS 오류:', event);
                     if (callback) callback();
                 };
                 
-                speechSynthesis.speak(utterance);
+                // iOS 재생 처리
+                if (isIOS) {
+                    // iOS는 약간의 딜레이 필요
+                    setTimeout(() => {
+                        try {
+                            speechSynthesis.speak(utterance);
+                            console.log('🔊 iOS TTS 재생 시작');
+                        } catch (e) {
+                            console.error('❌ iOS TTS 재생 실패:', e);
+                            if (callback) callback();
+                        }
+                    }, 100);
+                } else {
+                    speechSynthesis.speak(utterance);
+                }
             }
             
+            // 음성 목록 로드 대기
             if (speechSynthesis.getVoices().length === 0) {
+                console.log('🔊 음성 목록 로드 대기중...');
+                if (isIOS) {
+                    // iOS는 더 긴 대기 시간 필요
+                    setTimeout(() => {
+                        const voices = speechSynthesis.getVoices();
+                        if (voices.length > 0) {
+                            speak();
+                        } else {
+                            console.warn('⚠️ iOS 음성 로드 실패');
+                            if (callback) callback();
+                        }
+                    }, 500);
+                }
                 speechSynthesis.addEventListener('voiceschanged', speak, { once: true });
-                setTimeout(speak, 100);
             } else {
                 speak();
             }
@@ -1373,6 +1461,21 @@
         document.addEventListener('DOMContentLoaded', async function() {
             console.log('🚀 페이지 초기화 시작');
             initSpeechRecognition();
+            
+            // iOS에서 음성 초기화
+            if (isIOS) {
+                console.log('📱 iOS 음성 초기화');
+                // iOS는 사용자 상호작용 후 음성 초기화
+                document.addEventListener('touchstart', function initIOSAudio() {
+                    if (speechSynthesis) {
+                        const utterance = new SpeechSynthesisUtterance('');
+                        speechSynthesis.speak(utterance);
+                        speechSynthesis.cancel();
+                        console.log('📱 iOS 음성 엔진 초기화 완료');
+                    }
+                    document.removeEventListener('touchstart', initIOSAudio);
+                }, { once: true });
+            }
             
             if (speechSynthesis) {
                 speechSynthesis.getVoices();
@@ -1493,15 +1596,48 @@
             }
         }
 
-        // 환영 메시지 초기화
+        // 환영 메시지 초기화 (iOS 최적화)
         function initializeWelcomeMessage() {
             const welcomeMessage = "안녕하세요.\n저는 여러분의 슬기로운 금융 생활을 돕는 똑부리에요.\n혹시 도움이 필요한 일이 있나요?";
             addMessage(welcomeMessage, 'bot', false);
             
-            // 자동으로 환영 메시지 음성 재생
-            setTimeout(() => {
-                speakText(welcomeMessage);
-            }, 1000);
+            if (isIOS) {
+                // iOS 알림 표시
+                const notice = document.getElementById('iosAudioNotice');
+                notice.classList.add('show');
+                setTimeout(() => {
+                    notice.classList.remove('show');
+                }, 3000);
+                
+                // iOS는 터치 이벤트 후 재생
+                let hasPlayed = false;
+                const playOnTouch = function(e) {
+                    if (!hasPlayed && !isSpeaking) {
+                        hasPlayed = true;
+                        console.log('📱 iOS 첫 터치 감지 - 환영 메시지 재생');
+                        speakText(welcomeMessage);
+                        document.removeEventListener('touchstart', playOnTouch);
+                        document.removeEventListener('click', playOnTouch);
+                    }
+                };
+                
+                document.addEventListener('touchstart', playOnTouch, { passive: true });
+                document.addEventListener('click', playOnTouch);
+                
+                // 입력창 포커스 시에도 재생
+                document.getElementById('chatInput').addEventListener('focus', function() {
+                    if (!hasPlayed && !isSpeaking) {
+                        hasPlayed = true;
+                        speakText(welcomeMessage);
+                    }
+                }, { once: true });
+                
+            } else {
+                // 다른 플랫폼은 자동 재생
+                setTimeout(() => {
+                    speakText(welcomeMessage);
+                }, 1000);
+            }
         }
 
         // 채팅 히스토리 로드
